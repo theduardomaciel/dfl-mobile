@@ -1,0 +1,9 @@
+{
+    "expo": {
+      "name": "DFL",
+      "slug": "dfl-testing"
+    },
+    "plugins": [
+        "react-native-svg"
+    ]
+}
