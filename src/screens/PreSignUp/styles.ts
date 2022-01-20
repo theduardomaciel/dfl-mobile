@@ -14,7 +14,7 @@ export const styles = StyleSheet.create({
     form: {
         width: "100%",
         height: "47%",
-        backgroundColor: theme.colors.secondary100,
+        backgroundColor: theme.colors.primary1,
         paddingHorizontal: 25,
         flexDirection: "column",
         justifyContent: "flex-start",

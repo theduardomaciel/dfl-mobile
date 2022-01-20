@@ -24,7 +24,7 @@ export const styles = StyleSheet.create({
     },
 
     title: {
-        color: theme.colors.primary100,
+        color: theme.colors.secondary1,
         fontSize: 36,
         fontFamily: theme.fonts.subtitle500,
     },

@@ -104,8 +104,8 @@ function MainScreen() {
                 headerShown: false,
                 headerTransparent: true,
                 tabBarStyle: {
-                    backgroundColor: theme.colors.secondary100,
-                    borderTopColor: theme.colors.secondary100,
+                    backgroundColor: theme.colors.primary1,
+                    borderTopColor: theme.colors.primary1,
                     borderTopLeftRadius: 15,
                     borderTopRightRadius: 15,
                     height: 55,
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
     bottomBar: {
         height: 65,
         paddingHorizontal: 6,
-        backgroundColor: theme.colors.secondary100,
+        backgroundColor: theme.colors.primary1,
         alignItems: 'center',
         flexDirection: 'row',
         borderTopLeftRadius: 15,

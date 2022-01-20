@@ -20,14 +20,14 @@ export const styles = StyleSheet.create({
         lineHeight: 35,
         letterSpacing: -1,
         paddingHorizontal: 0,
-        color: theme.colors.primary100,
+        color: theme.colors.secondary1,
         textAlign: 'center',
         //backgroundColor: "green",
         justifyContent: 'center',
     },
     description: {
         fontFamily: theme.fonts.subtitle500,
-        color: theme.colors.primary100,
+        color: theme.colors.secondary1,
         textAlign: 'center',
         paddingHorizontal: 46,
     }

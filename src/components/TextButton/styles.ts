@@ -6,7 +6,7 @@ export const styles = StyleSheet.create({
         borderRadius: 15,
         flexDirection: "row",
         justifyContent: "center",
-        backgroundColor: theme.colors.primary100,
+        backgroundColor: theme.colors.secondary1,
         alignItems: "center",
         alignSelf: 'center',
         alignContent: 'center',

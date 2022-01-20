@@ -9,7 +9,7 @@ export const styles = StyleSheet.create({
         flex: 1,
         borderRadius: 15,
         opacity: 0.5,
-        color: theme.colors.primary100,
+        color: theme.colors.secondary1,
         //backgroundColor: "red",
         paddingHorizontal: 11,
     },

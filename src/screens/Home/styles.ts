@@ -26,13 +26,13 @@ export const styles = StyleSheet.create({
         //backgroundColor: "red",
         fontFamily: theme.fonts.subtitle500,
         fontSize: 28,
-        color: theme.colors.primary100,
+        color: theme.colors.secondary1,
     },
     greetingsNameText: {
         marginTop: -15,
         fontFamily: theme.fonts.subtitle500,
         fontSize: 36,
-        color: theme.colors.primary100,
+        color: theme.colors.secondary1,
     },
 
     // ScrollView
@@ -45,7 +45,7 @@ export const styles = StyleSheet.create({
         flex: 1,
         marginLeft: 30,
         width: "90%", // Limita o tamanho do texto para o tamanho da tela (o título "Engajamento da Comunidade" fica cortado)
-        color: theme.colors.primary100,
+        color: theme.colors.secondary1,
         fontSize: 24,
         lineHeight: 24,
         fontFamily: theme.fonts.title700,
@@ -74,7 +74,7 @@ export const styles = StyleSheet.create({
     scopeButton: {
         height: 35,
         width: 115,
-        backgroundColor: theme.colors.secondary100,
+        backgroundColor: theme.colors.primary1,
         borderRadius: 15,
         marginBottom: 5,
         alignItems: "center",

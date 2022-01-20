@@ -1,19 +1,20 @@
 export const theme = {
     colors: {
         background: '#F6F7EB',
+        background2: '#E6EADA',
         modalBackground: '#F3F7F4',
 
-        primary100: '#26413C',
-        primary2: '#C9E2C9',
-        secondary100: '#4F9D69',
+        primary1: '#4F9D69',
+        primary2: '#7FB883',
+        primary3: 'AED296',
+        primary4: 'C9E2C9',
 
-        unselected: '#DADADA',
-        grey: "#4E4A43",
-        blue: "#1877F2",
+        secondary1: '#26413C',
+        secondary2: '#346259',
 
-        green: "#4CAF50",
-        yellow: "#F0DE7B",
-        red: "#F44336",
+        red: '#D1351B',
+        red_dark: '#AA2B2B',
+        yellow: '#F0DE7B',
 
         text1: "#FFFFFF",
     },

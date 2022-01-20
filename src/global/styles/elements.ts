@@ -12,7 +12,7 @@ export const elements = StyleSheet.create({
         paddingVertical: 12,
 
         justifyContent: "space-between",
-        backgroundColor: theme.colors.secondary100,
+        backgroundColor: theme.colors.primary1,
     },
     subContainerWhite: {
         height: 200,

@@ -11,23 +11,23 @@ import { TextForm } from "../../components/TextForm";
 import { MaterialIcons } from '@expo/vector-icons';
 
 export function SignUp() {
-    const NameIcon = <MaterialIcons name="person-outline" size={24} color={theme.colors.primary100} />
-    const EmailIcon = <MaterialIcons name="mail-outline" size={24} color={theme.colors.primary100} />
-    const LockIcon = <MaterialIcons name="lock-outline" size={24} color={theme.colors.primary100} />
-    const HelpIcon = <MaterialIcons name="help-outline" size={24} color={theme.colors.primary100} />
+    const NameIcon = <MaterialIcons name="person-outline" size={24} color={theme.colors.secondary1} />
+    const EmailIcon = <MaterialIcons name="mail-outline" size={24} color={theme.colors.secondary1} />
+    const LockIcon = <MaterialIcons name="lock-outline" size={24} color={theme.colors.secondary1} />
+    const HelpIcon = <MaterialIcons name="help-outline" size={24} color={theme.colors.secondary1} />
 
-    const CircleIconUnselected = <MaterialIcons name="radio-button-off" size={24} color={theme.colors.primary100} />
-    const CircleIconSelected = <MaterialIcons name="radio-button-on" size={24} color={theme.colors.primary100} />
+    const CircleIconUnselected = <MaterialIcons name="radio-button-off" size={24} color={theme.colors.secondary1} />
+    const CircleIconSelected = <MaterialIcons name="radio-button-on" size={24} color={theme.colors.secondary1} />
 
     const ArrowDropdown = <MaterialIcons
         name="arrow-drop-down"
         size={24}
-        color={theme.colors.primary100}
+        color={theme.colors.secondary1}
     />
     const PasswordEye = <MaterialIcons
         name="remove-red-eye"
         size={24}
-        color={theme.colors.primary100}
+        color={theme.colors.secondary1}
     />
 
     return (
@@ -77,21 +77,21 @@ export function SignUp() {
                     Data de Nascimento
                 </Text>
                 <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 15 }}>
-                    <TextForm 
+                    <TextForm
                         placeholder={"10"}
                         shadow
                         buttonIcon={ArrowDropdown}
                         keyboardType={"numeric"}
                         style={{ width: "32%", alignSelf: "center" }}
                     />
-                    <TextForm 
+                    <TextForm
                         placeholder={"10"}
                         shadow
                         buttonIcon={ArrowDropdown}
                         keyboardType={"numeric"}
                         style={{ width: "32%" }}
                     />
-                    <TextForm 
+                    <TextForm
                         placeholder={"10"}
                         shadow
                         buttonIcon={ArrowDropdown}
@@ -105,29 +105,29 @@ export function SignUp() {
                 <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
                     <TextButton
                         shadow
-                        title={"Feminino"}    
+                        title={"Feminino"}
                         icon={CircleIconSelected}
-                        textStyle={{ color: theme.colors.primary100, fontFamily: theme.fonts.title700, fontSize: 14 }}
+                        textStyle={{ color: theme.colors.secondary1, fontFamily: theme.fonts.title700, fontSize: 14 }}
                         style={{ width: "32%", backgroundColor: theme.colors.text1, height: 34, borderRadius: 15, flexDirection: "row", justifyContent: "space-around", alignItems: "center", paddingHorizontal: 5 }}
                     />
                     <TextButton
                         shadow
-                        title={"Masculino"}    
+                        title={"Masculino"}
                         icon={CircleIconUnselected}
-                        textStyle={{ color: theme.colors.primary100, fontFamily: theme.fonts.title700, fontSize: 14 }}
+                        textStyle={{ color: theme.colors.secondary1, fontFamily: theme.fonts.title700, fontSize: 14 }}
                         style={{ width: "32%", backgroundColor: theme.colors.text1, height: 34, borderRadius: 15, flexDirection: "row", justifyContent: "space-around", alignItems: "center", paddingHorizontal: 5 }}
                     />
                     <TextButton
                         shadow
-                        title={"Outro"}    
+                        title={"Outro"}
                         icon={CircleIconSelected}
-                        textStyle={{ color: theme.colors.primary100, fontFamily: theme.fonts.title700, fontSize: 14 }}
+                        textStyle={{ color: theme.colors.secondary1, fontFamily: theme.fonts.title700, fontSize: 14 }}
                         style={{ width: "32%", backgroundColor: theme.colors.text1, height: 34, borderRadius: 15, flexDirection: "row", justifyContent: "space-around", alignItems: "center", paddingHorizontal: 5 }}
                     />
                 </View>
                 <View style={{
                     marginTop: 15,
-                    backgroundColor: theme.colors.primary100,
+                    backgroundColor: theme.colors.secondary1,
                     opacity: 0.75,
                     height: 0.5,
                     width: "100%",

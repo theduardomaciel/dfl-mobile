@@ -25,12 +25,12 @@ export const styles = StyleSheet.create({
         marginTop: 31,
         lineHeight: 35,
         fontFamily: theme.fonts.subtitle900,
-        color: theme.colors.primary100,
+        color: theme.colors.secondary1,
     },
     subtitle: {
         fontSize: 14,
         fontFamily: theme.fonts.title400,
-        color: theme.colors.primary100,
+        color: theme.colors.secondary1,
     },
     section: {
         //backgroundColor: "red",
@@ -42,12 +42,12 @@ export const styles = StyleSheet.create({
     passwordStrenghtText1: {
         fontFamily: theme.fonts.title700,
         fontSize: 12,
-        color: theme.colors.primary100
+        color: theme.colors.secondary1
     },
     passwordStrenghtText2: {
         fontFamily: theme.fonts.title400,
         fontSize: 12,
-        color: theme.colors.primary100
+        color: theme.colors.secondary1
     },
     passwordStrenght: {
         width: "100%",
@@ -56,7 +56,7 @@ export const styles = StyleSheet.create({
     },
     categoryTitle: {
         fontSize: 14,
-        color: theme.colors.primary100,
+        color: theme.colors.secondary1,
         fontFamily: theme.fonts.title600
     }
 });

@@ -55,16 +55,16 @@ export function Onboarding() {
                     ref={slidesRef}
                 />
             </View>
-            
+
             <View style={styles.footer}>
                 <Paginator data={onboarding_screens} scrollX={scrollX} scrollTo={scrollTo} />
                 <TextButton
                     activeOpacity={0.9}
                     title={"Criar uma conta"}
-                    buttonStyle={{ borderRadius: 8, height: 50, width: 250, backgroundColor: theme.colors.secondary100 }}
+                    buttonStyle={{ borderRadius: 8, height: 50, width: 250, backgroundColor: theme.colors.primary1 }}
                 />
                 <TouchableOpacity>
-                    <Text style={{ color: theme.colors.secondary100, fontSize: 11, marginTop:5 }}>
+                    <Text style={{ color: theme.colors.primary1, fontSize: 11, marginTop: 5 }}>
                         Já tem uma conta? Faça login aqui!
                     </Text>
                 </TouchableOpacity>

@@ -59,10 +59,10 @@ const EXAMPLE_REPORTS2 = [
 const SectionHeader = ({ section }: any) => (
     <SectionTitle
         title={section.title}
-        color={theme.colors.secondary100}
+        color={theme.colors.primary1}
         fontStyle={{
             fontFamily: theme.fonts.subtitle900,
-            color: theme.colors.secondary100
+            color: theme.colors.primary1
         }}
     />
 );
@@ -76,18 +76,18 @@ const SectionItem = ({ item }: any) => {
             <View style={styles.report_info_container}>
                 <SectionTitle
                     title={item.location}
-                    color={theme.colors.secondary100}
+                    color={theme.colors.primary1}
                     fontStyle={{
                         fontFamily: theme.fonts.subtitle900,
-                        color: theme.colors.secondary100
+                        color: theme.colors.primary1
                     }}
                 />
                 <Text style={styles.report_description}>
                     {item.description ? item.description : "[nenhuma sugestão provida]"}
                 </Text>
-                <Text style={[styles.report_description, { fontSize: 8, color: theme.colors.primary2 }]}>
+                <Text style={styles.report_data}>
                     {"Id do Relatório: " + item.id}
-                    {item.solved ? <Text style={{ color: theme.colors.green }}> | solucionado</Text> : <Text style={{ color: theme.colors.red }}> | não solucionado</Text>}
+                    {item.solved ? <Text style={{ color: theme.colors.primary1 }}> | solucionado</Text> : <Text style={{ color: theme.colors.red }}> | não solucionado</Text>}
                 </Text>
             </View>
             <Image
@@ -135,14 +135,15 @@ export function Account() {
                 <SectionTitle title="Histórico" />
                 <SectionList
                     nestedScrollEnabled={true}
-                    style={[elements.subContainerWhite, { height: 375, marginBottom: 25 }]}
+                    style={[elements.subContainerWhite, { flex: 1, height: 375, marginBottom: 25 }]}
 
                     // Configurações dos elementos do Relatório
-                    sections={[...EXAMPLE_REPORTS, ...EXAMPLE_REPORTS2]}
+                    sections={[...EXAMPLE_REPORTS, ...EXAMPLE_REPORTS2, ...EXAMPLE_REPORTS]}
                     /* keyExtractor={(item, index)=>index.toString()} */
                     keyExtractor={item => item.id}
                     renderItem={SectionItem}
                     renderSectionHeader={SectionHeader}
+                // Faz com que o Header fique grudado no início: stickySectionHeadersEnabled
                 />
 
                 { /* Estatísticas */}
