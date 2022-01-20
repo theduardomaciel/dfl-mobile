@@ -1,7 +1,7 @@
 import React from 'react';
+import { useNavigation } from '@react-navigation/native';
 
 import {
-    View,
     Image,
     StyleSheet,
     TouchableOpacity
@@ -12,8 +12,15 @@ type Props = {
 }
 
 export function ProfileIcon({ uri }: Props) {
+    const navigation = useNavigation();
     return (
-        <TouchableOpacity style={styles.container}>
+        <TouchableOpacity
+            activeOpacity={1}
+            style={styles.container}
+            onPress={() => {
+                navigation.navigate("Conta")
+            }}
+        >
             <Image
                 style={styles.logo}
                 source={{

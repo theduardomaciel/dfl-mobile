@@ -13,10 +13,24 @@ export const styles = StyleSheet.create({
         //backgroundColor: "green",
         width: "90%",
         alignItems: "flex-start",
-        flexDirection: "column",
+        flexDirection: "row",
         justifyContent: "space-between",
         marginTop: 35, //+ getStatusBarHeight(),
         marginBottom: 25,
+    },
+    userInfoContainer: {
+        flexDirection: "column"
+    },
+    title: {
+        color: theme.colors.primary100,
+        fontSize: 36,
+        fontFamily: theme.fonts.subtitle500,
+    },
+    username: {
+        marginTop: -5,
+        fontFamily: theme.fonts.subtitle500,
+        fontSize: 16,
+        color: theme.colors.primary100,
     },
 
     // ScrollView
@@ -24,19 +38,32 @@ export const styles = StyleSheet.create({
         alignItems: "center",
     },
 
-    title: {
-        color: theme.colors.primary100,
-        fontSize: 36,
-        fontFamily: theme.fonts.subtitle500,
+
+    // Propriedades do Relatório
+    report_container: {
+        height: 100,
+        backgroundColor: theme.colors.unselected,
+        flexDirection: "row",
+        borderRadius: 5,
+        marginBottom: 15,
     },
-    subtitle: {
-        fontFamily: theme.fonts.section400,
-        color: theme.colors.primary100,
-        fontSize: 18,
+    report_info_container: {
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+        width: "65%",
     },
-    info: {
-        fontFamily: theme.fonts.subtitle900,
-        color: theme.colors.text1,
-        fontSize: 24,
-    }
+    report_image: {
+        width: "35%",
+        borderTopRightRadius: 5,
+        borderBottomRightRadius: 5,
+    },
+    report_description: {
+        flex: 1,
+        textAlignVertical: "bottom",
+        justifyContent: "flex-end",
+        //backgroundColor: "blue",
+        fontFamily: theme.fonts.subtitle400,
+        fontSize: 10,
+        color: theme.colors.secondary100,
+    },
 });

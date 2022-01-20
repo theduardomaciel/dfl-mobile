@@ -27,7 +27,7 @@ export function Community() {
                 </View>
 
                 <SectionTitle title="Enquetes" info="termina em 12h31m" />
-                <View style={[elements.subContainerWhite, theme.shadowPropertiesLow]}>
+                <View style={elements.subContainerWhite}>
 
                 </View>
                 <View style={{ height: 100 }} />

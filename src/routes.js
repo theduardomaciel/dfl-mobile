@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { StatusBar, TouchableOpacity, View, Text, StyleSheet, Animated, Easing } from "react-native"
 
 import { useFocusEffect } from "@react-navigation/native";
@@ -30,13 +30,24 @@ const icons = [community_icon, reports_icon, null, home_icon, account_icon];
 
 import { TextButton } from './components/TextButton';
 
+import { menuAnimations } from './global/animations/menuAnimations';
+import { fadeAnimations } from './global/animations/fadeAnimations';
+
+const communityButtonDriver = new Animated.Value(0)
+const reportsButtonDriver = new Animated.Value(0)
+const homeButtonDriver = new Animated.Value(1)
+const accountButtonDriver = new Animated.Value(0)
+
+let lastIndex = 3; // A tela inicial é a "Home", que está posicionada no index 3
+const buttonDrivers = [communityButtonDriver, reportsButtonDriver, null, homeButtonDriver, accountButtonDriver]
+
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator(); // Para o modal de "Notificar Foco"
 
 function NotificarFoco({ navigation }) {
     return (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ fontSize: 30 }}>This is a modal!</Text>
+            <Text style={{ fontSize: 30 }}>Isso é um modal!</Text>
             <TextButton onPress={() => navigation.goBack()} title="Dismiss" />
         </View>
     );
@@ -60,37 +71,31 @@ const FadeReportsScreen = (props) => (
     </FadeInView>
 );
 
-const FadeAccountScreen = (props, { navigation }) => (
+const riseTrashbin = menuAnimations.riseTrashbin;
+const downTrashbin = menuAnimations.downTrashbin;
+
+const FadeAccountScreen = (props) => (
     <FadeInView>
+        {
+            useEffect(() => {
+                const changedScreen = props.navigation.addListener('focus', () => {
+                    if (lastIndex !== 4) {
+                        //console.log("Levantando botão de conta");
+                        riseTrashbin(buttonDrivers[4]);
+                        downTrashbin(buttonDrivers[lastIndex]);
+                        lastIndex = 4;
+                    }
+                });
+
+                // Return the function to unsubscribe from the event so it gets removed on unmount
+                return changedScreen;
+            }, [props.navigation])
+        }
         <Account {...props} />
     </FadeInView>
 );
 
-const communityButtonDriver = new Animated.Value(0)
-const reportsButtonDriver = new Animated.Value(0)
-const homeButtonDriver = new Animated.Value(1)
-const accountButtonDriver = new Animated.Value(0)
-
-let lastIndex = 3;
-const buttonDrivers = [communityButtonDriver, reportsButtonDriver, null, homeButtonDriver, accountButtonDriver];
-
 function MainScreen() {
-    const riseTrashbin = (button) => {
-        Animated.spring(button, {
-            toValue: 1,
-            duration: 500,
-            useNativeDriver: true
-        }).start()
-    }
-
-    const downTrashbin = (button) => {
-        Animated.spring(button, {
-            toValue: 0,
-            duration: 500,
-            useNativeDriver: true
-        }).start()
-    }
-
     return (
         <Tab.Navigator
             initialRouteName='Início'
@@ -114,7 +119,7 @@ function MainScreen() {
                     tabPress: () => {
                         if (lastIndex !== 0) {
                             //console.log("Levantando botão de comunidade");
-                            riseTrashbin(communityButtonDriver);
+                            riseTrashbin(buttonDrivers[0]);
                             downTrashbin(buttonDrivers[lastIndex]);
                             lastIndex = 0;
                         }
@@ -128,7 +133,7 @@ function MainScreen() {
                     tabPress: () => {
                         if (lastIndex !== 1) {
                             //console.log("Levantando botão de relatórios");
-                            riseTrashbin(reportsButtonDriver);
+                            riseTrashbin(buttonDrivers[1]);
                             downTrashbin(buttonDrivers[lastIndex]);
                             lastIndex = 1;
                         }
@@ -152,7 +157,7 @@ function MainScreen() {
                     tabPress: () => {
                         if (lastIndex !== 3) {
                             //console.log("Levantando botão de início");
-                            riseTrashbin(homeButtonDriver);
+                            riseTrashbin(buttonDrivers[3]);
                             downTrashbin(buttonDrivers[lastIndex]);
                             lastIndex = 3;
                         }
@@ -162,16 +167,6 @@ function MainScreen() {
             <Tab.Screen
                 name='Conta'
                 component={FadeAccountScreen}
-                listeners={() => ({
-                    tabPress: () => {
-                        if (lastIndex !== 4) {
-                            //console.log("Levantando botão de conta");
-                            riseTrashbin(accountButtonDriver);
-                            downTrashbin(buttonDrivers[lastIndex]);
-                            lastIndex = 4;
-                        }
-                    }
-                })}
             />
         </Tab.Navigator>
     )
@@ -209,7 +204,7 @@ export default function Routes() {
     )
 }
 
-const BottomTab = ({ size, title, isFocused, index }) => {
+const BottomTab = ({ title, index }) => {
     const icon = index == 0 ? 'home' : 'heart';
     const isMiddleButton = index == 2;
     return (
@@ -280,20 +275,13 @@ const MyTabBar = ({ state, descriptors, navigation }) => {
 const FadeInView = (props, { navigation }) => {
     const fadeAnim = React.useRef(new Animated.Value(0)).current; // Initial value for opacity: 0
 
+    const fadeIn = fadeAnimations.fadeIn
+    const fadeOut = fadeAnimations.fadeOut
+
     useFocusEffect(() => {
-        Animated.timing(fadeAnim, {
-            toValue: 1,
-            duration: 75,
-            easing: Easing.sin,
-            useNativeDriver: true,
-        }).start();
+        fadeIn(fadeAnim);
         return () => {
-            Animated.timing(fadeAnim, {
-                toValue: 0,
-                duration: 75,
-                easing: Easing.sin,
-                useNativeDriver: true,
-            }).start();
+            fadeOut(fadeAnim);
         };
     });
 

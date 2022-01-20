@@ -4,6 +4,7 @@ export const theme = {
         modalBackground: '#F3F7F4',
 
         primary100: '#26413C',
+        primary2: '#C9E2C9',
         secondary100: '#4F9D69',
 
         unselected: '#DADADA',

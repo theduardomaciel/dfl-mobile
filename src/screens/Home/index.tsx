@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, Image, RefreshControl } from "react-native";
+import { View, Text, ScrollView, Image, RefreshControl, TouchableOpacity } from "react-native";
 
 //import MapView from "react-native-maps";
 
@@ -52,6 +52,7 @@ export function Home() {
                     />
                 }
             >
+
                 {/* Seu nível */}
                 <Text style={[styles.title, { paddingTop: 0 }]}>
                     Seu nível
@@ -67,6 +68,7 @@ export function Home() {
                     </View>
                     <Image source={require("../../assets/level_placeholder.png")} />
                 </View>
+
                 {/* Seu engajamento */}
                 <Text style={styles.title}>
                     Seu engajamento
@@ -91,9 +93,22 @@ export function Home() {
                         </Text>
                     </View>
                 </View>
-                <Text style={styles.title}>
-                    Engajamento da Comunidade
-                </Text>
+
+                {/* Engajamento da Comunidade */}
+                <View style={styles.communityTitle}>
+                    <Text style={[styles.title, { marginLeft: 12 }]}>
+                        Engajamento da Comunidade
+                    </Text>
+                    <TouchableOpacity
+                        activeOpacity={0.9}
+                        style={styles.scopeButton}
+                    >
+                        <Text style={styles.subtitle}>
+                            Bairro
+                        </Text>
+
+                    </TouchableOpacity>
+                </View>
                 <View style={[elements.subContainerGreen, theme.shadowProperties, { height: 256 }]}>
                     <View>
                         <Text style={[styles.info, { fontSize: 36 }]}>
