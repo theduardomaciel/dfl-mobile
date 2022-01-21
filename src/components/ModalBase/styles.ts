@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { theme } from '../../global/styles/theme';
 
-export const modalStyles = StyleSheet.create({
+export const styles = StyleSheet.create({
     modal: {
         justifyContent: "space-between",
         alignItems: "center",

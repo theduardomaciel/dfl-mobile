@@ -15,9 +15,8 @@ import { theme } from "../../global/styles/theme";
 import { styles } from "./styles";
 
 import { Entypo } from '@expo/vector-icons';
-import { modalStyles } from "../../global/styles/modal";
 import { TextButton } from "../../components/TextButton";
-import { ModalCloseButton } from "../../components/Modal/CloseButton";
+import { ModalBase } from "../../components/ModalBase";
 
 export function Community() {
     const [isModalVisible, setModalVisible] = useState(false);
@@ -31,24 +30,15 @@ export function Community() {
  */
     return (
         <View style={styles.container}>
-            <Modal
+            <ModalBase
+                title="Alterar cidade padrão"
                 isVisible={isModalVisible}
-                statusBarTranslucent={true}
-                deviceHeight={1920}
-                style={{ alignItems: "center" }}
-                animationIn={"fadeInUp"}
-                backdropTransitionOutTiming={0}
                 onBackdropPress={() => setModalVisible(false)}
+                toggleModal={() => { setModalVisible(false) }}
             >
-                <View style={modalStyles.modal}>
-                    <Text style={modalStyles.title}>
-                        Alterar cidade padrão
-                    </Text>
-                    <TextButton title="X" buttonStyle={modalStyles.closeButton} onPress={toggleModal} />
-                    <Text>Essa é a descrição do modal.</Text>
-                    <TextButton title="ALTERAR CIDADE" buttonStyle={{ height: 40, width: 180, backgroundColor: theme.colors.primary1, borderRadius: 25 }} />
-                </View>
-            </Modal>
+                <Text>Essa é a descrição do modal.</Text>
+                <TextButton title="ALTERAR CIDADE" buttonStyle={{ height: 40, width: 180, backgroundColor: theme.colors.primary1, borderRadius: 25 }} />
+            </ModalBase>
             <StatusBar
                 barStyle="dark-content"
                 backgroundColor="transparent"
