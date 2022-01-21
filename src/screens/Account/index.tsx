@@ -3,12 +3,13 @@ import { View, Text, ScrollView, Image, FlatList, SectionList, TouchableOpacity,
 
 import { ProfileIcon } from "../../components/ProfileIcon";
 import { SectionTitle } from "../../components/SectionTitle";
-import { TextForm } from "../../components/TextForm";
 
 import { elements } from "../../global/styles/elements";
 import { theme } from "../../global/styles/theme";
 
 import { styles } from "./styles";
+
+import TrashbinSvg from "../../assets/trashbin_2.svg"
 
 // Os dados em uma SectionList devem ser sempre organizados em: "Title" e "Data". 
 // Se esse nomes não estiverem escritos, um erro será retornado.
@@ -100,6 +101,35 @@ const SectionItem = ({ item }: any) => {
     )
 }
 
+const EMPTY = []
+
+const EmptyItem = ({ item }: any) => {
+    return (
+        <View style={styles.container}>
+            <TrashbinSvg
+                width={50}
+                height={90}
+            />
+            <Text style={{
+                fontFamily: theme.fonts.title700,
+                color: theme.colors.secondary1,
+                fontSize: 18,
+                textAlign: "center"
+            }}>
+                Está um pouco vazio aqui...
+            </Text>
+            <Text style={{
+                fontFamily: theme.fonts.subtitle400,
+                color: theme.colors.secondary1,
+                fontSize: 16,
+                textAlign: "center"
+            }}>
+                Que tal reportar um foco de lixo para que ele apareça aqui?
+            </Text>
+        </View>
+    )
+}
+
 export function Account() {
     const Header = () => {
         return (
@@ -135,24 +165,29 @@ export function Account() {
                 <SectionTitle title="Histórico" />
                 <SectionList
                     nestedScrollEnabled={true}
-                    style={[elements.subContainerWhite, { flex: 1, height: 375, marginBottom: 25 }]}
-
+                    style={[elements.subContainerWhite, { height: 375, marginBottom: 25 }]}
+                    contentContainerStyle={styles.container}
                     // Configurações dos elementos do Relatório
-                    sections={[...EXAMPLE_REPORTS, ...EXAMPLE_REPORTS2, ...EXAMPLE_REPORTS]}
+                    //sections={[...EXAMPLE_REPORTS, ...EXAMPLE_REPORTS2]}
+                    sections={EMPTY}
                     /* keyExtractor={(item, index)=>index.toString()} */
                     keyExtractor={item => item.id}
                     renderItem={SectionItem}
                     renderSectionHeader={SectionHeader}
+                    renderSectionFooter={() => (
+                        <View style={{ height: 10 }}></View>
+                    )}
+                    ListEmptyComponent={EmptyItem}
                 // Faz com que o Header fique grudado no início: stickySectionHeadersEnabled
                 />
 
                 { /* Estatísticas */}
                 <SectionTitle title="Relatórios" />
-                <View style={elements.subContainerGreen}>
+                <View style={[elements.subContainerGreen, { height: 325 }]}>
 
                 </View>
 
-                <View style={{ height: 500 }} />
+                <View style={{ height: 25 }} />
             </ScrollView>
         </View>
     );

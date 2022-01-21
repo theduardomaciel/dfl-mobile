@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 
-import React, { useCallback, useEffect } from 'react';
-import { StatusBar, TouchableOpacity, View, Text, StyleSheet, Animated, Easing } from "react-native"
+import React, { useEffect } from 'react';
+import { TouchableOpacity, View, Text, StyleSheet, Animated } from "react-native"
 
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -174,33 +174,26 @@ function MainScreen() {
 
 export default function Routes() {
     return (
-        <>
-            <StatusBar
-                barStyle="dark-content"
-                backgroundColor="transparent"
-                translucent
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+            {/* // Logged Users Screens */}
+            <Stack.Screen
+                name="Main"
+                component={MainScreen}
+                options={{ headerShown: false }}
             />
-            <Stack.Navigator screenOptions={{ headerShown: false }}>
-                {/* // Logged Users Screens */}
-                <Stack.Screen
-                    name="Main"
-                    component={MainScreen}
-                    options={{ headerShown: false }}
-                />
 
-                {/* // Auth Screens */}
-                <Stack.Group>
-                    <Stack.Screen name="Onboarding" component={Onboarding} />
-                    <Stack.Screen name="PreSignUp" component={PreSignUp} />
-                    <Stack.Screen name="SignUp" component={SignUp} />
-                </Stack.Group>
+            {/* // Auth Screens */}
+            <Stack.Group>
+                <Stack.Screen name="Onboarding" component={Onboarding} />
+                <Stack.Screen name="PreSignUp" component={PreSignUp} />
+                <Stack.Screen name="SignUp" component={SignUp} />
+            </Stack.Group>
 
-                {/* Modal Screens */}
-                <Stack.Group screenOptions={{ presentation: 'modal' }}>
-                    <Stack.Screen name="NotificarFoco" component={NotificarFoco} />
-                </Stack.Group>
-            </Stack.Navigator>
-        </>
+            {/* Modal Screens */}
+            <Stack.Group screenOptions={{ presentation: 'modal' }}>
+                <Stack.Screen name="NotificarFoco" component={NotificarFoco} />
+            </Stack.Group>
+        </Stack.Navigator>
     )
 }
 

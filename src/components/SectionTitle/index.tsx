@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 
 import { styles } from './styles';
-import { theme } from '../../global/styles/theme';
 
 type Props = {
     // A ? faz com que o elemento não seja obrigatório

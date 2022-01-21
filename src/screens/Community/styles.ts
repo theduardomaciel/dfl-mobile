@@ -17,6 +17,9 @@ export const styles = StyleSheet.create({
         marginTop: 35, //+ getStatusBarHeight(),
         marginBottom: 12,
     },
+    button: {
+        flexDirection: "row",
+    },
 
     // ScrollView
     scrollContainer: {
@@ -34,8 +37,15 @@ export const styles = StyleSheet.create({
         fontSize: 15,
     },
     info: {
-        fontFamily: theme.fonts.subtitle900,
+        fontSize: 14,
+        fontFamily: theme.fonts.subtitle500,
         color: theme.colors.text1,
-        fontSize: 24,
+    },
+
+    mapView: {
+        backgroundColor: theme.colors.gray_dark,
+        height: 285,
+        borderTopLeftRadius: 10,
+        borderTopRightRadius: 10
     }
 });

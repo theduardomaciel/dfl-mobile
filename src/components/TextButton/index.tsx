@@ -3,13 +3,13 @@ import React from 'react';
 import {
     Text,
     View,
+    TouchableOpacity,
     TouchableOpacityProps,
 } from 'react-native';
 
 import { styles } from './styles';
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { RectButton } from 'react-native-gesture-handler';
 import { theme } from '../../global/styles/theme';
 
 type Props = TouchableOpacityProps & {
@@ -30,9 +30,9 @@ export function TextButton({ title, colors, icon, buttonStyle, textStyle, shadow
             ...buttonStyle,
             ...shadowOptions
         }
-    : buttonStyle = buttonStyle;
+        : buttonStyle = buttonStyle;
     const Button =
-        <RectButton
+        <TouchableOpacity
             // Verificamos se o botão possui gradiente, se possuir, inserimos o estilo de gradiente, caso não, inserimos o estilo padrão
             // Também verificamos se a propriedade de sombra foi inserida, para também adicionarmos o efeito ao botão
             style={colors ? (shadow ? [styles.button, shadowOptions] : styles.button) : [styles.gradient, buttonStyle]}
@@ -40,26 +40,22 @@ export function TextButton({ title, colors, icon, buttonStyle, textStyle, shadow
             {...rest}
         >
             <View>
-                { icon }
+                {icon}
             </View>
             <Text style={textStyle ? [styles.title, textStyle] : styles.title}>
-                { title }
+                {title}
             </Text>
-        </RectButton>
+        </TouchableOpacity>
     return ( // A propriedade "activeOpacity" influencia na opacidade do botão ao ser pressionado
-        <>
-            {
-                colors ?
-                <LinearGradient
-                    colors={colors}
-                    style={buttonStyle ? [styles.gradient, buttonStyle] : styles.gradient}
-                    start={{ x: 0, y: 0.5 }}
-                    end={ { x: 1, y: 0.5 } }
-                >
-                    { Button }
-                </LinearGradient>
-                : Button
-            }
-        </>
+        colors ?
+            <LinearGradient
+                colors={colors}
+                style={buttonStyle ? [styles.gradient, buttonStyle] : styles.gradient}
+                start={{ x: 0, y: 0.5 }}
+                end={{ x: 1, y: 0.5 }}
+            >
+                {Button}
+            </LinearGradient>
+            : Button
     )
 }

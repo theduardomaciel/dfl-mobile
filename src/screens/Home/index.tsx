@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, Image, RefreshControl, TouchableOpacity } from "react-native";
 
+import { Picker } from '@react-native-picker/picker'
 //import MapView from "react-native-maps";
 
 import { ProfileIcon } from "../../components/ProfileIcon";
+import { TextButton } from "../../components/TextButton";
 import { elements } from "../../global/styles/elements";
 import { theme } from "../../global/styles/theme";
 
 import { styles } from "./styles";
-//import { useNavigation, useFocusEffect } from "@react-navigation/core";
 
 function GetGreeting() {
     const hour = new Date().getHours();
@@ -28,6 +29,8 @@ export function Home() {
         console.log("Usuário atualizou página Home.")
         setRefreshing(false);
     }
+
+    const [selectedScope, setSelectedScope] = useState();
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -99,7 +102,7 @@ export function Home() {
                     <Text style={[styles.title, { marginLeft: 12 }]}>
                         Engajamento da Comunidade
                     </Text>
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                         activeOpacity={0.9}
                         style={styles.scopeButton}
                     >
@@ -107,7 +110,15 @@ export function Home() {
                             Bairro
                         </Text>
 
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
+                    <Picker
+                        selectedValue={selectedScope}
+                        onValueChange={(itemValue, itemIndex) =>
+                            setSelectedScope(itemValue)
+                        }>
+                        <Picker.Item label="Java" value="java" />
+                        <Picker.Item label="JavaScript" value="js" />
+                    </Picker>
                 </View>
                 <View style={[elements.subContainerGreen, theme.shadowProperties, { height: 256 }]}>
                     <View>
