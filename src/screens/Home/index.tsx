@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, Image, RefreshControl, TouchableOpacity } from "react-native";
+import { MapScopePicker } from "../../components/MapScopePicker";
 
-import { Picker } from '@react-native-picker/picker'
-//import MapView from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
 
 import { ProfileIcon } from "../../components/ProfileIcon";
 import { TextButton } from "../../components/TextButton";
@@ -22,6 +22,25 @@ function GetGreeting() {
     }
 }
 
+const Marcadores = [
+    {
+        title: "Marcador 1",
+        description: "Coiso",
+        coordinates: {
+            latitude: 39.09802,
+            longitude: 43.14820
+        }
+    },
+    {
+        title: "Marcador 2",
+        description: "Coiso 2",
+        coordinates: {
+            latitude: 23.52260,
+            longitude: 34.16131
+        }
+    }
+]
+
 export function Home() {
     const [refreshing, setRefreshing] = useState(false)
     const onRefresh = () => {
@@ -29,8 +48,20 @@ export function Home() {
         console.log("Usuário atualizou página Home.")
         setRefreshing(false);
     }
+    /* const UserMapView = () => {
+        return (
+            <MapView
+                initialRegion={{
+                    latitude: 37.78825,
+                    longitude: -122.4324,
+                    latitudeDelta: 0.0922,
+                    longitudeDelta: 0.0421,
+                }}
+            >
 
-    const [selectedScope, setSelectedScope] = useState();
+            </MapView>
+        )
+    } */
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -55,7 +86,6 @@ export function Home() {
                     />
                 }
             >
-
                 {/* Seu nível */}
                 <Text style={[styles.title, { paddingTop: 0 }]}>
                     Seu nível
@@ -102,36 +132,55 @@ export function Home() {
                     <Text style={[styles.title, { marginLeft: 12 }]}>
                         Engajamento da Comunidade
                     </Text>
-                    {/* <TouchableOpacity
-                        activeOpacity={0.9}
-                        style={styles.scopeButton}
-                    >
-                        <Text style={styles.subtitle}>
-                            Bairro
-                        </Text>
-
-                    </TouchableOpacity> */}
-                    <Picker
-                        selectedValue={selectedScope}
-                        onValueChange={(itemValue, itemIndex) =>
-                            setSelectedScope(itemValue)
-                        }>
-                        <Picker.Item label="Java" value="java" />
-                        <Picker.Item label="JavaScript" value="js" />
-                    </Picker>
+                    <MapScopePicker />
                 </View>
                 <View style={[elements.subContainerGreen, theme.shadowProperties, { height: 256 }]}>
-                    <View>
-                        <Text style={[styles.info, { fontSize: 36 }]}>
-                            28 focos de lixo
-                        </Text>
-                        <Text style={styles.subtitle}>
-                            foram encontrados em seu bairro este mês
-                        </Text>
-                    </View>
-                    {/* <MapView>
-
-                    </MapView> */}
+                    <Text style={[styles.info, { fontSize: 36 }]}>
+                        28 focos de lixo
+                    </Text>
+                    <Text style={styles.subtitle}>
+                        foram encontrados em seu bairro este mês
+                    </Text>
+                    {/* <View style={styles.mapView}>
+                        <MapView
+                            style={{ flex: 1, borderRadius: 10 }}
+                            provider={PROVIDER_GOOGLE}
+                            initialRegion={{
+                                latitude: 37.78825,
+                                longitude: -122.4324,
+                                latitudeDelta: 0.015,
+                                longitudeDelta: 0.0121,
+                            }}
+                        >
+                            {Marcadores.map((marker, index) => (
+                                <Marker
+                                    key={index}
+                                    coordinate={marker.coordinates}
+                                    title={marker.title}
+                                    description={marker.description}
+                                />
+                            ))}
+                        </MapView>
+                    </View> */}
+                    <MapView
+                        style={{ flex: 1, borderRadius: 10, position: "absolute", top: 10, right: 10 }}
+                        provider={PROVIDER_GOOGLE}
+                        initialRegion={{
+                            latitude: 37.78825,
+                            longitude: -122.4324,
+                            latitudeDelta: 0.015,
+                            longitudeDelta: 0.0121,
+                        }}
+                    >
+                        {Marcadores.map((marker, index) => (
+                            <Marker
+                                key={index}
+                                coordinate={marker.coordinates}
+                                title={marker.title}
+                                description={marker.description}
+                            />
+                        ))}
+                    </MapView>
                 </View>
                 <View style={{ height: 15 }} />
             </ScrollView>

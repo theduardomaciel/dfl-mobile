@@ -71,13 +71,9 @@ export const styles = StyleSheet.create({
         justifyContent: "space-around",
         alignItems: "flex-end",
     },
-    scopeButton: {
-        height: 35,
-        width: 115,
-        backgroundColor: theme.colors.primary1,
-        borderRadius: 15,
-        marginBottom: 5,
-        alignItems: "center",
-        justifyContent: "center",
+    mapView: {
+        flex: 1,
+        borderRadius: 10,
+        overflow: 'hidden'
     }
 });
