@@ -3,8 +3,8 @@ import { Animated, Easing } from "react-native"
 const fadeIn = (fadeAnim) => {
     Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 75,
-        easing: Easing.sin,
+        duration: 175,
+        easing: Easing.ease,
         useNativeDriver: true,
     }).start();
 }
@@ -12,8 +12,8 @@ const fadeIn = (fadeAnim) => {
 const fadeOut = (fadeAnim) => {
     Animated.timing(fadeAnim, {
         toValue: 0,
-        duration: 75,
-        easing: Easing.sin,
+        duration: 175,
+        easing: Easing.ease,
         useNativeDriver: true,
     }).start();
 }

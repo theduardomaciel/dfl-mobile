@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, Image, StatusBar, Pressable, Button } from "react-native";
+import * as Location from 'expo-location';
+
 import Modal from "react-native-modal"
+import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
 
 import { BottomBar } from "../../components/BottomBar";
 
@@ -18,16 +21,54 @@ import { Entypo } from '@expo/vector-icons';
 import { TextButton } from "../../components/TextButton";
 import { ModalBase } from "../../components/ModalBase";
 
+const Marcadores = [
+    {
+        title: "Marcador 1",
+        description: "Coiso",
+        coordinates: {
+            latitude: 39.09802,
+            longitude: 43.14820
+        }
+    },
+    {
+        title: "Marcador 2",
+        description: "Coiso 2",
+        coordinates: {
+            latitude: 23.52260,
+            longitude: 34.16131
+        }
+    }
+]
+
 export function Community() {
     const [isModalVisible, setModalVisible] = useState(false);
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
     };
-    /* const ChangeCity_Modal = () => {
-        return (
-            
+
+    const [location, setLocation] = useState("");
+    const [errorMsg, setErrorMsg] = useState("");
+
+    useEffect(() => {
+        (async () => {
+            let { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                setErrorMsg('Permission to access location was denied');
+                return;
+            }
+
+            let location = await Location.getCurrentPositionAsync({});
+            setLocation(location);
+        })();
+    }, []);
+
+    let text = 'Waiting..';
+    if (errorMsg) {
+        text = errorMsg;
+    } else if (location) {
+        text = JSON.stringify(location);
     }
- */
+
     return (
         <View style={styles.container}>
             <ModalBase
@@ -52,7 +93,27 @@ export function Community() {
             <ScrollView style={{ width: "100%" }} contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false} >
                 <SectionTitle title="Sua Cidade" info="212 usuários" />
                 <View style={styles.mapView}>
-
+                    <MapView
+                        style={{ flex: 1, borderRadius: 10, justifyContent: "center" }}
+                        provider={PROVIDER_GOOGLE}
+                        showsUserLocation={true}
+                        showsMyLocationButton={true}
+                        initialRegion={{
+                            latitude: 37.78825,
+                            longitude: -122.4324,
+                            latitudeDelta: 0.015,
+                            longitudeDelta: 0.0121,
+                        }}
+                    >
+                        {Marcadores.map((marker, index) => (
+                            <Marker
+                                key={index}
+                                coordinate={marker.coordinates}
+                                title={marker.title}
+                                description={marker.description}
+                            />
+                        ))}
+                    </MapView>
                 </View>
                 <BottomBar
                     element={

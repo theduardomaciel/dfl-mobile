@@ -90,7 +90,7 @@ export function Home() {
                 <Text style={[styles.title, { paddingTop: 0 }]}>
                     Seu nível
                 </Text>
-                <View style={[elements.subContainerGreen, theme.shadowProperties]}>
+                <View style={[elements.subContainerGreen, theme.shadowProperties, { flexDirection: "row" }]}>
                     <View>
                         <Text style={styles.subtitle}>
                             Nível Atual:
@@ -141,10 +141,12 @@ export function Home() {
                     <Text style={styles.subtitle}>
                         foram encontrados em seu bairro este mês
                     </Text>
-                    {/* <View style={styles.mapView}>
+                    <View style={styles.mapView}>
                         <MapView
-                            style={{ flex: 1, borderRadius: 10 }}
+                            style={{ flex: 1, borderRadius: 10, justifyContent: "center" }}
                             provider={PROVIDER_GOOGLE}
+                            showsUserLocation={true}
+                            showsMyLocationButton={true}
                             initialRegion={{
                                 latitude: 37.78825,
                                 longitude: -122.4324,
@@ -161,28 +163,9 @@ export function Home() {
                                 />
                             ))}
                         </MapView>
-                    </View> */}
-                    <MapView
-                        style={{ flex: 1, borderRadius: 10, position: "absolute", top: 10, right: 10 }}
-                        provider={PROVIDER_GOOGLE}
-                        initialRegion={{
-                            latitude: 37.78825,
-                            longitude: -122.4324,
-                            latitudeDelta: 0.015,
-                            longitudeDelta: 0.0121,
-                        }}
-                    >
-                        {Marcadores.map((marker, index) => (
-                            <Marker
-                                key={index}
-                                coordinate={marker.coordinates}
-                                title={marker.title}
-                                description={marker.description}
-                            />
-                        ))}
-                    </MapView>
+                    </View>
                 </View>
-                <View style={{ height: 15 }} />
+                <View style={{ height: 25 }} />
             </ScrollView>
         </View>
     );

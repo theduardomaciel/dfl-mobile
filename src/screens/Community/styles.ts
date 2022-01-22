@@ -43,8 +43,9 @@ export const styles = StyleSheet.create({
     },
 
     mapView: {
-        backgroundColor: theme.colors.gray_dark,
         height: 285,
+        width: "90%",
+        overflow: "hidden",
         borderTopLeftRadius: 10,
         borderTopRightRadius: 10
     }
