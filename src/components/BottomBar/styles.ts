@@ -6,14 +6,14 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 15,
         paddingVertical: 5,
         height: 40,
-        width: "90%",
         borderBottomLeftRadius: 10,
         borderBottomRightRadius: 10,
         backgroundColor: theme.colors.primary1,
         justifyContent: 'center'
     },
     info: {
-        fontFamily: theme.fonts.subtitle500,
+        fontSize: 12,
+        fontFamily: theme.fonts.subtitle400,
         color: theme.colors.text1,
         textAlignVertical: "center"
     }

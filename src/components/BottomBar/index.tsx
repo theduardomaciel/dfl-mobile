@@ -10,7 +10,7 @@ import { styles } from './styles';
 type Props = {
     // A ? faz com que o elemento não seja obrigatório
     info?: string;
-    element: any;
+    element?: any;
 }
 
 export function BottomBar({ info, element }: Props) {

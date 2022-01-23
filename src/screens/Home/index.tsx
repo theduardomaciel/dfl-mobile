@@ -41,6 +41,13 @@ const Marcadores = [
     }
 ]
 
+const initialRegion = {
+    latitude: -23.6821604,
+    longitude: -46.9057052,
+    latitudeDelta: 35,
+    longitudeDelta: 35
+}
+
 export function Home() {
     const [refreshing, setRefreshing] = useState(false)
     const onRefresh = () => {
@@ -48,20 +55,10 @@ export function Home() {
         console.log("Usuário atualizou página Home.")
         setRefreshing(false);
     }
-    /* const UserMapView = () => {
-        return (
-            <MapView
-                initialRegion={{
-                    latitude: 37.78825,
-                    longitude: -122.4324,
-                    latitudeDelta: 0.0922,
-                    longitudeDelta: 0.0421,
-                }}
-            >
 
-            </MapView>
-        )
-    } */
+    let mapReference: any;
+    const [region, setRegion] = useState(initialRegion);
+    const [alreadyLoaded, setAlreadyLoaded] = useState(false)
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -146,13 +143,24 @@ export function Home() {
                             style={{ flex: 1, borderRadius: 10, justifyContent: "center" }}
                             provider={PROVIDER_GOOGLE}
                             showsUserLocation={true}
+                            ref={ref => mapReference = ref}
                             showsMyLocationButton={true}
-                            initialRegion={{
-                                latitude: 37.78825,
-                                longitude: -122.4324,
-                                latitudeDelta: 0.015,
-                                longitudeDelta: 0.0121,
+                            region={region}
+                            onUserLocationChange={locationChangedResult => {
+                                if (!alreadyLoaded) {
+                                    setAlreadyLoaded(true)
+                                    const coords = locationChangedResult.nativeEvent.coordinate
+                                    const newRegion = {
+                                        latitude: coords.latitude,
+                                        longitude: coords.longitude,
+                                        latitudeDelta: 0.005,
+                                        longitudeDelta: 0.005
+                                    }
+                                    setRegion(newRegion);
+                                    mapReference.animateToRegion(newRegion, 2000)
+                                }
                             }}
+                            initialRegion={initialRegion}
                         >
                             {Marcadores.map((marker, index) => (
                                 <Marker

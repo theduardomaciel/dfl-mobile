@@ -1,8 +1,7 @@
 import 'react-native-gesture-handler';
 
 import React, { useEffect } from 'react';
-import { TouchableOpacity, View, Text, StyleSheet, Animated } from "react-native"
-
+import { TouchableOpacity, View, StyleSheet, Animated } from "react-native"
 import { useFocusEffect } from "@react-navigation/native";
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -17,18 +16,16 @@ import { Community } from "./screens/Community"
 import { Reports } from "./screens/Reports"
 import { Account } from "./screens/Account"
 
-import { theme } from './global/styles/theme';
+import { ReportScreen1 } from ".//screens/ReportScreens/Step1"
 
+import { theme } from './global/styles/theme';
 import { MenuButton } from './components/MenuButton';
 
 import community_icon from './assets/menu/community_icon.svg';
 import home_icon from './assets/menu/home_icon.svg';
 import account_icon from './assets/menu/account_icon.svg';
 import reports_icon from './assets/menu/reports_icon.svg';
-
 const icons = [community_icon, reports_icon, null, home_icon, account_icon];
-
-import { TextButton } from './components/TextButton';
 
 import { menuAnimations } from './global/animations/menuAnimations';
 import { fadeAnimations } from './global/animations/fadeAnimations';
@@ -37,21 +34,12 @@ const communityButtonDriver = new Animated.Value(0)
 const reportsButtonDriver = new Animated.Value(0)
 const homeButtonDriver = new Animated.Value(1)
 const accountButtonDriver = new Animated.Value(0)
+const buttonDrivers = [communityButtonDriver, reportsButtonDriver, null, homeButtonDriver, accountButtonDriver]
 
 let lastIndex = 3; // A tela inicial é a "Home", que está posicionada no index 3
-const buttonDrivers = [communityButtonDriver, reportsButtonDriver, null, homeButtonDriver, accountButtonDriver]
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator(); // Para o modal de "Notificar Foco"
-
-function NotificarFoco({ navigation }) {
-    return (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ fontSize: 30 }}>Isso é um modal!</Text>
-            <TextButton onPress={() => navigation.goBack()} title="Dismiss" />
-        </View>
-    );
-}
 
 const FadeHomeScreen = (props) => (
     <FadeInView>
@@ -142,7 +130,7 @@ function MainScreen() {
             />
             <Tab.Screen
                 name='Notificar Foco'
-                component={NotificarFoco}
+                component={ReportScreen1}
                 listeners={({ navigation }) => ({
                     tabPress: (event) => {
                         event.preventDefault();
@@ -191,7 +179,7 @@ export default function Routes() {
 
             {/* Modal Screens */}
             <Stack.Group screenOptions={{ presentation: 'modal' }}>
-                <Stack.Screen name="NotificarFoco" component={NotificarFoco} />
+                <Stack.Screen name="NotificarFoco" component={ReportScreen1} />
             </Stack.Group>
         </Stack.Navigator>
     )

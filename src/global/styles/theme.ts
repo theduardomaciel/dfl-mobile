@@ -30,6 +30,7 @@ export const theme = {
         title400: 'Inter_400Regular',
         subtitle400: 'Roboto_400Regular',
         subtitle500: 'Roboto_500Medium',
+        subtitle700: 'Roboto_700Bold',
         subtitle900: 'Roboto_900Black',
         section400: 'Alatsi_400Regular',
     },
