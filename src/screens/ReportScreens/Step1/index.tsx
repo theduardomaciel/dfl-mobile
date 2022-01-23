@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { View, Text } from "react-native";
 
-import MapView, { PROVIDER_GOOGLE, Region } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from 'expo-location';
 
 import { theme } from "../../../global/styles/theme";
@@ -51,9 +51,6 @@ export function ReportScreen1({ navigation }: any) {
     const [region, setRegion] = useState(initialRegion);
     const [address, setAddress] = useState("");
 
-    /*  useEffect(() => {
-         getCurrentLocation(setRegion, setAddress)
-     }, []); */
     let mapReference: any;
     return (
         <View style={defaultStyles.container}>
@@ -100,7 +97,12 @@ export function ReportScreen1({ navigation }: any) {
                     />
                 </View>
                 <BottomBar info={"Endereço: " + address} margin={25} />
-                <TextButton title="Próximo passo" colors={[theme.colors.secondary1, theme.colors.secondary2]} buttonStyle={{ height: 45, width: "90%", position: "absolute", bottom: 20, }} />
+                <TextButton
+                    title="Próximo passo"
+                    colors={[theme.colors.secondary1, theme.colors.secondary2]}
+                    buttonStyle={{ height: 45, width: "90%", position: "absolute", bottom: 20, }}
+                    onPress={() => navigation.navigate("Step2")}
+                />
             </View>
         </View>
     );

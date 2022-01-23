@@ -17,6 +17,7 @@ import { Reports } from "./screens/Reports"
 import { Account } from "./screens/Account"
 
 import { ReportScreen1 } from ".//screens/ReportScreens/Step1"
+import { ReportScreen2 } from ".//screens/ReportScreens/Step2"
 
 import { theme } from './global/styles/theme';
 import { MenuButton } from './components/MenuButton';
@@ -134,7 +135,7 @@ function MainScreen() {
                 listeners={({ navigation }) => ({
                     tabPress: (event) => {
                         event.preventDefault();
-                        navigation.navigate('NotificarFoco')
+                        navigation.navigate('Step1')
                     }
                 })}
             />
@@ -179,7 +180,8 @@ export default function Routes() {
 
             {/* Modal Screens */}
             <Stack.Group screenOptions={{ presentation: 'modal' }}>
-                <Stack.Screen name="NotificarFoco" component={ReportScreen1} />
+                <Stack.Screen name="Step1" component={ReportScreen1} />
+                <Stack.Screen name="Step2" component={ReportScreen2} />
             </Stack.Group>
         </Stack.Navigator>
     )

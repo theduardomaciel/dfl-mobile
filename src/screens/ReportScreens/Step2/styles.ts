@@ -3,11 +3,10 @@ import { theme } from "../../../global/styles/theme";
 //import { getStatusBarHeight } from 'react-native-iphone-x-helper'
 
 export const styles = StyleSheet.create({
-    mapView: {
+    cameraView: {
         height: "60%",
         width: "100%",
         borderTopLeftRadius: 15,
         borderTopRightRadius: 15,
-        overflow: "hidden"
     }
 });
