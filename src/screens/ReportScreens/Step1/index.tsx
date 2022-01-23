@@ -11,6 +11,7 @@ import { styles } from "./styles";
 
 import { AntDesign } from '@expo/vector-icons';
 import { BottomBar } from "../../../components/BottomBar";
+import { TextButton } from "../../../components/TextButton";
 
 // Dispatch<SetStateAction<{}>>
 /* async function getCurrentLocation() {
@@ -72,22 +73,9 @@ export function ReportScreen1({ navigation }: any) {
                         onMapReady={async () => {
                             console.log("Mapa carregou.")
                         }}
-                        userLocationFastestInterval={10000}
-                        userLocationUpdateInterval={5000}
+                        /* userLocationFastestInterval={5000}
+                        userLocationUpdateInterval={10000} */
                         onUserLocationChange={locationChangedResult => {
-                            /* if (alreadyLoaded == false) {
-                                console.log("repetindo")
-                                setAlreadyLoaded(true)
-                                const coords = locationChangedResult.nativeEvent.coordinate
-                                const newRegion = {
-                                    latitude: coords.latitude,
-                                    longitude: coords.longitude,
-                                    latitudeDelta: 0.005,
-                                    longitudeDelta: 0.005
-                                }
-                                setRegion(newRegion);
-                                mapReference.animateToRegion(newRegion, 2000)
-                            } */
                             const coords = locationChangedResult.nativeEvent.coordinate
                             const newRegion = {
                                 latitude: coords.latitude,
@@ -99,7 +87,9 @@ export function ReportScreen1({ navigation }: any) {
                             mapReference.animateToRegion(newRegion, 2000)
                             async function UpdateAddress() {
                                 const address = await getLocationAddress(newRegion.latitude, newRegion.longitude)
-                                setAddress(address)
+                                if (address !== undefined) {
+                                    setAddress(address)
+                                }
                             }
                             UpdateAddress()
                         }}
@@ -109,7 +99,8 @@ export function ReportScreen1({ navigation }: any) {
                         initialRegion={initialRegion}
                     />
                 </View>
-                <BottomBar info={"Endereço: " + address} />
+                <BottomBar info={"Endereço: " + address} margin={25} />
+                <TextButton title="Próximo passo" colors={[theme.colors.secondary1, theme.colors.secondary2]} buttonStyle={{ height: 45, width: "90%", position: "absolute", bottom: 20, }} />
             </View>
         </View>
     );

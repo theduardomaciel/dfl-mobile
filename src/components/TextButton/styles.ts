@@ -4,14 +4,13 @@ import { theme } from '../../global/styles/theme';
 export const styles = StyleSheet.create({
     gradient: {
         borderRadius: 15,
-        flexDirection: "row",
-        justifyContent: "center",
         backgroundColor: theme.colors.secondary1,
-        alignItems: "center",
-        alignSelf: 'center',
-        alignContent: 'center',
-        textAlignVertical: 'center',
-        textAlign: 'center',
+        flexDirection: "row",
+        paddingHorizontal: 15,
+        paddingVertical: 5,
+        alignSelf: "center",
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     button: {
         flex: 1,

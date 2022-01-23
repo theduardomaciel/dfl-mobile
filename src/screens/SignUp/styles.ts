@@ -9,20 +9,13 @@ export const styles = StyleSheet.create({
         backgroundColor: theme.colors.background,
     },
     header: {
-        marginTop: 30,
         width: "90%",
-        flexDirection: "column",
-        justifyContent: "flex-start",
-    },
-    form: {
-        marginTop: 30,
-        width: "90%",
+        marginTop: 20,
         flexDirection: "column",
         justifyContent: "flex-start",
     },
     title: {
         fontSize: 36,
-        marginTop: 31,
         lineHeight: 35,
         fontFamily: theme.fonts.subtitle900,
         color: theme.colors.secondary1,
@@ -32,8 +25,19 @@ export const styles = StyleSheet.create({
         fontFamily: theme.fonts.title400,
         color: theme.colors.secondary1,
     },
+    form: {
+        marginTop: 15,
+        width: "90%",
+        flexDirection: "column",
+        justifyContent: "flex-start",
+    },
+    categoryTitle: {
+        fontSize: 14,
+        color: theme.colors.secondary1,
+        fontFamily: theme.fonts.title600
+    },
     section: {
-        //backgroundColor: "red",
+        //backgroundColor: "blue",
         alignItems: "center",
         justifyContent: "space-between",
         flexDirection: "row",
@@ -42,7 +46,8 @@ export const styles = StyleSheet.create({
     passwordStrenghtText1: {
         fontFamily: theme.fonts.title700,
         fontSize: 12,
-        color: theme.colors.secondary1
+        color: theme.colors.secondary1,
+        marginRight: 2,
     },
     passwordStrenghtText2: {
         fontFamily: theme.fonts.title400,
@@ -54,9 +59,4 @@ export const styles = StyleSheet.create({
         height: 8,
         borderRadius: 4,
     },
-    categoryTitle: {
-        fontSize: 14,
-        color: theme.colors.secondary1,
-        fontFamily: theme.fonts.title600
-    }
 });

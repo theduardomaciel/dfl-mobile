@@ -6,7 +6,7 @@ import { styles } from "./styles";
 import { theme } from "../../global/styles/theme";
 
 import { TextButton } from "../../components/TextButton";
-import { TextForm } from "../../components/TextForm";
+import { TextForm } from "../../components/TextForm"
 
 import { MaterialIcons } from '@expo/vector-icons';
 
@@ -39,25 +39,25 @@ export function SignUp() {
             <View style={styles.form}>
                 <View style={styles.section}>
                     <TextForm
-                        placeholder={"Nome"}
+                        textInputProps={{ placeholder: "Nome" }}
                         shadow
                         icon={NameIcon}
                         style={{ width: "49%" }}
                     />
                     <TextForm
-                        placeholder={"Sobrenome"}
+                        textInputProps={{ placeholder: "Sobrenome" }}
                         shadow
                         style={{ width: "49%" }}
                     />
                 </View>
                 <TextForm style={styles.section}
                     shadow
-                    placeholder={"E-mail"}
+                    textInputProps={{ placeholder: "E-mail" }}
                     icon={EmailIcon}
                 />
                 <TextForm style={styles.section}
                     shadow
-                    placeholder={"Senha"}
+                    textInputProps={{ placeholder: "Senha" }}
                     icon={LockIcon}
                 />
                 <View>
@@ -77,25 +77,19 @@ export function SignUp() {
                     Data de Nascimento
                 </Text>
                 <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 15 }}>
-                    <TextForm
-                        placeholder={"10"}
+                    <TextForm style={{ width: "32%" }}
                         shadow
-                        buttonIcon={ArrowDropdown}
-                        keyboardType={"numeric"}
-                        style={{ width: "32%", alignSelf: "center" }}
+                        textInputProps={{ keyboardType: "numeric" }}
+                        icon={LockIcon}
                     />
                     <TextForm
-                        placeholder={"10"}
                         shadow
-                        buttonIcon={ArrowDropdown}
-                        keyboardType={"numeric"}
+                        textInputProps={{ keyboardType: "numeric" }}
                         style={{ width: "32%" }}
                     />
                     <TextForm
-                        placeholder={"10"}
                         shadow
-                        buttonIcon={ArrowDropdown}
-                        keyboardType={"numeric"}
+                        textInputProps={{ keyboardType: "numeric" }}
                         style={{ width: "32%" }}
                     />
                 </View>

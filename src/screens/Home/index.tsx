@@ -153,8 +153,8 @@ export function Home() {
                                     const newRegion = {
                                         latitude: coords.latitude,
                                         longitude: coords.longitude,
-                                        latitudeDelta: 0.005,
-                                        longitudeDelta: 0.005
+                                        latitudeDelta: 0.05,
+                                        longitudeDelta: 0.05
                                     }
                                     setRegion(newRegion);
                                     mapReference.animateToRegion(newRegion, 2000)

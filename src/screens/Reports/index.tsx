@@ -7,11 +7,10 @@ import { theme } from "../../global/styles/theme";
 import { styles } from "./styles";
 
 export function Reports() {
+    StatusBar.setBackgroundColor(theme.colors.secondary1, true)
+    StatusBar.setBarStyle("light-content")
     return (
         <View style={styles.container}>
-            <StatusBar
-                backgroundColor={theme.colors.secondary1}
-            />
 
         </View>
     );

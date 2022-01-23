@@ -11,11 +11,12 @@ type Props = {
     // A ? faz com que o elemento não seja obrigatório
     info?: string;
     element?: any;
+    margin?: number;
 }
 
-export function BottomBar({ info, element }: Props) {
+export function BottomBar({ info, element, margin }: Props) {
     return (
-        <View style={styles.container}>
+        <View style={margin ? [styles.container, { marginBottom: margin }] : styles.container}>
             {
                 info ? <Text style={styles.info}> {info} </Text> : null
             }

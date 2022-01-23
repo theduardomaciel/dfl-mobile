@@ -4,7 +4,7 @@ import {
     TextInput,
     Text,
     View,
-    TouchableOpacity
+    TextInputProps
 } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -12,51 +12,44 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { styles } from './styles';
 import { theme } from '../../global/styles/theme';
 
-type Props = {
+type Props = TextInputProps & {
     title?: string;
-    placeholder?: string;
-
-    keyboardType?: string;
-    autoCapitalize?: string;
-
     icon?: any;
-    buttonIcon?: any;
 
     style?: any;
     titleStyle?: any;
+
+    textInputProps?: TextInputProps;
     shadow?: boolean;
 }
 
-export function TextForm({ title, placeholder, keyboardType, autoCapitalize, icon, buttonIcon, style, titleStyle, shadow }: Props) {
+export function TextForm({ title, icon, titleStyle, style, textInputProps, shadow }: Props) {
     const shadowOptions = theme.shadowPropertiesLow;
+    // Estava dando erro pois, ao inserir o inputContainerStyle ao invés do styles.inputContainer, o ícone não aparecia
+    /* let inputContainerStyle = styles.inputContainer;
     shadow ?
-        style = {
-            ...style,
+        inputContainerStyle = {
+            ...inputContainerStyle,
             ...shadowOptions
         }
-    : style = style;
+        : inputContainerStyle = styles.inputContainer; */
+    const decider = shadow ? [styles.inputContainer, shadowOptions] : styles.inputContainer
+    // O problema estava na elevação (elevation), pois a da sombra era maior que a do ícone
     return (
-        <View style={style.container}>
+        <View style={style ? [styles.container, style] : styles.container}>
             {
                 title ? <Text style={titleStyle ? [styles.title, titleStyle] : styles.title}>{title}</Text> : null
             }
-            <View style={style ? [styles.inputContainer, style] : styles.inputContainer}>
-                { icon }
-                <TextInput
-                    style={styles.input}
-                    placeholder={placeholder}
-                    autoCapitalize={'none'}
-                    keyboardType={keyboardType ? keyboardType : 'default'}
-                    allowFontScaling={false}
-                    maxLength={45}
+            <View style={{ flex: 1 }}>
+                <TextInput style={icon ? [decider, { paddingLeft: 30 }] : decider}
+                    {...textInputProps}
                 />
-                {buttonIcon ? <TouchableOpacity
-                    activeOpacity={0.8}
-                    style={styles.buttonIcon}
-                >
-                    { buttonIcon }
-                </TouchableOpacity> : null }
+                <View style={styles.icon}>
+                    {icon}
+                </View>
             </View>
         </View>
     );
 }
+
+// style ? [styles.inputContainer, style] : styles.inputContainer

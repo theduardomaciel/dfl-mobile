@@ -3,15 +3,24 @@ import { theme } from '../../global/styles/theme';
 
 export const styles = StyleSheet.create({
     container: {
-        flex: 1,
-    },
-    input: {
-        flex: 1,
-        borderRadius: 15,
-        opacity: 0.5,
-        color: theme.colors.secondary1,
+        width: "100%",
+        height: 35,
         //backgroundColor: "red",
-        paddingHorizontal: 11,
+    },
+    inputContainer: {
+        zIndex: 0,
+        flex: 1,
+        paddingLeft: 15,
+        borderRadius: 15,
+        backgroundColor: '#FFFFFF',
+        color: theme.colors.secondary1,
+    },
+    icon: {
+        zIndex: 5,
+        position: "absolute",
+        bottom: 6,
+        left: 5,
+        elevation: 10 ** 10,
     },
     title: {
         marginLeft: 11, // Epaçamento por conta das bordas arredondadas
@@ -19,17 +28,4 @@ export const styles = StyleSheet.create({
         color: theme.colors.text1,
         fontFamily: theme.fonts.subtitle400
     },
-    inputContainer: {
-        height: 35,
-        borderRadius: 15,
-        flexDirection: 'row',
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-        backgroundColor: '#fff',
-    },
-    buttonIcon: {
-        //backgroundColor: "red",
-        marginLeft: 25,
-        marginRight: 5,
-    }
 });

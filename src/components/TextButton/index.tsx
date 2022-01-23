@@ -23,7 +23,7 @@ type Props = TouchableOpacityProps & {
 }
 
 export function TextButton({ title, colors, icon, buttonStyle, textStyle, shadow, ...rest }: Props) {
-    icon ? buttonStyle = { ...buttonStyle, justifyContent: "space-around" } : buttonStyle = buttonStyle;
+    icon ? buttonStyle = { ...buttonStyle, justifyContent: "space-around", paddingHorizontal: 0 } : buttonStyle = buttonStyle;
     const shadowOptions = theme.shadowProperties
     shadow ?
         buttonStyle = {
@@ -33,6 +33,7 @@ export function TextButton({ title, colors, icon, buttonStyle, textStyle, shadow
         : buttonStyle = buttonStyle;
     const Button =
         <TouchableOpacity
+            activeOpacity={0.8}
             // Verificamos se o botão possui gradiente, se possuir, inserimos o estilo de gradiente, caso não, inserimos o estilo padrão
             // Também verificamos se a propriedade de sombra foi inserida, para também adicionarmos o efeito ao botão
             style={colors ? (shadow ? [styles.button, shadowOptions] : styles.button) : [styles.gradient, buttonStyle]}

@@ -16,6 +16,8 @@ export const theme = {
         red_dark: '#AA2B2B',
         yellow: '#F0DE7B',
 
+        facebook_blue: "#1877F2",
+
         gray_light: '#C4C4C4',
         gray_dark: '#747474',
 

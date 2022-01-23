@@ -12,6 +12,10 @@ import { Alatsi_400Regular } from "@expo-google-fonts/alatsi"
 import Routes from "./src/routes";
 import { StatusBar } from "react-native";
 
+import { Onboarding } from './src/screens/Onboarding'
+import { PreSignUp } from './src/screens/PreSignUp';
+import { SignUp } from './src/screens/SignUp';
+
 export default function App() {
     const [fontsLoaded] = useFonts({
         Inter_400Regular,
@@ -39,3 +43,12 @@ export default function App() {
         </NavigationContainer>
     );
 }
+
+/* <NavigationContainer>
+            <StatusBar
+                barStyle="dark-content"
+                backgroundColor="transparent"
+                translucent
+            />
+            <Routes />
+        </NavigationContainer> */

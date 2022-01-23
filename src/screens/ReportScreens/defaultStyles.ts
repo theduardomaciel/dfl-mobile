@@ -32,6 +32,7 @@ export const defaultStyles = StyleSheet.create({
         color: theme.colors.secondary1,
         fontSize: 29,
         fontFamily: theme.fonts.subtitle700,
+        marginBottom: 15
     },
     subtitle: {
         fontFamily: theme.fonts.subtitle400,

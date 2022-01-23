@@ -21,7 +21,7 @@ export function PreSignUp() {
             <Logo style={styles.logo} width={325} height={165} />
             <View style={styles.form}>
                 <Text style={styles.title}>Pronto para criar sua conta?</Text>
-                <TextForm title={"Escolha um e-mail para a conta"} />
+                <TextForm title={"Escolha um e-mail para a conta"} style={{ height: 55 }} />
                 <TextButton
                     title={"Continuar com e-mail"}
                     colors={["#26413C", "#346259"]}
@@ -36,17 +36,17 @@ export function PreSignUp() {
                         title={"Continuar com Google"}
                         icon={GoogleIcon}
                         buttonStyle={{ height: 42, width: "49%", backgroundColor: theme.colors.text1 }}
-                        textStyle={{ fontSize: 12, color: theme.colors.grey }}
+                        textStyle={{ fontSize: 12, color: theme.colors.gray_dark }}
                     />
                     <TextButton
                         title={"Continuar com Facebook"}
                         icon={FacebookIcon}
                         buttonStyle={{ height: 42, width: "49%", backgroundColor: theme.colors.text1 }}
-                        textStyle={{ fontSize: 10, color: theme.colors.blue }}
+                        textStyle={{ fontSize: 10, color: theme.colors.facebook_blue }}
                     />
                 </View>
                 <TouchableOpacity>
-                    <Text style={[styles.or, { height: 32 }]}>
+                    <Text style={[styles.or]}>
                         Não tem uma conta? Cadastre-se aqui!
                     </Text>
                 </TouchableOpacity>
