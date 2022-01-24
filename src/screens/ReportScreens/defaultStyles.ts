@@ -35,8 +35,8 @@ export const defaultStyles = StyleSheet.create({
         marginBottom: 15
     },
     subtitle: {
-        fontFamily: theme.fonts.subtitle400,
-        color: theme.colors.text1,
+        fontFamily: theme.fonts.subtitle700,
+        color: theme.colors.secondary1,
         fontSize: 15,
     },
     info: {

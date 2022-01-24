@@ -15,11 +15,13 @@ type Props = {
     info?: string;
     fontStyle?: StyleProp<TextStyle>;
     color?: string;
+    hasLine?: boolean;
+    marginBottom?: number;
 }
 
-export function SectionTitle({ title, info, fontStyle, color }: Props) {
+export function SectionTitle({ title, info, fontStyle, color, hasLine, marginBottom }: Props) {
     return (
-        <View style={styles.container}>
+        <View style={marginBottom ? [styles.container, { marginBottom: marginBottom }] : styles.container}>
             <View style={styles.textContainer}>
                 <Text
                     style={
@@ -35,11 +37,13 @@ export function SectionTitle({ title, info, fontStyle, color }: Props) {
                     : null
                 }
             </View>
-            <View
-                style={
-                    color ? [styles.line, { backgroundColor: color }] : styles.line
-                }
-            />
+            {
+                hasLine ?
+                    <View style={
+                        color ? [styles.line, { backgroundColor: color }] : styles.line
+                    } />
+                    : null
+            }
         </View>
     )
 }

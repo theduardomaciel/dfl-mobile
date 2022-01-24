@@ -15,21 +15,34 @@ import { AntDesign } from '@expo/vector-icons';
 import { TextButton } from "../../../components/TextButton";
 import { BottomBar } from "../../../components/BottomBar";
 
-export function ReportScreen2({ navigation }: any) {
+export function ReportScreen2({ navigation, data }: any) {
     const [cameraType, setCameraType] = useState(Camera.Constants.Type.back)
     const [hasPermission, setHasPermission] = useState(false);
 
     const camRef = useRef(null)
-    const [capturedPhoto, setCapturedPhoto] = useState(null)
+    const [capturedPhoto, setCapturedPhoto] = useState({})
 
     const [modalOpen, setModalOpen] = useState(false)
 
-    async function TakePicture() {
+    async function takePicture() {
         if (camRef !== null) {
             const data = await camRef.current.takePictureAsync()
             console.log(data)
-            setCapturedPhoto(data.uri)
+            setCapturedPhoto(data)
             setModalOpen(true)
+        }
+    }
+
+    function cachePicture() {
+        if (capturedPhoto !== null) {
+            data.append("report_image", {
+                fileName: "provisório",
+                height: capturedPhoto.height,
+                width: capturedPhoto.width,
+                uri: capturedPhoto.uri,
+                type: 'type/jpeg'
+            });
+            return data;
         }
     }
 
@@ -73,7 +86,7 @@ export function ReportScreen2({ navigation }: any) {
                 <BottomBar
                     margin={20}
                     element={
-                        <TouchableOpacity style={styles.bottomBar} onPress={TakePicture}>
+                        <TouchableOpacity style={styles.bottomBar} onPress={takePicture}>
                             <CameraIcon height={48} width={48} />
                         </TouchableOpacity>
                     }
@@ -93,7 +106,7 @@ export function ReportScreen2({ navigation }: any) {
                                 </Text>
                                 <Image
                                     style={[styles.cameraView, { borderRadius: 15 }]}
-                                    source={{ uri: capturedPhoto }}
+                                    source={{ uri: capturedPhoto.uri }}
                                 />
                                 <TouchableOpacity
                                     activeOpacity={0.6}
@@ -106,7 +119,10 @@ export function ReportScreen2({ navigation }: any) {
                                     title="Próximo passo"
                                     colors={[theme.colors.secondary1, theme.colors.secondary2]}
                                     buttonStyle={{ height: 45, width: "90%", marginBottom: 20, marginTop: 20 }}
-                                    onPress={() => navigation.navigate("Step2")}
+                                    onPress={() => {
+                                        //const cache = cachePicture()
+                                        navigation.navigate("Step3")
+                                    }}
                                 />
                             </View>
                         </View>

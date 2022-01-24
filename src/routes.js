@@ -18,6 +18,7 @@ import { Account } from "./screens/Account"
 
 import { ReportScreen1 } from ".//screens/ReportScreens/Step1"
 import { ReportScreen2 } from ".//screens/ReportScreens/Step2"
+import { ReportScreen3 } from ".//screens/ReportScreens/Step3"
 
 import { theme } from './global/styles/theme';
 import { MenuButton } from './components/MenuButton';
@@ -182,6 +183,7 @@ export default function Routes() {
             <Stack.Group screenOptions={{ presentation: 'modal' }}>
                 <Stack.Screen name="Step1" component={ReportScreen1} />
                 <Stack.Screen name="Step2" component={ReportScreen2} />
+                <Stack.Screen name="Step3" component={ReportScreen3} />
             </Stack.Group>
         </Stack.Navigator>
     )

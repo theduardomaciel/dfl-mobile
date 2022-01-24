@@ -51,6 +51,19 @@ export function ReportScreen1({ navigation }: any) {
     const [region, setRegion] = useState(initialRegion);
     const [address, setAddress] = useState("");
 
+    function cacheLocation() {
+        const coordinates = {
+            latitude: region.latitude,
+            longitude: region.longitude
+        }
+        const data = new FormData();
+        data.append("location", {
+            coordinates: coordinates,
+            address: address
+        })
+        return data;
+    }
+
     let mapReference: any;
     return (
         <View style={defaultStyles.container}>
@@ -100,8 +113,11 @@ export function ReportScreen1({ navigation }: any) {
                 <TextButton
                     title="Próximo passo"
                     colors={[theme.colors.secondary1, theme.colors.secondary2]}
-                    buttonStyle={{ height: 45, width: "90%", position: "absolute", bottom: 20, }}
-                    onPress={() => navigation.navigate("Step2")}
+                    buttonStyle={{ height: 45, width: "90%", marginTop: 20, marginBottom: 20 }}
+                    onPress={() => {
+                        const cache = cacheLocation()
+                        navigation.navigate("Step2", { cache })
+                    }}
                 />
             </View>
         </View>
