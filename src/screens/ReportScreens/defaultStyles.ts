@@ -20,7 +20,7 @@ export const defaultStyles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         marginTop: 35, //+ getStatusBarHeight(),
-        marginBottom: 15,
+        marginBottom: 5,
         //paddingHorizontal: 20
     },
     stepTitle: {
