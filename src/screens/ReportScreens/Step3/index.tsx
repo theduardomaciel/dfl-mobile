@@ -14,6 +14,8 @@ import { BottomBar } from "../../../components/BottomBar";
 import { TextButton } from "../../../components/TextButton";
 import { TagsSelector } from "../../../components/TagsSelector";
 import { TextForm } from "../../../components/TextForm";
+import { TextInput } from "react-native-gesture-handler";
+import { KeyboardAvoidingView } from "native-base";
 
 export function ReportScreen3({ navigation, data }: any) {
 
@@ -25,7 +27,7 @@ export function ReportScreen3({ navigation, data }: any) {
     }
 
     return (
-        <View style={defaultStyles.container}>
+        <KeyboardAvoidingView style={defaultStyles.container}>
             <View style={defaultStyles.safeView}>
                 <View style={defaultStyles.header}>
                     <Text style={defaultStyles.stepTitle}>3 | INFORMAÇÕES</Text>
@@ -48,19 +50,21 @@ export function ReportScreen3({ navigation, data }: any) {
                     <Text style={styles.description}>
                         Busque descrever como você acha que o problema pode ser resolvido.
                     </Text>
-                    <TextForm style={styles.textForm} textInputProps={{ numberOfLines: 7, }} />
+                    <TextInput
+                        style={styles.textForm}
+                    />
                 </View>
                 <TextButton
                     title="Próximo passo"
                     style={theme.shadowProperties}
                     colors={[theme.colors.secondary1, theme.colors.secondary2]}
-                    buttonStyle={{ height: 45, width: "90%", position: "absolute", bottom: 20 }}
+                    buttonStyle={{ height: 45, width: "90%", }}
                     onPress={() => {
                         //const cache = cachePicture()
                         navigation.navigate("Step3")
                     }}
                 />
             </View>
-        </View>
+        </KeyboardAvoidingView>
     );
 }

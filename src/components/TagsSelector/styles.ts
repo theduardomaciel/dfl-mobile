@@ -14,16 +14,24 @@ export const styles = StyleSheet.create({
         backgroundColor: theme.colors.secondary1,
         borderRadius: 30,
 
-        height: 35,
+        height: 40,
         flexDirection: "row",
         paddingHorizontal: 15,
         paddingVertical: 5,
         marginRight: 10,
+
+        alignItems: "center",
+        justifyContent: "center"
     },
     tagText: {
         color: theme.colors.text1,
         fontFamily: theme.fonts.subtitle500,
-        fontSize: 14
+        fontSize: 14,
+
+        marginRight: 5,
+
+        textAlign: "center",
+        textAlignVertical: "center"
     },
     selectedTags: {
 

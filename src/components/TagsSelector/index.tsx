@@ -1,39 +1,89 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
     Text,
     View,
     TouchableOpacity,
-    ScrollView
+    UIManager,
+    FlatList,
+    LayoutAnimation,
+    Platform
 } from 'react-native';
 
 import { styles } from './styles';
 import { theme } from '../../global/styles/theme';
 import { SectionTitle } from '../SectionTitle';
 
+import { MaterialIcons } from "@expo/vector-icons"
+
 type TagSectionProps = {
     tags: Array<string>
 }
 
-function TagSection({ tags }: TagSectionProps) {
-    let section = []
+function CreateSectionData(tags: string[]) {
+    const data = [];
     for (let index = 0; index < tags.length; index++) {
         const tagTitle = tags[index];
-        section.push(
-            <TouchableOpacity key={index} style={styles.tag} activeOpacity={0.5}>
-                <Text style={styles.tagText}>{tagTitle}</Text>
-            </TouchableOpacity>
-        )
+        data[index] = {
+            id: index,
+            title: tagTitle,
+            checked: false
+        }
     }
+    return data;
+}
+
+function TagSection({ tags }: TagSectionProps) {
+    const [sectionData, setSectionData] = useState([] as any);
+
+    function UpdateTagsData() {
+        const checkedData = [...sectionData].filter(tag => tag.checked === true);
+        const uncheckedData = [...sectionData].filter(tag => tag.checked === false);
+        const sortedData = checkedData.concat(uncheckedData);
+        setSectionData(sortedData);
+    }
+
+    useEffect(() => {
+        (() => {
+            const newSectionData = CreateSectionData(tags);
+            setSectionData(newSectionData)
+        })();
+    }, []);
+
+    if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+        UIManager.setLayoutAnimationEnabledExperimental(true);
+    }
+
+    const renderItem = ({ item }: any) => (
+        <TouchableOpacity
+            key={item.id}
+            style={item.checked ? [styles.tag, { borderColor: theme.colors.primary1, borderWidth: 3 }] : styles.tag}
+            activeOpacity={0.75}
+            onPress={() => {
+                const updatedSectionData = sectionData
+                updatedSectionData.find((x: any) => x.id === item.id).checked = !item.checked
+                LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut); //.spring
+                setSectionData(updatedSectionData)
+                UpdateTagsData()
+            }}
+        >
+            <Text style={styles.tagText}>{item.title}</Text>
+            {
+                item.checked ? <MaterialIcons name="remove" size={18} color="white" /> :
+                    <MaterialIcons name="add" size={18} color="white" />
+            }
+        </TouchableOpacity>
+    );
     return (
-        <ScrollView
-            style={{ marginBottom: 5 }}
+        <FlatList
+            style={{ marginBottom: 1 }}
             contentContainerStyle={styles.tagSection}
             horizontal
             showsHorizontalScrollIndicator={false}
-        >
-            {section}
-        </ScrollView>
+            data={sectionData}
+            renderItem={renderItem}
+            keyExtractor={item => item.id}
+        />
     )
 }
 

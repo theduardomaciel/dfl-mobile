@@ -11,8 +11,13 @@ export const styles = StyleSheet.create({
     },
     textForm: {
         height: 125,
+        backgroundColor: theme.colors.primary2,
+        borderRadius: 10,
         color: theme.colors.text1,
         fontSize: 14,
-        fontFamily: theme.fonts.subtitle400
+        fontFamily: theme.fonts.subtitle400,
+        paddingHorizontal: 15,
+        paddingVertical: 15,
+        textAlignVertical: "top"
     }
 });

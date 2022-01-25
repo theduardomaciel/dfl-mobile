@@ -136,7 +136,7 @@ function MainScreen() {
                 listeners={({ navigation }) => ({
                     tabPress: (event) => {
                         event.preventDefault();
-                        navigation.navigate('Step1')
+                        navigation.navigate('Step3')
                     }
                 })}
             />
