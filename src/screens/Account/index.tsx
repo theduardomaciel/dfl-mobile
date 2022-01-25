@@ -142,7 +142,7 @@ export function Account() {
                         @nomedousuário
                     </Text>
                 </View>
-                <ProfileIcon uri="https://github.com/theduardomaciel.png" />
+                <ProfileIcon uri="https://github.com/theduardomaciel.png" openConfig />
             </View>
         )
     }

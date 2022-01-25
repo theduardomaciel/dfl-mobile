@@ -1,8 +1,5 @@
-import React, { Dispatch, SetStateAction, useState, useEffect } from "react";
-import { View, Text } from "react-native";
-
-import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
-import * as Location from 'expo-location';
+import React, { useState } from "react";
+import { View, Text, Modal, KeyboardAvoidingView } from "react-native";
 
 import { theme } from "../../../global/styles/theme";
 
@@ -10,15 +7,13 @@ import { defaultStyles } from "../defaultStyles";
 import { styles } from "./styles";
 
 import { AntDesign } from '@expo/vector-icons';
-import { BottomBar } from "../../../components/BottomBar";
 import { TextButton } from "../../../components/TextButton";
 import { TagsSelector } from "../../../components/TagsSelector";
-import { TextForm } from "../../../components/TextForm";
 import { TextInput } from "react-native-gesture-handler";
-import { KeyboardAvoidingView } from "native-base";
+import { ConclusionScreen } from "../../../components/ConclusionScreen";
 
 export function ReportScreen3({ navigation, data }: any) {
-
+    const [modalOpen, setModalOpen] = useState(false)
     function cacheInfo() {
         data.append("info", {
 
@@ -61,9 +56,21 @@ export function ReportScreen3({ navigation, data }: any) {
                     buttonStyle={{ height: 45, width: "90%", }}
                     onPress={() => {
                         //const cache = cachePicture()
-                        navigation.navigate("Step3")
+                        setModalOpen(true)
                     }}
                 />
+                {
+                    modalOpen && <Modal
+                        transparent={false}
+                        animationType={"slide"}
+                        statusBarTranslucent
+                    >
+                        <ConclusionScreen title="O relato foi registrado com sucesso!" info="Os órgãos responsáveis de sua cidade serão notificados." onPress={() => {
+                            navigation.navigate('Início')
+                            setModalOpen(false)
+                        }} />
+                    </Modal>
+                }
             </View>
         </KeyboardAvoidingView>
     );

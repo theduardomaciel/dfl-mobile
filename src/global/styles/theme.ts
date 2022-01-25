@@ -2,12 +2,14 @@ export const theme = {
     colors: {
         background: '#F6F7EB',
         background2: '#E6EADA',
+
+        conclusionBackground: '#EBF7EB',
         modalBackground: '#F3F7F4',
 
         primary1: '#4F9D69',
         primary2: '#7FB883',
-        primary3: 'AED296',
-        primary4: 'C9E2C9',
+        primary3: '#AED296',
+        primary4: '#C9E2C9',
 
         secondary1: '#26413C',
         secondary2: '#346259',
