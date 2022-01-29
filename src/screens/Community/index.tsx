@@ -116,6 +116,7 @@ export function Community() {
                     </MapView>
                 </View>
                 <BottomBar
+                    viewStyle={{ width: "90%" }}
                     element={
                         <Pressable style={styles.button} onPress={toggleModal}>
                             <Text style={styles.info}>Maceió</Text>

@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text } from "react-native";
 
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
@@ -64,6 +64,11 @@ export function ReportScreen1({ navigation }: any) {
         return data;
     }
 
+    const [loadedScreen, setLoadedScreen] = useState(false)
+    useEffect(() => {
+        setLoadedScreen(true)
+    });
+
     let mapReference: any;
     return (
         <View style={defaultStyles.container}>
@@ -109,7 +114,7 @@ export function ReportScreen1({ navigation }: any) {
                         initialRegion={initialRegion}
                     />
                 </View>
-                <BottomBar info={"Endereço: " + address} margin={25} />
+                <BottomBar info={"Endereço: " + address} viewStyle={{ marginBottom: 25 }} />
                 <TextButton
                     title="Próximo passo"
                     colors={[theme.colors.secondary1, theme.colors.secondary2]}

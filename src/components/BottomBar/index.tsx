@@ -1,24 +1,24 @@
 import React from 'react';
 
 import {
+    StyleSheet,
     Text,
     View,
+    ViewProps
 } from 'react-native';
 
 import { styles } from './styles';
 
-type Props = {
+type Props = ViewProps & {
     // A ? faz com que o elemento não seja obrigatório
     info?: string;
     element?: any;
-    height?: number;
-    margin?: number;
+    viewStyle?: any;
 }
 
-export function BottomBar({ info, element, height, margin }: Props) {
-    const newHeight = height ? [styles.container, { height: height }] : styles.container
+export function BottomBar({ info, element, viewStyle, ...rest }: Props) {
     return (
-        <View style={margin ? [newHeight, { marginBottom: margin }] : newHeight}>
+        <View style={viewStyle ? [viewStyle, styles.container] : styles.container} {...rest}>
             {
                 info ? <Text style={styles.info}> {info} </Text> : null
             }

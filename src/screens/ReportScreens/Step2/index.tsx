@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, Modal, TouchableOpacity, Image } from "react-native";
+import { View, Text, Modal, TouchableOpacity, Image, ActivityIndicator } from "react-native";
 
 import { Camera } from "expo-camera";
 
@@ -12,12 +12,28 @@ import NewPhotoIcon from "../../../assets/camera/new_photo.svg"
 import FlipCamera from "../../../assets/camera/flip_camera.svg"
 
 import { AntDesign } from '@expo/vector-icons';
+
 import { TextButton } from "../../../components/TextButton";
 import { BottomBar } from "../../../components/BottomBar";
 
+function cachePicture(data: any, capturedPhoto: any) {
+    if (capturedPhoto !== null) {
+        data.append("report_image", {
+            fileName: "provisório",
+            height: capturedPhoto.height,
+            width: capturedPhoto.width,
+            uri: capturedPhoto.uri,
+            type: 'type/jpeg'
+        });
+        return data;
+    }
+}
+
 export function ReportScreen2({ navigation, data }: any) {
+    const [isLoading, setIsLoading] = useState(false)
+
     const [cameraType, setCameraType] = useState(Camera.Constants.Type.back)
-    const [hasPermission, setHasPermission] = useState(false);
+    const [hasPermission, setHasPermission] = useState(null);
 
     const camRef = useRef(null)
     const [capturedPhoto, setCapturedPhoto] = useState({})
@@ -25,36 +41,35 @@ export function ReportScreen2({ navigation, data }: any) {
     const [modalOpen, setModalOpen] = useState(false)
 
     async function takePicture() {
-        if (camRef !== null) {
+        //setIsLoading(true)
+        try {
             const data = await camRef.current.takePictureAsync()
+            camRef.current.pausePreview();
             console.log(data)
             setCapturedPhoto(data)
             setModalOpen(true)
+        } catch (error) {
+            //setIsLoading(false)
+            console.log(error)
         }
     }
 
-    function cachePicture() {
-        if (capturedPhoto !== null) {
-            data.append("report_image", {
-                fileName: "provisório",
-                height: capturedPhoto.height,
-                width: capturedPhoto.width,
-                uri: capturedPhoto.uri,
-                type: 'type/jpeg'
-            });
-            return data;
-        }
+    async function backToPreview() {
+        setIsLoading(false)
+        await camRef.current.resumePreview();
+        setModalOpen(false)
     }
 
     useEffect(() => {
         (async () => {
             const { status } = await Camera.requestCameraPermissionsAsync();
             setHasPermission(status === 'granted')
-            if (hasPermission === false || hasPermission === null) {
-                return <View />
-            }
         })();
     }, []);
+
+    if (hasPermission === false || hasPermission === null) {
+        return <View />
+    }
 
     return (
         <View style={defaultStyles.container}>
@@ -70,8 +85,8 @@ export function ReportScreen2({ navigation, data }: any) {
                     <Camera
                         style={{ flex: 1 }}
                         type={cameraType}
-                        ratio={"4:3"}
                         ref={camRef}
+                        useCamera2Api
                     >
                         <TouchableOpacity activeOpacity={0.5} style={styles.flipCamera} onPress={() => {
                             setCameraType(
@@ -84,10 +99,11 @@ export function ReportScreen2({ navigation, data }: any) {
                     </Camera>
                 </View>
                 <BottomBar
-                    margin={20}
+                    viewStyle={{ marginBottom: 35 }}
                     element={
                         <TouchableOpacity style={styles.bottomBar} onPress={takePicture}>
-                            <CameraIcon height={48} width={48} />
+                            {isLoading ? <ActivityIndicator size="large" color={theme.colors.text1} /> :
+                                <CameraIcon height={48} width={48} />}
                         </TouchableOpacity>
                     }
                 />
@@ -111,7 +127,7 @@ export function ReportScreen2({ navigation, data }: any) {
                                 <TouchableOpacity
                                     activeOpacity={0.6}
                                     style={styles.newPhotoButton}
-                                    onPress={() => { setModalOpen(false) }}
+                                    onPress={backToPreview}
                                 >
                                     <NewPhotoIcon height={42} width={42} />
                                 </TouchableOpacity>
