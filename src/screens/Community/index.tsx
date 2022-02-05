@@ -40,13 +40,22 @@ const Marcadores = [
     }
 ]
 
+const initialRegion = {
+    latitude: 37.78825,
+    longitude: -122.4324,
+    latitudeDelta: 0.015,
+    longitudeDelta: 0.0121,
+}
+
 export function Community() {
     const [isModalVisible, setModalVisible] = useState(false);
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
     };
 
-    const [location, setLocation] = useState("");
+    const [alreadyLoaded, setAlreadyLoaded] = useState(false)
+
+    /* const [location, setLocation] = useState("");
     const [errorMsg, setErrorMsg] = useState("");
 
     useEffect(() => {
@@ -68,7 +77,9 @@ export function Community() {
     } else if (location) {
         text = JSON.stringify(location);
     }
-
+ */
+    const [region, setRegion] = useState(initialRegion);
+    let mapReference: any;
     return (
         <View style={styles.container}>
             <ModalBase
@@ -95,15 +106,28 @@ export function Community() {
                 <View style={styles.mapView}>
                     <MapView
                         style={{ flex: 1, borderRadius: 10, justifyContent: "center" }}
+                        ref={mapReference}
                         provider={PROVIDER_GOOGLE}
                         showsUserLocation={true}
                         showsMyLocationButton={true}
-                        initialRegion={{
-                            latitude: 37.78825,
-                            longitude: -122.4324,
-                            latitudeDelta: 0.015,
-                            longitudeDelta: 0.0121,
+                        region={region}
+                        onUserLocationChange={locationChangedResult => {
+                            if (!alreadyLoaded) {
+                                setAlreadyLoaded(true)
+                                const coords = locationChangedResult.nativeEvent.coordinate
+                                const newRegion = {
+                                    latitude: coords.latitude,
+                                    longitude: coords.longitude,
+                                    latitudeDelta: 0.05,
+                                    longitudeDelta: 0.05
+                                }
+                                setRegion(newRegion);
+                                if (mapReference !== undefined) {
+                                    mapReference.animateToRegion(newRegion, 2000)
+                                }
+                            }
                         }}
+                        initialRegion={initialRegion}
                     >
                         {Marcadores.map((marker, index) => (
                             <Marker

@@ -129,7 +129,7 @@ export function Home() {
                     <Text style={[styles.title, { marginLeft: 12 }]}>
                         Engajamento da Comunidade
                     </Text>
-                    <MapScopePicker />
+                    <MapScopePicker actualRegion={region} setMapRegion={setRegion} />
                 </View>
                 <View style={[elements.subContainerGreen, theme.shadowProperties, { height: 256 }]}>
                     <Text style={[styles.info, { fontSize: 36 }]}>

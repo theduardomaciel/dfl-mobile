@@ -12,10 +12,13 @@ import { theme } from '../../global/styles/theme';
 
 type CustomProps<T = string | number> = {
     //onValueChange?: (itemValue: T, itemIndex: number) => void;
-    MapView?: React.Component<MapViewProps>;
+    //MapView?: React.Component<MapViewProps>;
+    biggerScope?: boolean;
+    setMapRegion: any;
+    actualRegion: any;
 }
 
-export function MapScopePicker({ MapView }: CustomProps) {
+export function MapScopePicker({ biggerScope, actualRegion, setMapRegion }: CustomProps) {
     const [selectedScope, setSelectedScope] = useState();
     return (
         <View style={styles.scopeButton}>
@@ -25,23 +28,43 @@ export function MapScopePicker({ MapView }: CustomProps) {
                 dropdownIconColor={theme.colors.text1}
                 selectedValue={selectedScope}
                 onValueChange={(itemValue, itemIndex) => {
+                    if (!actualRegion) return;
+                    console.log("Alterando escopo do mapa.")
                     setSelectedScope(itemValue)
-                    console.log(itemValue)
                     // Função que altera o escopo do mapa
-                    /* switch (key) {
-                        case value:
-                            
-                            break;
-                    
-                        default:
-                            break;
-                    } */
+                    let newRegion;
+                    if (itemValue === 'state') {
+                        newRegion = {
+                            latitude: actualRegion.latitude,
+                            longitude: actualRegion.longitude,
+                            latitudeDelta: 2,
+                            longitudeDelta: 2
+                        }
+                    } else if (itemValue === 'city') {
+                        newRegion = {
+                            latitude: actualRegion.latitude,
+                            longitude: actualRegion.longitude,
+                            latitudeDelta: 0.25,
+                            longitudeDelta: 0.25
+                        }
+                    } else if (itemValue === 'neighbrhood') {
+                        newRegion = {
+                            latitude: actualRegion.latitude,
+                            longitude: actualRegion.longitude,
+                            latitudeDelta: 0.05,
+                            longitudeDelta: 0.05
+                        }
+                    }
+                    setMapRegion(newRegion)
                 }}
             >
                 <Picker.Item label="Bairro" value="neighborhood" color={theme.colors.secondary1} fontFamily={theme.fonts.title700} />
                 <Picker.Item label="Cidade" value="city" color={theme.colors.secondary1} fontFamily={theme.fonts.title700} />
                 <Picker.Item label="Estado" value="state" color={theme.colors.secondary1} fontFamily={theme.fonts.title700} />
-                <Picker.Item label="País" value="country" color={theme.colors.secondary1} fontFamily={theme.fonts.title700} />
+                {
+                    biggerScope ? <Picker.Item label="País" value="country" color={theme.colors.secondary1} fontFamily={theme.fonts.title700} />
+                        : null
+                }
             </Picker>
         </View>
     );

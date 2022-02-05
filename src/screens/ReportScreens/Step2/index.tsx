@@ -60,7 +60,7 @@ export function ReportScreen2({ navigation, data }: any) {
         setModalOpen(false)
     }
 
-    useEffect(() => {
+    /* useEffect(() => {
         (async () => {
             const { status } = await Camera.requestCameraPermissionsAsync();
             setHasPermission(status === 'granted')
@@ -69,7 +69,7 @@ export function ReportScreen2({ navigation, data }: any) {
 
     if (hasPermission === false || hasPermission === null) {
         return <View />
-    }
+    } */
 
     return (
         <View style={defaultStyles.container}>
