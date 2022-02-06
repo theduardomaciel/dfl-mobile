@@ -1,5 +1,6 @@
 import React, { useRef, useState, useCallback } from "react";
-import { View, Text, FlatList, Animated, ViewToken, TouchableOpacity } from "react-native";
+import { View, FlatList, Animated, ViewToken, Pressable } from "react-native";
+import { GoogleSignin, GoogleSigninButton } from "@react-native-google-signin/google-signin";
 
 import { onboarding_screens } from "../../utils/onboarding";
 import Logo from "../../assets/Logo.svg"
@@ -9,13 +10,16 @@ import { theme } from "../../global/styles/theme";
 
 import { OnboardingItem } from "../../components/OnboardingItem";
 import { Paginator } from "../../components/Paginator";
-import { TextButton } from "../../components/TextButton";
+
+import { useAuth } from "../../hooks/auth"
 
 type PropTypes = {
     viewableItems: Array<ViewToken>;
 }
 
 export function Onboarding() {
+    const { signIn, isSigningIn } = useAuth();
+
     const [currentIndex, setCurrentIndex] = useState(0)
     const scrollX = useRef(new Animated.Value(0)).current;
     const slidesRef = useRef(null);
@@ -58,16 +62,14 @@ export function Onboarding() {
 
             <View style={styles.footer}>
                 <Paginator data={onboarding_screens} scrollX={scrollX} scrollTo={scrollTo} />
-                <TextButton
-                    activeOpacity={0.9}
-                    title={"Criar uma conta"}
-                    buttonStyle={{ borderRadius: 8, height: 50, width: 250, backgroundColor: theme.colors.primary1 }}
+                <Pressable style={{ height: 125, width: 225, backgroundColor: theme.colors.primary1 }} onPress={signIn} />
+                <GoogleSigninButton
+                    //style={{ width: 192, height: 48 }}
+                    size={GoogleSigninButton.Size.Wide}
+                    color={GoogleSigninButton.Color.Light}
+                    onPress={signIn}
+                    disabled={isSigningIn}
                 />
-                <TouchableOpacity>
-                    <Text style={{ color: theme.colors.primary1, fontSize: 11, marginTop: 5 }}>
-                        Já tem uma conta? Faça login aqui!
-                    </Text>
-                </TouchableOpacity>
             </View>
         </View>
     );

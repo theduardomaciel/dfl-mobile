@@ -3,4 +3,5 @@
   <string name="app_name">dlftesting</string>
   <string name="expo_splash_screen_resize_mode" translatable="false">contain</string>
   <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
+  <string name="server_client_id">867322063173-1e0bldiu77qaovou203mru1eqq16rjte.apps.googleusercontent.com</string>
 </resources>

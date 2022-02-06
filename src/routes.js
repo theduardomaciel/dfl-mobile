@@ -8,8 +8,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import { Onboarding } from './screens/Onboarding';
-import { PreSignUp } from './screens/PreSignUp';
-import { SignUp } from './screens/SignUp';
 
 import { Home } from "./screens/Home";
 import { Community } from "./screens/Community"
@@ -31,6 +29,7 @@ const icons = [community_icon, reports_icon, null, home_icon, account_icon];
 
 import { menuAnimations } from './global/animations/menuAnimations';
 import { fadeAnimations } from './global/animations/fadeAnimations';
+import { useAuth } from './hooks/auth';
 
 const communityButtonDriver = new Animated.Value(0)
 const reportsButtonDriver = new Animated.Value(0)
@@ -162,29 +161,34 @@ function MainScreen() {
     )
 }
 
+async function isSignedIn() {
+    try {
+        const isSignedIn = await GoogleSignin.isSignedIn();
+        return isSignedIn
+    } catch (error) {
+        return false
+    }
+}
+
 export default function Routes() {
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-            {/* // Logged Users Screens */}
-            <Stack.Screen
-                name="Main"
-                component={MainScreen}
-                options={{ headerShown: false }}
-            />
-
-            {/* // Auth Screens */}
-            <Stack.Group>
+            {isSignedIn() ?
+                <>
+                    <Stack.Screen
+                        name="Main"
+                        component={MainScreen}
+                        options={{ headerShown: false }}
+                    />
+                    <Stack.Group screenOptions={{ presentation: 'modal' }}>
+                        <Stack.Screen name="Step1" component={ReportScreen1} />
+                        <Stack.Screen name="Step2" component={ReportScreen2} />
+                        <Stack.Screen name="Step3" component={ReportScreen3} />
+                    </Stack.Group>
+                </>
+                :
                 <Stack.Screen name="Onboarding" component={Onboarding} />
-                <Stack.Screen name="PreSignUp" component={PreSignUp} />
-                <Stack.Screen name="SignUp" component={SignUp} />
-            </Stack.Group>
-
-            {/* Modal Screens */}
-            <Stack.Group screenOptions={{ presentation: 'modal' }}>
-                <Stack.Screen name="Step1" component={ReportScreen1} />
-                <Stack.Screen name="Step2" component={ReportScreen2} />
-                <Stack.Screen name="Step3" component={ReportScreen3} />
-            </Stack.Group>
+            }
         </Stack.Navigator>
     )
 }

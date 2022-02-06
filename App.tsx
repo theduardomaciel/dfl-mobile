@@ -1,5 +1,6 @@
 import * as Svg from "react-native-svg";
 import React from "react";
+import { StatusBar } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 
 import { useFonts } from "expo-font";
@@ -10,11 +11,9 @@ import { Roboto_400Regular, Roboto_500Medium, Roboto_700Bold, Roboto_900Black } 
 import { Alatsi_400Regular } from "@expo-google-fonts/alatsi"
 
 import Routes from "./src/routes";
-import { StatusBar } from "react-native";
 
-import { Onboarding } from './src/screens/Onboarding'
-import { PreSignUp } from './src/screens/PreSignUp';
-import { SignUp } from './src/screens/SignUp';
+import { AuthProvider } from "./src/hooks/auth";
+import { Home } from "./src/screens/Home";
 
 export default function App() {
     const [fontsLoaded] = useFonts({
@@ -33,22 +32,15 @@ export default function App() {
         return <AppLoading />
     }
     return (
-        <NavigationContainer>
-            <StatusBar
-                barStyle="dark-content"
-                backgroundColor="transparent"
-                translucent
-            />
-            <Routes />
-        </NavigationContainer>
+        <AuthProvider>
+            <NavigationContainer>
+                <StatusBar
+                    barStyle="dark-content"
+                    backgroundColor="transparent"
+                    translucent
+                />
+                <Routes />
+            </NavigationContainer>
+        </AuthProvider>
     );
 }
-
-/* <NavigationContainer>
-            <StatusBar
-                barStyle="dark-content"
-                backgroundColor="transparent"
-                translucent
-            />
-            <Routes />
-        </NavigationContainer> */
