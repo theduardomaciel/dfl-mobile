@@ -39,7 +39,7 @@ export function Paginator({ data, scrollX, scrollTo }: Props) {
                 });
                 const backgroundColor = scrollX.interpolate({
                     inputRange,
-                    outputRange: [theme.colors.unselected, theme.colors.primary1, theme.colors.unselected],
+                    outputRange: [theme.colors.gray_light, theme.colors.primary1, theme.colors.gray_light],
                     extrapolate: 'clamp'
                 });
                 return <Animated.View style={[styles.dot, { width: dotWidth, opacity, backgroundColor }]} key={index.toString()}>

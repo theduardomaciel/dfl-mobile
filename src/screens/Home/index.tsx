@@ -11,6 +11,8 @@ import { theme } from "../../global/styles/theme";
 
 import { styles } from "./styles";
 
+import { useAuth } from "../../hooks/auth";
+
 function GetGreeting() {
     const hour = new Date().getHours();
     if (hour >= 0 && hour < 12) {
@@ -59,6 +61,11 @@ export function Home() {
     let mapReference: any;
     const [region, setRegion] = useState(initialRegion);
     const [alreadyLoaded, setAlreadyLoaded] = useState(false)
+
+    const { user } = useAuth();
+    if (user === null) {
+        return null;
+    }
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -67,10 +74,10 @@ export function Home() {
                         {GetGreeting()}
                     </Text>
                     <Text style={styles.greetingsNameText}>
-                        meninocoiso!
+                        {user.givenName + "!"}
                     </Text>
                 </View>
-                <ProfileIcon uri={"https://github.com/theduardomaciel.png"} />
+                <ProfileIcon uri={user.photo} />
             </View>
             <ScrollView
                 contentContainerStyle={styles.scrollContainer}

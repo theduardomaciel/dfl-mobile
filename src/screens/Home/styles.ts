@@ -29,7 +29,7 @@ export const styles = StyleSheet.create({
         color: theme.colors.secondary1,
     },
     greetingsNameText: {
-        marginTop: -15,
+        marginTop: -5,
         fontFamily: theme.fonts.subtitle500,
         fontSize: 36,
         color: theme.colors.secondary1,

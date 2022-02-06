@@ -11,6 +11,8 @@ import { styles } from "./styles";
 
 import TrashbinSvg from "../../assets/trashbin_2.svg"
 
+import { useAuth } from "../../hooks/auth";
+
 // Os dados em uma SectionList devem ser sempre organizados em: "Title" e "Data". 
 // Se esse nomes não estiverem escritos, um erro será retornado.
 const EXAMPLE_REPORTS = [
@@ -131,18 +133,22 @@ const EmptyItem = ({ item }: any) => {
 }
 
 export function Account() {
+    const { user } = useAuth();
+    if (user === null) {
+        return null;
+    }
     const Header = () => {
         return (
             <View style={styles.header}>
                 <View style={styles.userInfoContainer}>
                     <Text style={styles.title}>
-                        nome completo
+                        {user.name}
                     </Text>
                     <Text style={styles.username}>
                         @nomedousuário
                     </Text>
                 </View>
-                <ProfileIcon uri="https://github.com/theduardomaciel.png" openConfig />
+                <ProfileIcon uri={user.photo} openConfig />
             </View>
         )
     }

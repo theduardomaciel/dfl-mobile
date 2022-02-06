@@ -7,6 +7,12 @@ GoogleSignin.configure({
     offlineAccess: true
 });
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const SCOPE = "read:user";
+const USER_STORAGE = "@dfl:user";
+const TOKEN_STORAGE = "@dfl:token";
+
 type User = {
     email: string;
     id: string;
@@ -45,8 +51,10 @@ function AuthProvider({ children }: AuthProviderProps) {
             const userInfo = await GoogleSignin.signIn();
             if (userInfo && userInfo.idToken) {
                 //const { user, idToken } = userInfo;
-                console.log(userInfo);
+                console.log("Usuário criado com sucesso!", userInfo.user);
                 setUser(userInfo.user)
+                /* await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(user))
+                await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(userInfo.idToken)) */
             }
         } catch (error) {
             if (error.code === statusCodes.SIGN_IN_CANCELLED) {
@@ -64,6 +72,7 @@ function AuthProvider({ children }: AuthProviderProps) {
     }
 
     async function signOut() {
+        console.log("Deslogando da conta.")
         try {
             await GoogleSignin.signOut();
             setUser(null)
@@ -78,7 +87,8 @@ function AuthProvider({ children }: AuthProviderProps) {
             //const tokenStorage = await AsyncStorage.getItem(TOKEN_STORAGE);
             const currentUser = await GoogleSignin.getCurrentUser();
             if (currentUser && currentUser.idToken) {
-                console.log("Logando o usuário", currentUser)
+                setUser(currentUser.user)
+                console.log("Logando o usuário...")
             }
             setIsSigningIn(false);
         }

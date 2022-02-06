@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 
 import {
+    FlatList,
     Image,
+    Pressable,
     Text,
     TouchableOpacity,
     View
@@ -13,58 +15,119 @@ import { styles } from './styles';
 import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../../global/styles/theme';
 
+import { useAuth } from '../../hooks/auth';
+import { ConfigOption } from './ConfigOption';
+
 type Props = {
     uri: string;
     openConfig?: boolean;
 }
 
+import { Ionicons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
+
 export function ProfileIcon({ uri, openConfig }: Props) {
-    const [modalOpen, setModalOpen] = useState(false)
-    const navigation = useNavigation();
+
+    const { signOut } = useAuth();
+    const CONFIG_BUTTONS = [
+        {
+            id: "0",
+            title: "Perfil",
+            description: "como a comunidade lhe vê",
+            icon: <Ionicons name="person" size={48} color={theme.colors.primary1} />,
+            onPress: () => { }
+        },
+        {
+            id: "1",
+            title: "Conta",
+            description: "configurações",
+            icon: <Ionicons name="settings" size={48} color={theme.colors.primary1} />,
+            onPress: () => { }
+        },
+        {
+            id: "2",
+            title: "Log-out",
+            description: "nos vemos em breve!",
+            icon: <MaterialIcons name="logout" size={48} color={theme.colors.primary1} />,
+            onPress: signOut
+        },
+    ]
+
+    const [modalVisible, setModalVisible] = useState(false)
+    const navigation = useNavigation<any>();
+
+    const { user } = useAuth();
+
+    const renderItem = ({ item }) => (
+        <ConfigOption id={item.id} title={item.title} description={item.description} icon={item.icon} onPress={item.onPress} />
+    );
+
+    const renderSeparator = () => (
+        <View style={{
+            backgroundColor: theme.colors.primary4,
+            opacity: 0.35,
+            flex: 1,
+            height: 1,
+        }}
+        />
+    );
+
     return (
         <TouchableOpacity
             activeOpacity={1}
             style={styles.container}
             onPress={() => {
-                openConfig ? setModalOpen(true) : navigation.navigate("Conta")
+                openConfig ? setModalVisible(true) : navigation.navigate("Conta")
             }}
         >
-            <Image
-                style={styles.logo}
-                source={{
-                    uri: uri,
-                }}
-            />
-            {
-                modalOpen &&
-                <Modal
-                    style={{ margin: 0, alignItems: "center", justifyContent: "flex-end" }}
-                    isVisible={modalOpen}
-                    deviceHeight={1920}
-                    statusBarTranslucent={true}
-                    backdropTransitionOutTiming={0}
-                    hideModalContentWhileAnimating
-                    animationOut={"slideOutDown"}
-                    onSwipeComplete={() => setModalOpen(false)}
-                    swipeDirection="down"
-                >
-                    <View style={styles.modalContainer}>
-                        <LinearGradient
-                            colors={[theme.colors.primary2, theme.colors.primary3]}
-                            style={styles.headerGradient}
-                            start={{ x: 0, y: 0.5 }}
-                            end={{ x: 1, y: 0.5 }}
-                        >
-                            <Text style={styles.modalTitle}>Nome do Usuário</Text>
-                            <Text style={styles.modalSubtitle}>emaildousuario@email.com</Text>
-                        </LinearGradient>
-
-                        <View style={styles.options}>
-
-                        </View>
+            <View style={styles.logo}>
+                <Image
+                    style={{ flex: 1 }}
+                    source={{
+                        uri: uri,
+                    }}
+                />
+            </View>
+            <Modal
+                style={{ margin: 0, alignItems: "center", justifyContent: "flex-end" }}
+                isVisible={modalVisible}
+                deviceHeight={1920}
+                statusBarTranslucent={true}
+                backdropTransitionOutTiming={0}
+                hideModalContentWhileAnimating
+                animationOut={"slideOutDown"}
+                onSwipeComplete={() => setModalVisible(false)}
+                swipeDirection="down"
+            >
+                <View style={styles.modalContainer}>
+                    <LinearGradient
+                        colors={[theme.colors.primary2, theme.colors.primary3]}
+                        style={styles.headerGradient}
+                        start={{ x: 0, y: 0.5 }}
+                        end={{ x: 1, y: 0.5 }}
+                    >
+                        <Text style={styles.modalTitle}>{user ? user.name : "nomedousuário"}</Text>
+                        <Text style={styles.modalSubtitle}>{user ? user.email : "email@email.com"}</Text>
+                    </LinearGradient>
+                    <View style={styles.options}>
+                        <Pressable style={styles.closeButton} onPress={() => { setModalVisible(false) }}>
+                            <Text style={styles.closeButtonText}>X</Text>
+                        </Pressable>
+                        <FlatList
+                            style={{ width: "100%" }}
+                            nestedScrollEnabled={true}
+                            data={CONFIG_BUTTONS}
+                            renderItem={renderItem}
+                            keyExtractor={item => item.id}
+                            ItemSeparatorComponent={renderSeparator}
+                        />
+                        {/* <ConfigOption id={2} title='Perfil' description='como a comunidade lhe vê' icon={
+                            <Ionicons name="person" size={48} color={theme.colors.primary1} />
+                        }
+                        /> */}
                     </View>
-                </Modal>
-            }
+                </View>
+            </Modal>
         </TouchableOpacity>
     );
 }

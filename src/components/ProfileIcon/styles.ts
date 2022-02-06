@@ -12,6 +12,7 @@ export const styles = StyleSheet.create({
         width: 80,
         height: 80,
         borderRadius: 40,
+        overflow: "hidden",
     },
     modalContainer: {
         height: "95%",
@@ -20,6 +21,7 @@ export const styles = StyleSheet.create({
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
 
+        alignItems: "center",
         justifyContent: "flex-start"
     },
     modalTitle: {
@@ -32,6 +34,23 @@ export const styles = StyleSheet.create({
         color: theme.colors.text1,
         fontSize: 12
     },
+    closeButton: {
+        height: 50,
+        width: 50,
+        borderRadius: 50 / 2,
+        backgroundColor: theme.colors.text1,
+
+        alignItems: "center",
+        justifyContent: "center",
+
+        position: "absolute",
+        top: -25,
+    },
+    closeButtonText: {
+        color: theme.colors.primary4,
+        fontFamily: theme.fonts.subtitle400,
+        fontSize: 18,
+    },
     headerGradient: {
         height: 150,
         width: "100%",
@@ -43,6 +62,7 @@ export const styles = StyleSheet.create({
     },
     options: {
         flex: 1,
-        width: "90%"
+        width: "90%",
+        alignItems: "center"
     }
 });

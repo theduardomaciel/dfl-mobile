@@ -14,9 +14,9 @@ import { Community } from "./screens/Community"
 import { Reports } from "./screens/Reports"
 import { Account } from "./screens/Account"
 
-import { ReportScreen1 } from ".//screens/ReportScreens/Step1"
-import { ReportScreen2 } from ".//screens/ReportScreens/Step2"
-import { ReportScreen3 } from ".//screens/ReportScreens/Step3"
+import { ReportScreen1 } from "./screens/ReportScreens/Step1"
+import { ReportScreen2 } from "./screens/ReportScreens/Step2"
+import { ReportScreen3 } from "./screens/ReportScreens/Step3"
 
 import { theme } from './global/styles/theme';
 import { MenuButton } from './components/MenuButton';
@@ -40,7 +40,7 @@ const buttonDrivers = [communityButtonDriver, reportsButtonDriver, null, homeBut
 let lastIndex = 3; // A tela inicial é a "Home", que está posicionada no index 3
 
 const Tab = createBottomTabNavigator();
-const Stack = createStackNavigator(); // Para o modal de "Notificar Foco"
+const Stack = createStackNavigator();
 
 const FadeHomeScreen = (props) => (
     <FadeInView>
