@@ -161,19 +161,11 @@ function MainScreen() {
     )
 }
 
-async function isSignedIn() {
-    try {
-        const isSignedIn = await GoogleSignin.isSignedIn();
-        return isSignedIn
-    } catch (error) {
-        return false
-    }
-}
-
 export default function Routes() {
+    const { user } = useAuth();
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-            {isSignedIn() ?
+            {user ?
                 <>
                     <Stack.Screen
                         name="Main"

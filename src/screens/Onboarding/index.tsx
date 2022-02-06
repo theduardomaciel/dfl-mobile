@@ -65,7 +65,7 @@ export function Onboarding() {
                 <Pressable style={{ height: 125, width: 225, backgroundColor: theme.colors.primary1 }} onPress={signIn} />
                 <GoogleSigninButton
                     //style={{ width: 192, height: 48 }}
-                    size={GoogleSigninButton.Size.Wide}
+                    size={GoogleSigninButton.Size.Standard}
                     color={GoogleSigninButton.Color.Light}
                     onPress={signIn}
                     disabled={isSigningIn}
