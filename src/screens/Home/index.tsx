@@ -74,10 +74,10 @@ export function Home() {
                         {GetGreeting()}
                     </Text>
                     <Text style={styles.greetingsNameText}>
-                        {user.givenName + "!"}
+                        {user.first_name + "!"}
                     </Text>
                 </View>
-                <ProfileIcon uri={user.photo} />
+                <ProfileIcon uri={user.image_url} />
             </View>
             <ScrollView
                 contentContainerStyle={styles.scrollContainer}

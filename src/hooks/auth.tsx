@@ -4,7 +4,11 @@ import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-si
 
 GoogleSignin.configure({
     webClientId: '867322063173-idupsd05i0n5hi8k8ae2iamealrksu3u.apps.googleusercontent.com',
-    offlineAccess: true
+    offlineAccess: true,
+    scopes: [
+        'https://www.googleapis.com/auth/user.gender.read',
+        'https://www.googleapis.com/auth/user.birthday.read'
+    ]
 });
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -16,10 +20,10 @@ const TOKEN_STORAGE = "@dfl:token";
 type User = {
     email: string;
     id: string;
-    givenName: string;
-    familyName: string;
-    photo: string;
     name: string;
+    first_name: string;
+    last_name: string;
+    image_url: string;
 }
 
 type AuthContextData = {
@@ -52,7 +56,21 @@ function AuthProvider({ children }: AuthProviderProps) {
             if (userInfo && userInfo.idToken) {
                 //const { user, idToken } = userInfo;
                 console.log("Usuário criado com sucesso!", userInfo.user);
-                setUser(userInfo.user)
+                const userWithScopes = await GoogleSignin.addScopes({
+                    scopes: [
+                        'https://www.googleapis.com/auth/user.gender.read',
+                        'https://www.googleapis.com/auth/user.birthday.read'
+                    ],
+                });
+                console.log("Com escopos: ", userWithScopes)
+                setUser({
+                    email: userInfo.user.email,
+                    id: userInfo.user.id,
+                    name: userInfo.user.name,
+                    first_name: userInfo.user.givenName,
+                    last_name: userInfo.user.familyName,
+                    image_url: userInfo.user.photo,
+                })
                 /* await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(user))
                 await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(userInfo.idToken)) */
             }
@@ -85,10 +103,22 @@ function AuthProvider({ children }: AuthProviderProps) {
         async function loadUserStorageData() {
             //const userStorage = await AsyncStorage.getItem(USER_STORAGE);
             //const tokenStorage = await AsyncStorage.getItem(TOKEN_STORAGE);
-            const currentUser = await GoogleSignin.getCurrentUser();
+            const currentUser = await GoogleSignin.addScopes({
+                scopes: [
+                    'https://www.googleapis.com/auth/user.gender.read',
+                    'https://www.googleapis.com/auth/user.birthday.read'
+                ],
+            });
             if (currentUser && currentUser.idToken) {
-                setUser(currentUser.user)
-                console.log("Logando o usuário...")
+                setUser({
+                    email: currentUser.user.email,
+                    id: currentUser.user.id,
+                    name: currentUser.user.name,
+                    first_name: currentUser.user.givenName,
+                    last_name: currentUser.user.familyName,
+                    image_url: currentUser.user.photo,
+                })
+                console.log("Logando o usuário...", currentUser)
             }
             setIsSigningIn(false);
         }
