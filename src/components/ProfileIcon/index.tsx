@@ -25,16 +25,24 @@ type Props = {
 
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
+import { TextForm } from '../TextForm';
+import { TextButton } from '../TextButton';
 
 export function ProfileIcon({ uri, openConfig }: Props) {
+    const { user, signOut } = useAuth();
 
-    const { signOut } = useAuth();
+    const ProfileComponents = <View style={{ flex: 1, width: "100%" }}>
+        <TextForm title='Nome de Usuário' style={{ height: 55 }} titleStyle={{ color: theme.colors.secondary1, fontFamily: theme.fonts.section400, fontSize: 14 }} textInputProps={{ placeholder: user.first_name }} />
+        <TextButton title='Alterar nome de usuário' buttonStyle={{ backgroundColor: theme.colors.primary1, marginTop: 10, width: "100%" }} />
+    </View>
+
     const CONFIG_BUTTONS = [
         {
             id: "0",
             title: "Perfil",
             description: "como a comunidade lhe vê",
             icon: <Ionicons name="person" size={48} color={theme.colors.primary1} />,
+            components: ProfileComponents,
             onPress: () => { }
         },
         {
@@ -56,10 +64,9 @@ export function ProfileIcon({ uri, openConfig }: Props) {
     const [modalVisible, setModalVisible] = useState(false)
     const navigation = useNavigation<any>();
 
-    const { user } = useAuth();
-
     const renderItem = ({ item }) => (
-        <ConfigOption id={item.id} title={item.title} description={item.description} icon={item.icon} onPress={item.onPress} />
+        item.components ? <ConfigOption id={item.id} title={item.title} description={item.description} icon={item.icon} accordionComponents={item.components} />
+            : <ConfigOption id={item.id} title={item.title} description={item.description} icon={item.icon} onPress={item.onPress} />
     );
 
     const renderSeparator = () => (

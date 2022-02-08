@@ -62,7 +62,9 @@ function AuthProvider({ children }: AuthProviderProps) {
                         'https://www.googleapis.com/auth/user.birthday.read'
                     ],
                 });
-                console.log("Com escopos: ", userWithScopes)
+                //console.log("Com escopos: ", userWithScopes)
+                const tokens = await GoogleSignin.getTokens();
+                console.log(tokens)
                 setUser({
                     email: userInfo.user.email,
                     id: userInfo.user.id,
@@ -118,7 +120,7 @@ function AuthProvider({ children }: AuthProviderProps) {
                     last_name: currentUser.user.familyName,
                     image_url: currentUser.user.photo,
                 })
-                console.log("Logando o usuário...", currentUser)
+                console.log("Logando o usuário...")
             }
             setIsSigningIn(false);
         }
