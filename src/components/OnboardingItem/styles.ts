@@ -18,8 +18,10 @@ export const styles = StyleSheet.create({
         fontFamily: theme.fonts.title700,
         fontSize: 36,
         lineHeight: 35,
-        letterSpacing: -1,
-        paddingHorizontal: 0,
+        letterSpacing: -1.5,
+        paddingHorizontal: 10,
+        //leterSpacing: -1,
+        //paddingHorizontaL: 0
         color: theme.colors.secondary1,
         textAlign: 'center',
         //backgroundColor: "green",

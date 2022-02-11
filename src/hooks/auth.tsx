@@ -4,6 +4,7 @@ import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-si
 
 GoogleSignin.configure({
     webClientId: '867322063173-idupsd05i0n5hi8k8ae2iamealrksu3u.apps.googleusercontent.com',
+    forceCodeForRefreshToken: true,
     offlineAccess: true,
     scopes: [
         'https://www.googleapis.com/auth/user.gender.read',
@@ -84,7 +85,8 @@ function AuthProvider({ children }: AuthProviderProps) {
             } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
                 return console.log("Os serviços da Google Play estão desatualizados ou indisponíveis.");
             } else {
-                return console.log(error)
+                console.log(error)
+                return console.log("erro de conexão")
             }
         } finally {
             setIsSigningIn(false)

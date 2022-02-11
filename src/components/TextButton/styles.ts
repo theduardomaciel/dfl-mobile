@@ -6,8 +6,8 @@ export const styles = StyleSheet.create({
         borderRadius: 15,
         backgroundColor: theme.colors.secondary1,
         flexDirection: "row",
-        paddingHorizontal: 15,
-        paddingVertical: 5,
+        //paddingHorizontal: 15,
+        //paddingVertical: 5,
         alignSelf: "center",
         alignItems: 'center',
         justifyContent: 'center'
@@ -17,7 +17,7 @@ export const styles = StyleSheet.create({
         height: "100%",
         justifyContent: "center",
         alignItems: "center",
-        //backgroundColor: "red"
+        backgroundColor: "red"
     },
     title: {
         color: theme.colors.text1,

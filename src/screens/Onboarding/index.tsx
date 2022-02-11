@@ -12,6 +12,7 @@ import { OnboardingItem } from "../../components/OnboardingItem";
 import { Paginator } from "../../components/Paginator";
 
 import { useAuth } from "../../hooks/auth"
+import { ModalBase } from "../../components/ModalBase";
 
 type PropTypes = {
     viewableItems: Array<ViewToken>;
@@ -39,6 +40,8 @@ export function Onboarding() {
 
     const viewabilityConfigCallbackPairs = useRef([{ viewabilityConfig, onViewableItemsChanged }])
 
+    const [isModalVisible, setModalVisible] = useState(false);
+
     return (
         <View style={styles.container}>
             <Logo height={75} width={150} />
@@ -61,13 +64,27 @@ export function Onboarding() {
                 />
             </View>
 
+            <ModalBase
+                title="Não foi possível autenticar."
+                description={`Nossos servidores devem estar passando por problemas no momento :( \n Tente novamente mais tarde.`}
+                button
+                isVisible={isModalVisible}
+                onBackdropPress={() => setModalVisible(false)}
+                toggleModal={() => { setModalVisible(false) }}
+            />
+
             <View style={styles.footer}>
                 <Paginator data={onboarding_screens} scrollX={scrollX} scrollTo={scrollTo} />
                 <GoogleSigninButton
                     style={{ width: 270, height: 55 }}
                     size={GoogleSigninButton.Size.Wide}
                     color={GoogleSigninButton.Color.Light}
-                    onPress={signIn}
+                    onPress={() => {
+                        const errorMessage = signIn()
+                        if (typeof errorMessage === "string") {
+                            setModalVisible(true)
+                        }
+                    }}
                     disabled={isSigningIn}
                 />
             </View>

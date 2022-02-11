@@ -14,7 +14,6 @@ type Props = TouchableOpacityProps & {
 }
 
 export function ConfigOption({ title, id, description, accordionComponents, icon, ...rest }: Props) {
-    console.log(accordionComponents)
     const [isExpanded, setIsExpanded] = useState(false)
 
     if (Platform.OS === 'android') {

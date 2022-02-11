@@ -11,9 +11,7 @@ import { Roboto_400Regular, Roboto_500Medium, Roboto_700Bold, Roboto_900Black } 
 import { Alatsi_400Regular } from "@expo-google-fonts/alatsi"
 
 import Routes from "./src/routes";
-
 import { AuthProvider } from "./src/hooks/auth";
-import { Home } from "./src/screens/Home";
 
 export default function App() {
     const [fontsLoaded] = useFonts({

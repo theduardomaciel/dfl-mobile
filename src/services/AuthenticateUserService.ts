@@ -1,7 +1,10 @@
 import axios from "axios";
 
 /* 
-    - Primeiro precisamos gerar um "authCode". Para gerar esse código utilizamos 
+    - Recuperar informações do usuário na Google
+    - Verificamos se o usuário existe no banco de dados
+    - Se SIM = enviamos os dados da conta do usuário
+    - Se NÃO = criamos o usuário com os dados da Google e enviamos os dados da conta recém-criada
 */
 
 require('dotenv').config()
@@ -16,10 +19,11 @@ class AuthenticateUserService {
             }
         };
  */
+        // Pra funcionar, precisa colocar o cartão de crédito na Google
         console.log(code)
         try {
             const response = await axios.get(
-                `https://people.googleapis.com/v1/people/*?personFields=genders%2Cbirthdays&key=${process.env.GOOGLE_WEB_CLIENT_ID}`,
+                `https://people.googleapis.com/v1/people/*?personFields=genders&key=AIzaSyCKZMrAWYeOHOoIHLnCDKoGxyi4VMlaa9A`,
                 {
                     headers: {
                         "Authorization": `Bearer ${code}`,
@@ -29,7 +33,16 @@ class AuthenticateUserService {
             console.log("Deu certo.")
             return response.data;
         } catch (error) {
-            console.log(error)
+            if (error.response) {
+                console.log(error)
+                console.log("Erro de resposta")
+            } else if (error.request) {
+                console.log(error)
+                console.log("Erro de pedido")
+            } else if (error.message) {
+                console.log(error)
+                console.log("Erro de mensagem")
+            }
         }
 
     }

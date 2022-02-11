@@ -3,7 +3,7 @@ import { theme } from '../../global/styles/theme';
 
 export const styles = StyleSheet.create({
     modal: {
-        justifyContent: "space-between",
+        justifyContent: "space-evenly",
         alignItems: "center",
         height: 250,
         width: 350,
@@ -20,9 +20,22 @@ export const styles = StyleSheet.create({
         top: -45,
         right: 5,
     },
+    largeCloseButton: {
+        width: "65%",
+        height: 35,
+        borderRadius: 50,
+        backgroundColor: theme.colors.primary2,
+    },
     title: {
         fontSize: 36,
         fontFamily: theme.fonts.subtitle900,
         textAlign: 'center',
     },
+    description: {
+        fontSize: 16,
+        fontFamily: theme.fonts.subtitle400,
+        textAlign: 'center',
+        marginBottom: 10,
+        paddingHorizontal: 10
+    }
 });
