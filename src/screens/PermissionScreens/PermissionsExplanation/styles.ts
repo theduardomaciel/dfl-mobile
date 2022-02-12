@@ -8,7 +8,6 @@ export const styles = StyleSheet.create({
         flex: 1,
     },
     elementsContainer: {
-        flex: 1,
         //backgroundColor: "green",
         paddingHorizontal: 10,
         justifyContent: "flex-start",
@@ -21,6 +20,7 @@ export const styles = StyleSheet.create({
         marginTop: 15,
         flexDirection: "row",
         maxHeight: 125,
+        marginBottom: -25,
     },
 
     title: {
@@ -40,8 +40,10 @@ export const styles = StyleSheet.create({
     },
 
     line: {
-        marginTop: 5,
+        marginTop: 15,
+        marginBottom: 5,
         height: 1,
+        alignSelf: "center",
         width: "92.5%",
         paddingHorizontal: 10,
         backgroundColor: theme.colors.secondary1

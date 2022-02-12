@@ -41,7 +41,7 @@ const PERMISSIONS = [
         } />
     },
     {
-        id: "2",
+        id: "1",
         title: "Câmera",
         iconName: "photo-camera",
         description: `É crucial para a Identificação do Foco de Lixo, permitindo que as autoridades analisem a situação atual do local.\nTambém permite que a Foto de Perfil seja alterada com uma foto da câmera.`,
@@ -91,21 +91,21 @@ export function PermissionsExplanation() {
 
     return (
         <View style={styles.container}>
+            <View style={styles.elementsContainer}>
+                <Text style={styles.title}>
+                    Antes de começar, precisamos de algumas <Bold>permissões.</Bold>
+                </Text>
+                <Text style={styles.subtitle}>
+                    Só pediremos o necessário e não se preocupe, está tudo explicadinho aqui em baixo pra você ficar por dentro de tudo.
+                </Text>
+                <View style={styles.line} />
+            </View>
             <ScrollView>
-                <View style={styles.elementsContainer}>
-                    <Text style={styles.title}>
-                        Antes de começar, precisamos de algumas <Bold>permissões.</Bold>
-                    </Text>
-                    <Text style={styles.subtitle}>
-                        Só pediremos o necessário e não se preocupe, está tudo explicadinho aqui em baixo pra você ficar por dentro de tudo.
-                    </Text>
-                    <View style={styles.line} />
-                    <PermissionItem item={PERMISSIONS[0]} />
-                    <View style={styles.line} />
-                    <PermissionItem item={PERMISSIONS[1]} />
-                </View>
+                <PermissionItem item={PERMISSIONS[0]} />
+                <View style={[styles.line, { width: "70%" }]} />
+                <PermissionItem item={PERMISSIONS[1]} />
             </ScrollView>
-            <TextButton title="Continuar" buttonStyle={{ height: 45, width: "90%", position: "absolute", bottom: 15 }} colors={[theme.colors.primary1, theme.colors.secondary1]} />
+            <TextButton title="Continuar" shadow buttonStyle={{ height: 45, width: "90%", position: "absolute", bottom: 15 }} colors={[theme.colors.primary1, theme.colors.secondary1]} />
         </View>
     );
 }
