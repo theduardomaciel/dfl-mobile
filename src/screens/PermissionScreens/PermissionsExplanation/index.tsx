@@ -26,7 +26,9 @@ const PERMISSIONS = [
         id: "1",
         title: "Localização",
         iconName: "location-on",
-        description: `É o mais importante para o funcionamento do aplicativo.\nÉ necessária para as funções de Comunidade e Localização do Foco de Lixo.`,
+        description: <Text>
+            É o mais importante para o funcionamento do aplicativo.{`\n`}É necessária para as funções de <Bold>Comunidade</Bold> e <Bold>Localização do Foco de Lixo.</Bold>
+        </Text>,
         explanation: `Na função Comunidade, utilizamos sua localização para mantê-lo conectado com outros usuários de sua cidade.\n
         Na função Localização do Foco de Lixo, utilizamos sua localização para armazenar a posição do foco de lixo. Desta maneira podemos notificar os órgãos responsáveis pela coleta.`,
         elements: <HintView CustomText={
@@ -44,9 +46,11 @@ const PERMISSIONS = [
         id: "1",
         title: "Câmera",
         iconName: "photo-camera",
-        description: `É crucial para a Identificação do Foco de Lixo, permitindo que as autoridades analisem a situação atual do local.\nTambém permite que a Foto de Perfil seja alterada com uma foto da câmera.`,
+        description: <Text>
+            É crucial para a <Bold>Identificação do Foco de Lixo</Bold>, permitindo que as autoridades analisem a situação atual do local.{`\n`}Também permite que a <Bold>Foto de Perfil</Bold> seja alterada com uma foto da câmera.
+        </Text>,
         explanation: `É necessária para as funções de Identificação do Foco de Lixo e Foto de Perfil.`,
-        elements: <HintView CustomText={
+        elements: <HintView customStyle={{ marginTop: 5 }} CustomText={
             () => (
                 <View>
                     <Text style={HintViewTextStyle}>
@@ -61,7 +65,7 @@ const PERMISSIONS = [
 export function PermissionsExplanation() {
     const Header = () => (
         <View style={{ flex: 1, alignItems: "flex-start" }}>
-            <MaterialIcons name="keyboard-arrow-down" size={32} color={theme.colors.secondary1} />
+            <MaterialIcons style={{ transform: [{ rotate: '-90deg' }] }} name="keyboard-arrow-down" size={32} color={theme.colors.secondary1} />
         </View>
     );
 
@@ -93,7 +97,7 @@ export function PermissionsExplanation() {
         <View style={styles.container}>
             <View style={styles.elementsContainer}>
                 <Text style={styles.title}>
-                    Antes de começar, precisamos de algumas <Bold>permissões.</Bold>
+                    Antes de começar, precisamos de algumas <Bold>permissões</Bold>.
                 </Text>
                 <Text style={styles.subtitle}>
                     Só pediremos o necessário e não se preocupe, está tudo explicadinho aqui em baixo pra você ficar por dentro de tudo.
@@ -102,7 +106,7 @@ export function PermissionsExplanation() {
             </View>
             <ScrollView>
                 <PermissionItem item={PERMISSIONS[0]} />
-                <View style={[styles.line, { width: "70%" }]} />
+                <View style={[styles.line, { width: "70%", marginTop: 15, marginBottom: 0 }]} />
                 <PermissionItem item={PERMISSIONS[1]} />
             </ScrollView>
             <TextButton title="Continuar" shadow buttonStyle={{ height: 45, width: "90%", position: "absolute", bottom: 15 }} colors={[theme.colors.primary1, theme.colors.secondary1]} />

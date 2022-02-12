@@ -4,6 +4,8 @@ import { theme } from '../../global/styles/theme';
 export const styles = StyleSheet.create({
     container: {
         borderRadius: 15,
+        width: "96%",
+        alignSelf: "center",
         backgroundColor: theme.colors.primary4,
         alignItems: 'center',
         paddingVertical: 10,

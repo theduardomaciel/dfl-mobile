@@ -40,7 +40,7 @@ export const styles = StyleSheet.create({
     },
 
     line: {
-        marginTop: 15,
+        marginTop: 5,
         marginBottom: 5,
         height: 1,
         alignSelf: "center",
