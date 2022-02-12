@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
+
 import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
 
 GoogleSignin.configure({
@@ -16,7 +17,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SCOPE = "read:user";
 const USER_STORAGE = "@dfl:user";
-const TOKEN_STORAGE = "@dfl:token";
 
 type User = {
     email: string;
@@ -50,32 +50,21 @@ function AuthProvider({ children }: AuthProviderProps) {
     const [user, setUser] = useState<User | null>(null)
 
     async function signIn() {
+        setIsSigningIn(true)
+
+        await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
         try {
-            setIsSigningIn(true)
-            await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
             const userInfo = await GoogleSignin.signIn();
             if (userInfo && userInfo.idToken) {
-                //const { user, idToken } = userInfo;
                 console.log("Usuário criado com sucesso!", userInfo.user);
-                const userWithScopes = await GoogleSignin.addScopes({
+                const userInfoWithScopes = await GoogleSignin.addScopes({
                     scopes: [
                         'https://www.googleapis.com/auth/user.gender.read',
                         'https://www.googleapis.com/auth/user.birthday.read'
                     ],
                 });
-                //console.log("Com escopos: ", userWithScopes)
                 const tokens = await GoogleSignin.getTokens();
-                console.log(tokens)
-                setUser({
-                    email: userInfo.user.email,
-                    id: userInfo.user.id,
-                    name: userInfo.user.name,
-                    first_name: userInfo.user.givenName,
-                    last_name: userInfo.user.familyName,
-                    image_url: userInfo.user.photo,
-                })
-                /* await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(user))
-                await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(userInfo.idToken)) */
+                // Chamar o backend com o usuário e o acess_token
             }
         } catch (error) {
             if (error.code === statusCodes.SIGN_IN_CANCELLED) {
@@ -85,18 +74,22 @@ function AuthProvider({ children }: AuthProviderProps) {
             } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
                 return console.log("Os serviços da Google Play estão desatualizados ou indisponíveis.");
             } else {
-                console.log(error)
-                return console.log("erro de conexão")
+                return console.log(error)
             }
-        } finally {
-            setIsSigningIn(false)
         }
+
+        const user = null //atualizar para o que a API do backend retornar
+        setUser(user)
+        //await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(user))
+
+        setIsSigningIn(false)
     }
 
     async function signOut() {
-        console.log("Deslogando da conta.")
+        console.log("Deslogando usuário de sua conta.")
         try {
             await GoogleSignin.signOut();
+            await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(user))
             setUser(null)
         } catch (error) {
             console.error(error);
@@ -105,26 +98,12 @@ function AuthProvider({ children }: AuthProviderProps) {
 
     useEffect(() => {
         async function loadUserStorageData() {
-            //const userStorage = await AsyncStorage.getItem(USER_STORAGE);
-            //const tokenStorage = await AsyncStorage.getItem(TOKEN_STORAGE);
-            const currentUser = await GoogleSignin.addScopes({
-                scopes: [
-                    'https://www.googleapis.com/auth/user.gender.read',
-                    'https://www.googleapis.com/auth/user.birthday.read'
-                ],
-            });
-            if (currentUser && currentUser.idToken) {
-                setUser({
-                    email: currentUser.user.email,
-                    id: currentUser.user.id,
-                    name: currentUser.user.name,
-                    first_name: currentUser.user.givenName,
-                    last_name: currentUser.user.familyName,
-                    image_url: currentUser.user.photo,
-                })
+            /* const userStorage = await AsyncStorage.getItem(USER_STORAGE);
+            if (userStorage) {
+                setUser(JSON.parse(userStorage))
                 console.log("Logando o usuário...")
             }
-            setIsSigningIn(false);
+            setIsSigningIn(false); */
         }
         loadUserStorageData();
     }, []);

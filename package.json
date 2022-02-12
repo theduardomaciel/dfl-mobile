@@ -4,7 +4,7 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "start": "expo start --dev-client",
-    "dev": "ts-node-dev src/app.ts"
+    "dev": "ts-node-dev --exit-child src/app.ts"
   },
   "dependencies": {
     "@expo-google-fonts/alatsi": "^0.2.2",
