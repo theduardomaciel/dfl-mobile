@@ -13,6 +13,8 @@ import { Alatsi_400Regular } from "@expo-google-fonts/alatsi"
 import Routes from "./src/routes";
 import { AuthProvider } from "./src/hooks/auth";
 
+import { PermissionsExplanation } from "./src/screens/PermissionScreens/PermissionsExplanation";
+
 export default function App() {
     const [fontsLoaded] = useFonts({
         Inter_400Regular,
@@ -30,15 +32,18 @@ export default function App() {
         return <AppLoading />
     }
     return (
-        <AuthProvider>
+        <PermissionsExplanation />
+
+    )
+}
+
+/* <AuthProvider>
             <NavigationContainer>
                 <StatusBar
                     barStyle="dark-content"
                     backgroundColor="transparent"
-                    translucent
+                    translucent 
                 />
                 <Routes />
             </NavigationContainer>
-        </AuthProvider>
-    );
-}
+        </AuthProvider> */

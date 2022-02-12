@@ -113,7 +113,7 @@ export function ProfileIcon({ uri, openConfig }: Props) {
                         start={{ x: 0, y: 0.5 }}
                         end={{ x: 1, y: 0.5 }}
                     >
-                        <Text style={styles.modalTitle}>{user ? user.name : "nomedousuário"}</Text>
+                        <Text style={styles.modalTitle}>{user ? user.first_name + " " + user.last_name : "nomedousuário"}</Text>
                         <Text style={styles.modalSubtitle}>{user ? user.email : "email@email.com"}</Text>
                     </LinearGradient>
                     <View style={styles.options}>

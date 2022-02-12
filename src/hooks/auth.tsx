@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-
 import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
 
 GoogleSignin.configure({
@@ -13,18 +12,20 @@ GoogleSignin.configure({
     ]
 });
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { api } from "../services/api";
 
 const SCOPE = "read:user";
 const USER_STORAGE = "@dfl:user";
 
 type User = {
-    email: string;
     id: string;
-    name: string;
+    google_id: string;
+    email: string;
     first_name: string;
     last_name: string;
     image_url: string;
+    createdAt: Date;
 }
 
 type AuthContextData = {
@@ -51,12 +52,11 @@ function AuthProvider({ children }: AuthProviderProps) {
 
     async function signIn() {
         setIsSigningIn(true)
-
         await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
         try {
             const userInfo = await GoogleSignin.signIn();
-            if (userInfo && userInfo.idToken) {
-                console.log("Usuário criado com sucesso!", userInfo.user);
+            if (userInfo) {
+                console.log("Passou")
                 const userInfoWithScopes = await GoogleSignin.addScopes({
                     scopes: [
                         'https://www.googleapis.com/auth/user.gender.read',
@@ -64,7 +64,29 @@ function AuthProvider({ children }: AuthProviderProps) {
                     ],
                 });
                 const tokens = await GoogleSignin.getTokens();
+                console.log("Passou ala")
                 // Chamar o backend com o usuário e o acess_token
+                try {
+                    const authResponse = await api.post("/authenticate", { user_info: userInfoWithScopes, access_token: tokens.accessToken })
+                    console.log("Passou")
+                    const { user, token } = authResponse.data as AuthResponse;
+                    console.log(user)
+                    console.log("Passou 2")
+                    //api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+                    await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(user));
+                    console.log("Passou 3")
+                    //await AsyncStorage.setItem(TOKEN_STORAGE, token);
+
+                    setUser(user);
+                    console.log("Usuário criado com sucesso!", user);
+                } catch (error) {
+                    console.log(error)
+                    return error
+                }
+            } else {
+                console.log("O usuário não foi encontrado.")
+                return "O usuário não foi encontrado."
             }
         } catch (error) {
             if (error.code === statusCodes.SIGN_IN_CANCELLED) {
@@ -77,11 +99,6 @@ function AuthProvider({ children }: AuthProviderProps) {
                 return console.log(error)
             }
         }
-
-        const user = null //atualizar para o que a API do backend retornar
-        setUser(user)
-        //await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(user))
-
         setIsSigningIn(false)
     }
 
@@ -89,7 +106,8 @@ function AuthProvider({ children }: AuthProviderProps) {
         console.log("Deslogando usuário de sua conta.")
         try {
             await GoogleSignin.signOut();
-            await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(user))
+            await AsyncStorage.removeItem(USER_STORAGE);
+            //await AsyncStorage.removeItem(TOKEN_STORAGE);
             setUser(null)
         } catch (error) {
             console.error(error);
@@ -98,12 +116,17 @@ function AuthProvider({ children }: AuthProviderProps) {
 
     useEffect(() => {
         async function loadUserStorageData() {
-            /* const userStorage = await AsyncStorage.getItem(USER_STORAGE);
+            const userStorage = await AsyncStorage.getItem(USER_STORAGE);
+            //const tokenStorage = await AsyncStorage.getItem(TOKEN_STORAGE);
+
+            // && tokenStorage
             if (userStorage) {
-                setUser(JSON.parse(userStorage))
-                console.log("Logando o usuário...")
+                //api.defaults.headers.common['Authorization'] = `Bearer ${tokenStorage}`;
+                setUser(JSON.parse(userStorage));
+                console.log("Usuário logado com sucesso!", userStorage)
             }
-            setIsSigningIn(false); */
+
+            setIsSigningIn(false);
         }
         loadUserStorageData();
     }, []);

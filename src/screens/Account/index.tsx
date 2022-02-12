@@ -142,13 +142,13 @@ export function Account() {
             <View style={styles.header}>
                 <View style={styles.userInfoContainer}>
                     <Text style={styles.title}>
-                        {user.name}
+                        {user.first_name + " " + user.last_name}
                     </Text>
                     <Text style={styles.username}>
                         @nomedousuário
                     </Text>
                 </View>
-                <ProfileIcon uri={user.photo} openConfig />
+                <ProfileIcon uri={user.image_url} openConfig />
             </View>
         )
     }
