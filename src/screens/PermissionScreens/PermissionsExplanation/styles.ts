@@ -1,25 +1,26 @@
 import { StyleSheet } from "react-native";
 //import { getStatusBarHeight } from 'react-native-iphone-x-helper'
-import { theme } from "../../global/styles/theme";
+import { theme } from "../../../global/styles/theme"
 
 export const styles = StyleSheet.create({
     container: {
         backgroundColor: theme.colors.background,
         flex: 1,
-
     },
     elementsContainer: {
+        flex: 1,
+        //backgroundColor: "green",
         paddingHorizontal: 10,
         justifyContent: "flex-start",
         alignItems: "center",
     },
-    header: {
-        //backgroundColor: "green",
-        width: "90%",
+    rowContainer: {
+        flex: 1,
+        paddingHorizontal: 10,
+        //backgroundColor: "pink",
+        marginTop: 15,
         flexDirection: "row",
-        justifyContent: "space-between",
-        marginTop: 35, //+ getStatusBarHeight(),
-        marginBottom: 25,
+        maxHeight: 125,
     },
 
     title: {
@@ -39,13 +40,24 @@ export const styles = StyleSheet.create({
     },
 
     line: {
-        flex: 1,
+        marginTop: 5,
+        height: 1,
+        width: "92.5%",
+        paddingHorizontal: 10,
         backgroundColor: theme.colors.secondary1
     },
 
-    info: {
-        fontFamily: theme.fonts.subtitle900,
-        color: theme.colors.text1,
-        fontSize: 24,
+    permissionTitle: {
+        fontFamily: theme.fonts.title700,
+        fontSize: 20,
+        textAlignVertical: "bottom",
+        color: theme.colors.secondary1
+    },
+    permissionDescription: {
+        //backgroundColor: "red",
+        fontFamily: theme.fonts.subtitle400,
+        color: theme.colors.secondary1,
+        fontSize: 15,
+        flexWrap: "wrap"
     },
 });

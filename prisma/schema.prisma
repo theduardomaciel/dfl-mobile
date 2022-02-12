@@ -28,7 +28,7 @@ model User {
 model Profile {
   id       Int    @id @default(autoincrement())
   username String
-  bio      String
+  city     String
   level    Int    @default(0)
   user     User   @relation(fields: [user_id], references: [id])
   user_id  Int    @unique

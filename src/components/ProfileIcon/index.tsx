@@ -16,7 +16,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../../global/styles/theme';
 
 import { useAuth } from '../../hooks/auth';
-import { ConfigOption } from './ConfigOption';
+import { AccordionOptions } from "../AccordionOptions"
 
 type Props = {
     uri: string;
@@ -33,7 +33,7 @@ export function ProfileIcon({ uri, openConfig }: Props) {
 
     const ProfileComponents = <View style={{ flex: 1, width: "100%" }}>
         <TextForm title='Nome de Usuário' style={{ height: 55 }} titleStyle={{ color: theme.colors.secondary1, fontFamily: theme.fonts.section400, fontSize: 14 }} textInputProps={{ placeholder: user.first_name }} />
-        <TextButton title='Alterar nome de usuário' buttonStyle={{ backgroundColor: theme.colors.primary1, marginTop: 10, width: "100%" }} />
+        <TextButton title='Alterar nome de usuário' buttonStyle={{ backgroundColor: theme.colors.primary1, height: 35, marginTop: 10, width: "100%" }} />
     </View>
 
     const CONFIG_BUTTONS = [
@@ -64,9 +64,19 @@ export function ProfileIcon({ uri, openConfig }: Props) {
     const [modalVisible, setModalVisible] = useState(false)
     const navigation = useNavigation<any>();
 
+    const Header = ({ item }) => (
+        <View style={{ flexDirection: "row" }}>
+            {item.icon}
+            <View style={[styles.columnContainer, { marginLeft: 35 }]}>
+                <Text style={styles.title}>{item.title}</Text>
+                <Text style={styles.description}>{item.description}</Text>
+            </View>
+        </View>
+    );
+
     const renderItem = ({ item }) => (
-        item.components ? <ConfigOption id={item.id} title={item.title} description={item.description} icon={item.icon} accordionComponents={item.components} />
-            : <ConfigOption id={item.id} title={item.title} description={item.description} icon={item.icon} onPress={item.onPress} />
+        item.components ? <AccordionOptions id={item.id} header={<Header item={item} />} accordionComponents={item.components} />
+            : <AccordionOptions id={item.id} header={<Header item={item} />} onPress={item.onPress} />
     );
 
     const renderSeparator = () => (

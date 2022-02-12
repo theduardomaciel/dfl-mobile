@@ -6,14 +6,12 @@ import { styles } from './styles';
 
 type Props = TouchableOpacityProps & {
     // A ? faz com que o elemento não seja obrigatório
-    title: string;
-    description: string;
+    header: React.ReactNode;
     accordionComponents?: React.ReactNode;
-    icon: any;
     id: string;
 }
 
-export function ConfigOption({ title, id, description, accordionComponents, icon, ...rest }: Props) {
+export function AccordionOptions({ id, header, accordionComponents, ...rest }: Props) {
     const [isExpanded, setIsExpanded] = useState(false)
 
     if (Platform.OS === 'android') {
@@ -24,24 +22,15 @@ export function ConfigOption({ title, id, description, accordionComponents, icon
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         setIsExpanded(!isExpanded)
     }
-    const component =
-        <View style={{ flexDirection: "row", }}>
-            {icon}
-            <View style={styles.textContainer}>
-                <Text style={styles.title}>{title}</Text>
-                <Text style={styles.description}>{description}</Text>
-            </View>
-        </View>
     return (
         <TouchableOpacity activeOpacity={0.7} style={id === "0" ? [styles.container, { marginTop: 35 }] : styles.container} onPress={toggleExpand} {...rest}>
             {
-                accordionComponents ?
-                    isExpanded ? <View style={{ flex: 1 }}>
-                        {component}
+                isExpanded ?
+                    <View style={{ flex: 1 }}>
+                        {header}
                         {accordionComponents}
                     </View>
-                        : component
-                    : component
+                    : header
             }
         </TouchableOpacity>
     )

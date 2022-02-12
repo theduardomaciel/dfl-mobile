@@ -62,7 +62,24 @@ export const styles = StyleSheet.create({
     },
     options: {
         flex: 1,
-        width: "90%",
+        width: "80%",
         alignItems: "center"
-    }
+    },
+
+    //ConfigOptions
+    columnContainer: {
+        flexDirection: "column",
+        //backgroundColor: "green"
+    },
+    title: {
+        fontFamily: theme.fonts.title700,
+        fontSize: 24,
+        color: theme.colors.primary1,
+        //backgroundColor: "blue"
+    },
+    description: {
+        fontFamily: theme.fonts.title400,
+        fontSize: 10,
+        color: theme.colors.primary3,
+    },
 });
