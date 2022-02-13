@@ -2,6 +2,8 @@ package com.dlftesting;
 import expo.modules.updates.UpdatesDevLauncherController;
 import expo.modules.devlauncher.DevLauncherController;
 
+import com.zoontek.rnpermissions.RNPermissionsPackage;
+
 import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;

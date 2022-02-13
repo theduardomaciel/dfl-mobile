@@ -14,6 +14,8 @@ import Routes from "./src/routes";
 import { AuthProvider } from "./src/hooks/auth";
 
 import { PermissionsExplanation } from "./src/screens/PermissionScreens/PermissionsExplanation";
+import { PermissionsResquest } from "./src/screens/PermissionScreens/PermissionsRequest";
+
 
 export default function App() {
     const [fontsLoaded] = useFonts({
@@ -32,8 +34,7 @@ export default function App() {
         return <AppLoading />
     }
     return (
-        <PermissionsExplanation />
-
+        <PermissionsResquest />
     )
 }
 

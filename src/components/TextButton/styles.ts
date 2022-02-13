@@ -4,7 +4,7 @@ import { theme } from '../../global/styles/theme';
 export const styles = StyleSheet.create({
     gradient: {
         borderRadius: 15,
-        backgroundColor: theme.colors.secondary1,
+        backgroundColor: theme.colors.primary1,
         flexDirection: "row",
         //paddingHorizontal: 15,
         //paddingVertical: 5,

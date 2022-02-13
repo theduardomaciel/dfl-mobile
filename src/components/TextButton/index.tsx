@@ -5,6 +5,8 @@ import {
     View,
     TouchableOpacity,
     TouchableOpacityProps,
+    ViewStyle,
+    TextStyle,
 } from 'react-native';
 
 import { styles } from './styles';
@@ -17,8 +19,8 @@ type Props = TouchableOpacityProps & {
     title: string;
     colors?: Array<string>;
     icon?: any;
-    buttonStyle?: any;
-    textStyle?: any;
+    buttonStyle?: ViewStyle;
+    textStyle?: TextStyle;
     shadow?: boolean;
 }
 

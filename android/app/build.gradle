@@ -182,6 +182,7 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-permissions')
     implementation 'com.google.android.gms:play-services-auth:20.1.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
     implementation project(':react-native-svg')

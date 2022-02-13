@@ -2,18 +2,18 @@ import React from 'react';
 
 import {
     View,
-    ViewProps
+    ViewStyle
 } from 'react-native';
 
 import { styles } from './styles';
 import { theme } from '../../global/styles/theme';
 
 type Props = {
-    CustomText: () => Element;
-    customStyle: ViewProps;
+    CustomText: any;
+    customStyle?: ViewStyle
 }
 
-export function HintView({ CustomText, customStyle }: any) {
+export function HintView({ CustomText, customStyle }: Props) {
     return (
         <View style={customStyle ? [styles.container, customStyle] : styles.container}>
             <CustomText />
