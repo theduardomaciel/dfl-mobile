@@ -19,6 +19,7 @@ export const styles = StyleSheet.create({
         color: theme.colors.secondary1,
         fontSize: 16,
         marginBottom: 35,
+        width: "75%",
         fontFamily: theme.fonts.subtitle400,
         textAlign: 'center'
     },

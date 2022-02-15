@@ -6,6 +6,7 @@ import {
     TextStyle,
     View,
 } from 'react-native';
+import { theme } from '../../global/styles/theme';
 import { TextButton } from '../TextButton';
 
 import { styles } from './styles';
@@ -14,10 +15,11 @@ type Props = {
     // A ? faz com que o elemento não seja obrigatório
     title: string;
     info: string;
-    onPress: () => {};
+    backButtonText?: string;
+    onPress: () => void;
 }
 
-export function ConclusionScreen({ title, info, onPress }: Props) {
+export function ConclusionScreen({ title, info, backButtonText, onPress }: Props) {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>
@@ -31,7 +33,7 @@ export function ConclusionScreen({ title, info, onPress }: Props) {
                 <View style={styles.circle} />
                 <Text style={{ fontSize: 64 }}>✅</Text>
             </View>
-            <TextButton title='Voltar para a tela inicial' buttonStyle={{ height: 50 }} onPress={onPress} />
+            <TextButton title={backButtonText ? backButtonText : "Voltar para a tela inicial"} buttonStyle={{ backgroundColor: theme.colors.secondary1, paddingHorizontal: 20, paddingVertical: 15 }} onPress={onPress} />
         </View>
     )
 }

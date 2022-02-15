@@ -13,7 +13,7 @@ datasource db {
 
 model User {
   id         Int      @id @default(autoincrement())
-  google_id  String
+  google_id  String   @unique
   first_name String
   last_name  String
   email      String   @unique
@@ -26,12 +26,12 @@ model User {
 }
 
 model Profile {
-  id       Int    @id @default(autoincrement())
-  username String
-  city     String
-  level    Int    @default(0)
-  user     User   @relation(fields: [user_id], references: [id])
-  user_id  Int    @unique
+  username    String    @id
+  defaultCity String
+  level       Int       @default(0)
+  user        User      @relation(fields: [user_id], references: [id])
+  user_id     Int       @unique
+  comments    Comment[]
 }
 
 model Report {
@@ -43,18 +43,23 @@ model Report {
   tags         Boolean[]
   suggestion   String
   hasTrashBins Boolean   @default(true)
-  resolved     Boolean   @default(false)
+
+  ratings  Float[]
+  resolved Boolean @default(false)
 
   user    User @relation(fields: [user_id], references: [id], onDelete: SetNull)
   user_id Int
 
-  categories Category[] @relation(references: [id])
-
+  comments Comment[]
   @@map("reports")
 }
 
-model Category {
-  id      Int      @id @default(autoincrement())
-  name    String
-  reports Report[] @relation(references: [id])
+model Comment {
+  id              Int     @id @default(autoincrement())
+  content         String
+  profile         Profile @relation(fields: [profileUsername], references: [username])
+  profileUsername String
+
+  Report   Report @relation(fields: [reportId], references: [id])
+  reportId Int
 }

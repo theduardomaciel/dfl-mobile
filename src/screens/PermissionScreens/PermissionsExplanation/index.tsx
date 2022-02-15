@@ -62,7 +62,7 @@ const PERMISSIONS = [
     },
 ]
 
-export function PermissionsExplanation() {
+export function PermissionsExplanation({ navigation }) {
     const Header = () => (
         <View style={{ flex: 1, alignItems: "flex-start" }}>
             <MaterialIcons style={{ transform: [{ rotate: '-90deg' }] }} name="keyboard-arrow-down" size={32} color={theme.colors.secondary1} />
@@ -95,7 +95,7 @@ export function PermissionsExplanation() {
 
     return (
         <View style={styles.container}>
-            <View style={styles.elementsContainer}>
+            <View style={[styles.elementsContainer, { marginTop: 25 }]}>
                 <Text style={styles.title}>
                     Antes de começar, precisamos de algumas <Bold>permissões</Bold>.
                 </Text>
@@ -109,7 +109,12 @@ export function PermissionsExplanation() {
                 <View style={[styles.line, { width: "70%", marginTop: 15, marginBottom: 0 }]} />
                 <PermissionItem item={PERMISSIONS[1]} />
             </ScrollView>
-            <TextButton title="Continuar" shadow buttonStyle={{ height: 45, width: "90%", position: "absolute", bottom: 15 }} colors={[theme.colors.primary1, theme.colors.secondary1]} />
+            <TextButton
+                title="Continuar"
+                shadow
+                buttonStyle={{ height: 45, width: "90%", position: "absolute", bottom: 15 }}
+                colors={[theme.colors.primary1, theme.colors.secondary1]}
+                onPress={() => { navigation.navigate("PermissionsRequest") }} />
         </View>
     );
 }

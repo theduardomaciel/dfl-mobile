@@ -24,10 +24,10 @@ export function OnboardingItem({ image: Image, title, description, children }: P
             <View>
                 <Text style={styles.title}> {title} </Text>
                 <Text style={styles.description}> {description} </Text>
-                {
-                    children ? children : null
-                }
             </View>
+            {
+                children ? children : null
+            }
             <View style={styles.svg} >
                 <Image width={width} />
             </View>

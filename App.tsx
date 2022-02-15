@@ -34,7 +34,16 @@ export default function App() {
         return <AppLoading />
     }
     return (
-        <PermissionsResquest />
+        <AuthProvider>
+            <NavigationContainer>
+                <StatusBar
+                    barStyle="dark-content"
+                    backgroundColor="transparent"
+                    translucent
+                />
+                <Routes />
+            </NavigationContainer>
+        </AuthProvider>
     )
 }
 

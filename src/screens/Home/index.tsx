@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { View, Text, ScrollView, Image, RefreshControl, TouchableOpacity } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, ScrollView, Image, RefreshControl, Platform } from "react-native";
 import { MapScopePicker } from "../../components/MapScopePicker";
 
 import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
+import { check, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 import { ProfileIcon } from "../../components/ProfileIcon";
-import { TextButton } from "../../components/TextButton";
 import { elements } from "../../global/styles/elements";
 import { theme } from "../../global/styles/theme";
 
@@ -50,7 +50,7 @@ const initialRegion = {
     longitudeDelta: 35
 }
 
-export function Home() {
+export function Home({ navigation }) {
     const [refreshing, setRefreshing] = useState(false)
     const onRefresh = () => {
         setRefreshing(true);
@@ -62,10 +62,35 @@ export function Home() {
     const [region, setRegion] = useState(initialRegion);
     const [alreadyLoaded, setAlreadyLoaded] = useState(false)
 
-    const { user } = useAuth();
+    const { user, creatingAccount } = useAuth();
+    useEffect(() => {
+        async function HasPermission() {
+            let permissionToCheck;
+            if (Platform.OS === "android") {
+                permissionToCheck = PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION
+            } else if (Platform.OS === "ios") {
+                permissionToCheck = PERMISSIONS.IOS.LOCATION_WHEN_IN_USE
+            }
+            check(permissionToCheck)
+                .then((result) => {
+                    console.log(result)
+                    if (result !== RESULTS.GRANTED) {
+                        creatingAccount ?
+                            navigation.navigate("PermissionsExplanation")
+                            : navigation.navigate("PermissionsRequest")
+                    }
+                });
+        }
+        HasPermission();
+    });
+
+    console.log(user)
     if (user === null) {
-        return null;
+        return null
     }
+
+    const userReportsAmount = user.reports ? user.reports.length : 0
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -116,14 +141,14 @@ export function Home() {
                             Focos de lixo encontrados por você este mês:
                         </Text>
                         <Text style={[styles.info, theme.shadowProperties, { fontSize: 36, textAlign: "center" }]}>
-                            6 focos de lixo
+                            {userReportsAmount === 1 ? `1 foco de lixo` : userReportsAmount + " focos de lixo"}
                         </Text>
                     </View>
                 </View>
                 <View style={[elements.subContainerGreen, theme.shadowProperties, { height: 125, marginTop: 17 }]}>
                     <View>
                         <Text style={styles.subtitle}>
-                            Destes 6 focos,
+                            {userReportsAmount === 1 ? `Deste 1 foco,` : `Destes ${userReportsAmount} focos,`}
                         </Text>
                         <Text style={[styles.info, { fontSize: 24, textAlign: "center" }]}>
                             4 já foram recolhidos pelos órgãos responsáveis

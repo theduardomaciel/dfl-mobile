@@ -1,6 +1,6 @@
 import React, { useRef, useState, useCallback } from "react";
-import { Text, View, FlatList, Animated, ViewToken, Linking, Platform } from "react-native";
-import { check, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import { Text, View, FlatList, Animated, ViewToken, Linking, Platform, Modal, PermissionsAndroid } from "react-native";
+import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 import { permissions_screens } from "../../../utils/permissions"
 import Logo from "../../../assets/Logo.svg"
@@ -14,9 +14,7 @@ import { Paginator } from "../../../components/Paginator";
 import { ModalBase } from "../../../components/ModalBase";
 import { TextButton } from "../../../components/TextButton";
 import { HintView, HintViewTextStyle } from "../../../components/HintView";
-
-import { Camera } from 'expo-camera';
-import * as Location from 'expo-location';
+import { ConclusionScreen } from "../../../components/ConclusionScreen";
 
 type PropTypes = {
     viewableItems: Array<ViewToken>;
@@ -24,11 +22,12 @@ type PropTypes = {
 
 const Bold = (props) => <Text style={{ fontWeight: 'bold' }}>{props.children}</Text>
 
-const BUTTONS_TEXTS = ["Permitir acesso à localização", "Permitir acesso à câmera"]
+let BUTTON_COLORS = [theme.colors.primary1, theme.colors.primary1]
+let BUTTONS_TEXTS = ["Permitir acesso à localização", "Permitir acesso à câmera"]
 
 let CameraPermission = false;
 let LocationPermission = false
-export function PermissionsResquest() {
+export function PermissionsResquest({ navigation }) {
     const [currentIndex, setCurrentIndex] = useState(0)
     const scrollX = useRef(new Animated.Value(0)).current;
     const slidesRef = useRef(null);
@@ -52,83 +51,112 @@ export function PermissionsResquest() {
         <HintView
             CustomText={
                 () => (
-                    <Text style={[HintViewTextStyle, { textAlignVertical: "center", textAlign: "center", fontSize: 11 }]}>Ao permitir, selecione a opção <Bold>“Durante o uso do app”</Bold> para que a permissão não seja requerida a todo momento.</Text>
+                    <Text style={[HintViewTextStyle, { textAlignVertical: "center", textAlign: "center", fontSize: 12 }]}>Ao permitir, selecione a opção <Bold>“Durante o uso do app”</Bold> para que a permissão não seja requerida a todo momento.</Text>
                 )
             }
-            customStyle={{ width: "85%", marginTop: 15, marginBottom: 15 }}
+            customStyle={{ width: "90%", marginTop: 15, marginBottom: 15 }}
         />
     )
 
     const [isModalVisible, setModalVisible] = useState(false);
-    const [modalDescription, setModalDescription] = useState("");
 
-    async function RequestCameraPermission() {
-        const { status } = await Camera.requestCameraPermissionsAsync();
-        console.log(status)
-        if (status !== 'granted') {
-            CameraPermission = false;
-            setModalDescription("A permissão de acesso da câmera foi negada.")
-            let permissionToCheck;
-            if (Platform.OS === "android") {
-                permissionToCheck = PERMISSIONS.ANDROID.CAMERA
-            } else if (Platform.OS === "ios") {
-                permissionToCheck = PERMISSIONS.IOS.CAMERA
-            }
-            check(permissionToCheck)
-                .then(async (result) => {
-                    if (result === RESULTS.BLOCKED) {
-                        await Linking.openSettings();
-                    }
-                })
-            return setModalVisible(true)
+    function CameraGranted() {
+        console.log("A permissão para uso da câmera foi garantida.")
+        CameraPermission = true
+        BUTTONS_TEXTS[1] = "Continuar"
+        if (CameraPermission && LocationPermission) {
+            console.log("As duas permissões já foram concedidas, proseguindo...")
+            setModalVisible(true)
         } else {
-            CameraPermission = true
-            console.log(CameraPermission, LocationPermission)
-            if (CameraPermission && LocationPermission) {
-                console.log("Duas permissões.")
-            } else if (!LocationPermission) {
-                scrollTo(0)
-                setCurrentIndex(0)
-            }
+            scrollTo(0)
+            setCurrentIndex(0)
         }
     }
-
-    async function RequestLocationPermission() {
-        const { status } = await Location.requestForegroundPermissionsAsync();
-        console.log(status)
-        if (status !== 'granted') {
-            LocationPermission = false;
-            setModalDescription("A permissão de acesso da localização foi negada.")
-            let permissionToCheck;
-            if (Platform.OS === "android") {
-                permissionToCheck = PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION
-            } else if (Platform.OS === "ios") {
-                permissionToCheck = PERMISSIONS.IOS.LOCATION_WHEN_IN_USE
-            }
-            console.log(permissionToCheck)
-            check(permissionToCheck)
-                .then(async (result) => {
-                    console.log(result)
-                    if (result === RESULTS.DENIED || result === RESULTS.BLOCKED) {
-                        await Linking.openSettings();
-                    }
-                })
-            return setModalVisible(true)
+    function LocationGranted() {
+        console.log("A permissão para uso da localização foi garantida.")
+        LocationPermission = true
+        BUTTONS_TEXTS[0] = "Continuar"
+        if (CameraPermission && LocationPermission) {
+            console.log("As duas permissões já foram concedidas, proseguindo...")
+            setModalVisible(true)
         } else {
-            LocationPermission = true
-            if (CameraPermission && LocationPermission) {
-                console.log("Duas permissões.")
-            }
             scrollTo(1)
             setCurrentIndex(1)
         }
+    }
+
+    /* {
+        title: "Permissão Necessária",
+        message:
+            "O acesso à câmera é um elemento fundamental para o funcionamento do aplicativo. ",
+        buttonPositive: "Continuar"
+    }, */
+
+    async function RequestCameraPermission() {
+        let permissionToCheck;
+        if (Platform.OS === "android") {
+            permissionToCheck = PERMISSIONS.ANDROID.CAMERA
+        } else if (Platform.OS === "ios") {
+            permissionToCheck = PERMISSIONS.IOS.CAMERA
+        }
+        check(permissionToCheck)
+            .then(async (result) => {
+                switch (result) {
+                    case RESULTS.DENIED:
+                        console.log('The permission has not been requested / is denied but requestable');
+                        request(permissionToCheck).then((result) => {
+                            if (result === RESULTS.GRANTED) {
+                                return CameraGranted();
+                            }
+                        });
+                        break;
+                    case RESULTS.GRANTED:
+                        console.log('The permission is granted');
+                        CameraGranted();
+                        break;
+                    case RESULTS.BLOCKED:
+                        console.log('The permission is denied and not requestable anymore');
+                        await Linking.openSettings();
+                        break;
+                }
+            })
+    }
+
+    async function RequestLocationPermission() {
+        let permissionToCheck;
+        if (Platform.OS === "android") {
+            permissionToCheck = PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION
+        } else if (Platform.OS === "ios") {
+            permissionToCheck = PERMISSIONS.IOS.LOCATION_WHEN_IN_USE
+        }
+        check(permissionToCheck)
+            .then(async (result) => {
+                switch (result) {
+                    case RESULTS.DENIED:
+                        console.log('The permission has not been requested / is denied but requestable');
+                        request(permissionToCheck).then((result) => {
+                            if (result === RESULTS.GRANTED) {
+                                return LocationGranted();
+                            }
+                        });
+                        break;
+                    case RESULTS.GRANTED:
+                        console.log('The permission is granted');
+                        LocationGranted();
+                        break;
+                    case RESULTS.BLOCKED:
+                        console.log('The permission is denied and not requestable anymore');
+                        await Linking.openSettings();
+                        break;
+                }
+            })
     }
     const FUNCTIONS = [RequestLocationPermission, RequestCameraPermission]
 
     return (
         <View style={styles.container}>
             <Logo height={75} width={150} />
-            <View style={{ flex: 0.75, marginTop: 48 }}>
+            <View style={{ flex: 0.8, marginTop: 48 }}>
                 <FlatList style={styles.list}
                     data={permissions_screens}
                     renderItem={({ item }) => <OnboardingItem image={item.icon} title={item.title} description={item.description} children={<Hint />} />}
@@ -147,18 +175,27 @@ export function PermissionsResquest() {
                 />
             </View>
 
-            {/* <ModalBase
-                title="Não foi possível autenticar."
-                description={`Nossos servidores devem estar passando por problemas no momento :( \n Tente novamente mais tarde.`}
-                button
-                isVisible={isModalVisible}
-                onBackdropPress={() => setModalVisible(false)}
-                toggleModal={() => { setModalVisible(false) }}
-            /> */}
+            {
+                isModalVisible && <Modal
+                    transparent={false}
+                    animationType={"slide"}
+                    statusBarTranslucent
+                >
+                    <ConclusionScreen
+                        title="O DFL está pronto para você!"
+                        info={`Tudo está configurado.\nAgora é sua vez de tornar sua cidade cada vez mais limpa!`}
+                        backButtonText="Ir para o app"
+                        onPress={() => {
+                            navigation.navigate('Main')
+                            setModalVisible(false)
+                        }}
+                    />
+                </Modal>
+            }
 
             <View style={styles.footer}>
                 <Paginator data={permissions_screens} scrollX={scrollX} scrollTo={scrollTo} />
-                <TextButton buttonStyle={{ paddingHorizontal: 20, paddingVertical: 15 }} title={BUTTONS_TEXTS[currentIndex]} onPress={FUNCTIONS[currentIndex]} />
+                <TextButton buttonStyle={{ backgroundColor: BUTTON_COLORS[currentIndex], paddingHorizontal: 20, paddingVertical: 15 }} title={BUTTONS_TEXTS[currentIndex]} onPress={FUNCTIONS[currentIndex]} />
                 {/* <Text style={styles.info}>Negar a permissão tornará impossível utilizar o aplicativo.</Text> */}
             </View>
         </View>

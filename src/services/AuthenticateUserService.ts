@@ -61,13 +61,15 @@ class AuthenticateUserService {
         const { email, id, familyName, givenName, photo } = userInfo.user;
         //const [gender, birthday] = await GetAdditionalInfo(acess_token)
 
-        let user = await prismaClient.user.findFirst({
+        let token = "logado"
+        let user = await prismaClient.user.findUnique({
             where: {
-                google_id: id
+                email: email
             }
         })
 
         if (!user) {
+            token = "criado"
             user = await prismaClient.user.create({
                 data: {
                     google_id: id,
@@ -93,7 +95,7 @@ class AuthenticateUserService {
                 expiresIn: "1d",
             }
         ); */
-        const token = ""
+        //const token = ""
 
         return { token, user };
     }

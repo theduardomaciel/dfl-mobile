@@ -79,9 +79,9 @@ export function Onboarding() {
                     style={{ width: 270, height: 55 }}
                     size={GoogleSigninButton.Size.Wide}
                     color={GoogleSigninButton.Color.Light}
-                    onPress={() => {
-                        const errorMessage = signIn()
-                        if (typeof errorMessage === "string") {
+                    onPress={async () => {
+                        const errorMessage = await signIn()
+                        if (typeof errorMessage === "object") {
                             setModalVisible(true)
                         }
                     }}

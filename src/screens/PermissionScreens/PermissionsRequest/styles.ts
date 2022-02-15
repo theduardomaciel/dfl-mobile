@@ -9,12 +9,11 @@ export const styles = StyleSheet.create({
         backgroundColor: theme.colors.background,
     },
     list: {
-        //backgroundColor: "red",
-        flex: 3,
     },
     footer: {
         //backgroundColor: "blue",
-        marginTop: 75,
+        //marginTop: 75
+        marginTop: 35,
         paddingHorizontal: 50,
         alignItems: "center",
         justifyContent: "center",
