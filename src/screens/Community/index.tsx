@@ -1,25 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, Image, StatusBar, Pressable, Button } from "react-native";
-import * as Location from 'expo-location';
+import { View, Text, ScrollView, Image, StatusBar, Pressable } from "react-native";
 
 import Modal from "react-native-modal"
 import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
 
+import { TextButton } from "../../components/TextButton";
+import { ModalBase } from "../../components/ModalBase";
 import { BottomBar } from "../../components/BottomBar";
-
-//import MapView from "react-native-maps";
-
-import { ProfileIcon } from "../../components/ProfileIcon";
 import { SectionTitle } from "../../components/SectionTitle";
 
 import { elements } from "../../global/styles/elements";
 import { theme } from "../../global/styles/theme";
-
 import { styles } from "./styles";
 
 import { Entypo } from '@expo/vector-icons';
-import { TextButton } from "../../components/TextButton";
-import { ModalBase } from "../../components/ModalBase";
+
+import { useAuth } from "../../hooks/auth";
+import { api } from "../../services/api";
+import { ProfileModal } from "../../components/ProfileModal";
 
 const Marcadores = [
     {
@@ -47,46 +45,50 @@ const initialRegion = {
     longitudeDelta: 0.0121,
 }
 
+type Profile = {
+    username: string;
+    defaultCity: string;
+    level: number;
+}
+
+type ProfileCreationResponse = {
+    profile: Profile;
+}
+
 export function Community() {
-    const [isModalVisible, setModalVisible] = useState(false);
-    const toggleModal = () => {
-        setModalVisible(!isModalVisible);
-    };
-
     const [alreadyLoaded, setAlreadyLoaded] = useState(false)
+    const { user } = useAuth();
 
-    /* const [location, setLocation] = useState("");
-    const [errorMsg, setErrorMsg] = useState("");
-
+    const [isProfileModalVisible, setProfileModalVisible] = useState(false)
     useEffect(() => {
-        (async () => {
-            let { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                setErrorMsg('Permission to access location was denied');
-                return;
+        async function CheckIfProfileIsCreated() {
+            if (!user.profile) {
+                setProfileModalVisible(true)
+                /* let usernameTextInput = "";
+                let defaultCityTextInput = "";
+                const profileCreationResponse = await api.post("/profile/create", { user: user, username: usernameTextInput, defaultCity: defaultCityTextInput })
+                const { profile } = profileCreationResponse.data as ProfileCreationResponse;
+                console.log(profile) */
             }
-
-            let location = await Location.getCurrentPositionAsync({});
-            setLocation(location);
-        })();
+        }
+        setTimeout(CheckIfProfileIsCreated, 1000);
     }, []);
 
-    let text = 'Waiting..';
-    if (errorMsg) {
-        text = errorMsg;
-    } else if (location) {
-        text = JSON.stringify(location);
-    }
- */
+    const [isCityModalVisible, setCityModalVisible] = useState(false);
+    const toggleCityModal = () => {
+        setCityModalVisible(!isCityModalVisible);
+    };
+
     const [region, setRegion] = useState(initialRegion);
     let mapReference: any;
     return (
         <View style={styles.container}>
+            <ProfileModal isVisible={isProfileModalVisible} toggleModal={() => { setProfileModalVisible(!isProfileModalVisible) }} />
             <ModalBase
                 title="Alterar cidade padrão"
-                isVisible={isModalVisible}
-                onBackdropPress={() => setModalVisible(false)}
-                toggleModal={() => { setModalVisible(false) }}
+                isVisible={isCityModalVisible}
+                onBackdropPress={() => setCityModalVisible(false)}
+                toggleModal={() => { setCityModalVisible(false) }}
             >
                 <Text>Essa é a descrição do modal.</Text>
                 <TextButton title="ALTERAR CIDADE" buttonStyle={{ height: 40, width: 180, backgroundColor: theme.colors.primary1, borderRadius: 25 }} />
@@ -142,7 +144,7 @@ export function Community() {
                 <BottomBar
                     viewStyle={{ width: "90%" }}
                     element={
-                        <Pressable style={styles.button} onPress={toggleModal}>
+                        <Pressable style={styles.button} onPress={toggleCityModal}>
                             <Text style={styles.info}>Maceió</Text>
                             <Entypo name="chevron-small-down" size={22} color="white" />
                         </Pressable>
