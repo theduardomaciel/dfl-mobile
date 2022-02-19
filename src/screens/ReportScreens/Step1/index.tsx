@@ -52,10 +52,7 @@ export function ReportScreen1({ navigation }: any) {
     const [address, setAddress] = useState("");
 
     function cacheLocation() {
-        const coordinates = {
-            latitude: region.latitude,
-            longitude: region.longitude
-        }
+        const coordinates = [region.latitude, region.longitude]
         const data = {
             coordinates: coordinates,
             address: address
@@ -120,8 +117,8 @@ export function ReportScreen1({ navigation }: any) {
                     colors={[theme.colors.secondary1, theme.colors.secondary2]}
                     buttonStyle={{ height: 45, width: "90%", marginTop: 20, marginBottom: 20 }}
                     onPress={() => {
-                        const cache = cacheLocation()
-                        navigation.navigate("Step2", { cache })
+                        const data = cacheLocation()
+                        navigation.navigate("Step2", { data })
                     }}
                 />
             </View>

@@ -25,18 +25,14 @@ type Props = CustomModalProps & {
     secondToogleModal?: () => void;
 }
 
-type Profile = {
+/* type Profile = {
     username: string;
     defaultCity: string;
     level: number;
-}
-
-type ProfileCreationResponse = {
-    profile: Profile;
-}
+} */
 
 export function ProfileModal({ toggleModal, isSecond, secondToogleModal, ...rest }: Props) {
-    const { user } = useAuth();
+    const { user, updateUser } = useAuth();
 
     const [username, setUsername] = useState("");
     const [defaultCity, setDefaultCity] = useState("Cidade não reconhecida");
@@ -52,8 +48,8 @@ export function ProfileModal({ toggleModal, isSecond, secondToogleModal, ...rest
         console.log("Cidade: ", defaultCity)
         try {
             const profileCreationResponse = await api.post("/profile/create", { user: user, username: username, defaultCity: defaultCity })
-            const { profile } = profileCreationResponse.data as ProfileCreationResponse;
-            console.log(profile)
+            await updateUser();
+            console.log(user)
         } catch (error) {
             console.log(error)
         }

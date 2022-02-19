@@ -12,23 +12,51 @@ import { TextButton } from "../../../components/TextButton";
 import { TagsSelector } from "../../../components/TagsSelector";
 import { TextInput } from "react-native-gesture-handler";
 import { ConclusionScreen } from "../../../components/ConclusionScreen";
+import { api } from "../../../services/api";
+import { useAuth } from "../../../hooks/auth";
 
-export function ReportScreen3({ navigation, data }: any) {
-    const [tags, setTags] = useState({});
+type ReportProps = {
+    coordinates: {},
+    address: string,
+    image_url: string,
+    tags: string,
+    suggestion: string,
+    hasTrashBins: boolean,
+}
+
+export function ReportScreen3({ route, navigation }: any) {
+    const { data } = route.params;
+    const { user, updateUser } = useAuth();
     const [modalOpen, setModalOpen] = useState(false)
-    function cacheInfo() {
-        data.append("info", {
 
-        })
-        return data;
-    }
-
+    const [tags, setTags] = useState({});
     const handleTags = (tags) => {
         setTags(tags)
         console.log(tags)
     }
 
-    let textInputRef;
+    const [suggestion, setSuggestion] = useState("");
+    const [hasTrashbin, setHasTrashbin] = useState(false);
+
+    async function SubmitReport(data: ReportProps) {
+        console.log(data)
+        try {
+            const submitResponse = await api.post("/report/create", {
+                user_id: user.id,
+                coordinates: data.coordinates,
+                address: data.address,
+                image_url: data.image_url,
+                tags: data.tags,
+                suggestion: data.suggestion,
+                hasTrashbin: data.hasTrashBins
+            })
+            console.log(submitResponse)
+            updateUser();
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     return (
         <KeyboardAvoidingView style={defaultStyles.container}>
             <ScrollView showsVerticalScrollIndicator={false} style={defaultStyles.safeView}>
@@ -55,7 +83,7 @@ export function ReportScreen3({ navigation, data }: any) {
                     </Text>
                 </View>
                 <TextInput
-                    ref={textInputRef}
+                    onChangeText={setSuggestion}
                     style={styles.textForm}
                 />
                 <BouncyCheckbox
@@ -70,14 +98,18 @@ export function ReportScreen3({ navigation, data }: any) {
                         fontSize: 13
                     }}
                     iconStyle={{ borderRadius: 10 }}
-                    onPress={(isChecked: boolean) => { }}
+                    onPress={setHasTrashbin}
                 />
                 <TextButton
                     title="Próximo passo"
                     colors={[theme.colors.secondary1, theme.colors.secondary2]}
                     buttonStyle={{ height: 55, width: "90%", }}
-                    onPress={() => {
-                        //const cache = cachePicture()
+                    onPress={async () => {
+                        data.tags = tags
+                        data.hasTrashBins = hasTrashbin
+                        data.suggestion = suggestion
+                        const response = await SubmitReport(data);
+                        console.log(response)
                         setModalOpen(true)
                     }}
                 />

@@ -37,6 +37,7 @@ type AuthContextData = {
     //signIn: () => Promise<void>;
     signIn: () => Promise<void>;
     signOut: () => Promise<void>;
+    updateUser: () => Promise<void>;
 }
 
 type AuthProviderProps = {
@@ -62,7 +63,6 @@ function AuthProvider({ children }: AuthProviderProps) {
         try {
             const userInfo = await GoogleSignin.signIn();
             if (userInfo) {
-                console.log("Passou")
                 const userInfoWithScopes = await GoogleSignin.addScopes({
                     scopes: [
                         'https://www.googleapis.com/auth/user.gender.read',
@@ -70,7 +70,6 @@ function AuthProvider({ children }: AuthProviderProps) {
                     ],
                 });
                 const tokens = await GoogleSignin.getTokens();
-                console.log("Passou ala")
                 // Chamar o backend com o usuário e o acess_token
                 try {
                     const authResponse = await api.post("/authenticate", { user_info: userInfoWithScopes, access_token: tokens.accessToken })
@@ -117,6 +116,18 @@ function AuthProvider({ children }: AuthProviderProps) {
         }
     }
 
+    async function updateUser() {
+        const readResponse = await api.post("/user", { user_id: user.id })
+        const updatedUser = readResponse.data as User;
+        //api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+        await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(updatedUser));
+        //await AsyncStorage.setItem(TOKEN_STORAGE, token);
+
+        setUser(updatedUser);
+        console.log(`Usuário atualizado com sucesso!`);
+    }
+
     useEffect(() => {
         async function loadUserStorageData() {
             const userStorage = await AsyncStorage.getItem(USER_STORAGE);
@@ -138,6 +149,7 @@ function AuthProvider({ children }: AuthProviderProps) {
         <AuthContext.Provider value={{
             signIn,
             signOut,
+            updateUser,
             user,
             creatingAccount,
             isSigningIn

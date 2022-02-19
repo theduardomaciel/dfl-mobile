@@ -12,7 +12,7 @@ datasource db {
 }
 
 model User {
-  id         Int      @id @default(autoincrement())
+  id         Int      @id @unique @default(autoincrement())
   google_id  String
   first_name String
   last_name  String
@@ -26,13 +26,13 @@ model User {
 }
 
 model Profile {
-  username    String    @id
+  id          Int       @id @default(autoincrement())
+  username    String    @unique
   defaultCity String
   level       Int       @default(0)
   comments    Comment[]
-
-  user   User @relation(fields: [userId], references: [id])
-  userId Int
+  user        User      @relation(fields: [user_id], references: [id], onDelete: SetDefault)
+  user_id     Int       @unique
 }
 
 model Report {
@@ -41,7 +41,7 @@ model Report {
   address      String
   coordinates  Decimal[]
   image_url    String
-  tags         Boolean[]
+  tags         Json
   suggestion   String
   hasTrashBins Boolean   @default(true)
 

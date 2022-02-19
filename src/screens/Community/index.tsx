@@ -53,7 +53,8 @@ export function Community() {
     const [secondModalIsVisible, setSecondModalVisible] = useState(false)
     useEffect(() => {
         function CheckIfProfileIsCreated() {
-            if (!user.profile) {
+            console.log(user.profile)
+            if (user.profile === undefined) {
                 setProfileModalVisible(true)
             }
         }

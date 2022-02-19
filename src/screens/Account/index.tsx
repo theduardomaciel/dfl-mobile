@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { View, Text, ScrollView, Image, FlatList, SectionList, TouchableOpacity, RefreshControl } from "react-native";
 
 import { ProfileIcon } from "../../components/ProfileIcon";
@@ -12,6 +12,8 @@ import { styles } from "./styles";
 import TrashbinSvg from "../../assets/trashbin_2.svg"
 
 import { useAuth } from "../../hooks/auth";
+import { api } from "../../services/api";
+import { response } from "express";
 
 // Os dados em uma SectionList devem ser sempre organizados em: "Title" e "Data". 
 // Se esse nomes não estiverem escritos, um erro será retornado.
@@ -21,22 +23,22 @@ const EXAMPLE_REPORTS = [
         data: [
             {
                 id: "1312313",
-                location: "Feitosa, Maceió - AL",
-                description: "O contato com o proprietário se mostra urgente devido à situação do local.",
+                address: "Feitosa, Maceió - AL",
+                suggestion: "O contato com o proprietário se mostra urgente devido à situação do local.",
                 image_url: "https://pbs.twimg.com/media/FJgrSipX0AIqJNk?format=png&name=240x240",
                 solved: true
             },
             {
                 id: "23426563",
-                location: "1094 Rua Luiz Rizzo",
-                description: "",
+                address: "1094 Rua Luiz Rizzo",
+                suggestion: "",
                 image_url: "https://pbs.twimg.com/media/FJgrR-9XMAMxdb5?format=png&name=240x240",
                 solved: false
             },
             {
                 id: "1930257",
-                location: "234 Tv. Escritor Paulino Santiago",
-                description: "",
+                address: "234 Tv. Escritor Paulino Santiago",
+                suggestion: "",
                 image_url: "https://pbs.twimg.com/media/FJgrRhlWUAMUUfD?format=png&name=240x240",
                 solved: false
             }
@@ -50,8 +52,8 @@ const EXAMPLE_REPORTS2 = [
         data: [
             {
                 id: "1312313",
-                location: "Feitosa, Maceió - AL",
-                description: "O contato com o proprietário se mostra urgente devido à situação do local.",
+                address: "Feitosa, Maceió - AL",
+                suggestion: "O contato com o proprietário se mostra urgente devido à situação do local.",
                 image_url: "https://pbs.twimg.com/media/FJgrSipX0AIqJNk?format=png&name=240x240",
                 solved: true
             },
@@ -78,7 +80,7 @@ const SectionItem = ({ item }: any) => {
         >
             <View style={styles.report_info_container}>
                 <SectionTitle
-                    title={item.location}
+                    title={item.address}
                     color={theme.colors.primary1}
                     fontStyle={{
                         fontFamily: theme.fonts.subtitle900,
@@ -86,7 +88,7 @@ const SectionItem = ({ item }: any) => {
                     }}
                 />
                 <Text style={styles.report_description}>
-                    {item.description ? item.description : "[nenhuma sugestão provida]"}
+                    {item.suggestion ? item.suggestion : "[nenhuma sugestão provida]"}
                 </Text>
                 <Text style={styles.report_data}>
                     {"Id do Relatório: " + item.id}
@@ -132,6 +134,16 @@ const EmptyItem = ({ item }: any) => {
     )
 }
 
+type Report = {
+    address: string,
+    coordinates: Array<number>,
+    image_url: string,
+    tags: string,
+    suggestion: string,
+    hasTrashbin: boolean,
+    createdAt: string;
+}
+
 export function Account() {
     const { user } = useAuth();
     if (user === null) {
@@ -152,6 +164,30 @@ export function Account() {
             </View>
         )
     }
+
+    async function GetUserReports() {
+        const reportsResponse = await api.post("/user/reports", { user_id: user.id });
+        const reports = reportsResponse.data as Array<Report>
+        console.log(reports)
+        return reports;
+    }
+
+    useEffect(() => {
+        async function LoadUserReports() {
+            const data = await GetUserReports();
+            const groups = data.reduce((groups, report) => {
+                const date = report.createdAt.split('T')[0];
+                if (!groups[date]) {
+                    groups[date] = [];
+                }
+                groups[date].push(report);
+                return groups;
+            }, {});
+            console.log(groups)
+        }
+        LoadUserReports()
+    });
+
     return (
         <View style={styles.container}>
             <Header />

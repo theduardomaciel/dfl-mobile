@@ -18,35 +18,36 @@ import { BottomBar } from "../../../components/BottomBar";
 
 function cachePicture(data: any, capturedPhoto: any) {
     if (capturedPhoto !== null) {
-        data.append("report_image", {
+        /* data.append("report_image", {
             fileName: "provisório",
             height: capturedPhoto.height,
             width: capturedPhoto.width,
             uri: capturedPhoto.uri,
             type: 'type/jpeg'
-        });
+        }); */
         return data;
     }
 }
 
-export function ReportScreen2({ navigation, data }: any) {
+export function ReportScreen2({ route, navigation }: any) {
+    const { data } = route.params;
     const [isLoading, setIsLoading] = useState(false)
 
     const [cameraType, setCameraType] = useState(Camera.Constants.Type.back)
     const [hasPermission, setHasPermission] = useState(null);
 
     const camRef = useRef(null)
-    const [capturedPhoto, setCapturedPhoto] = useState({})
+    const [capturedPhoto, setCapturedPhoto] = useState({} as any)
 
     const [modalOpen, setModalOpen] = useState(false)
 
     async function takePicture() {
         //setIsLoading(true)
         try {
-            const data = await camRef.current.takePictureAsync()
-            camRef.current.pausePreview();
-            console.log(data)
-            setCapturedPhoto(data)
+            const picture = await camRef.current.takePictureAsync()
+            //camRef.current.pausePreview();
+            console.log(picture)
+            setCapturedPhoto(picture)
             setModalOpen(true)
         } catch (error) {
             //setIsLoading(false)
@@ -137,7 +138,8 @@ export function ReportScreen2({ navigation, data }: any) {
                                     buttonStyle={{ height: 45, width: "90%", marginBottom: 20, marginTop: 20 }}
                                     onPress={() => {
                                         //const cache = cachePicture()
-                                        navigation.navigate("Step3")
+                                        data.image_url = ""
+                                        navigation.navigate("Step3", { data })
                                     }}
                                 />
                             </View>
