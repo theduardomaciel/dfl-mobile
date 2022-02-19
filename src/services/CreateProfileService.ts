@@ -1,29 +1,36 @@
 import prismaClient from "../prisma"
 
 type User = {
-    id: string;
+    id: number;
     google_id: string;
     email: string;
     first_name: string;
     last_name: string;
     image_url: string;
-    profile: Array<[]>;
-    reports: Array<[]>;
+    profile: Array<[]> | null;
+    reports: Array<[]> | null;
     createdAt: Date;
 }
 
 class CreateProfileService {
     async execute(user: User, username: string, defaultCity: string) {
-        const profile = await prismaClient.profile.create({
-            data: {
-                user: {
-                    connect: { email: user.email },
+        try {
+            const profile = await prismaClient.profile.create({
+                data: {
+                    user: {
+                        connect: { id: user.id },
+                    },
+                    username,
+                    defaultCity,
                 },
-                username,
-                defaultCity,
-            },
-        });
-        return profile;
+            });
+            if (profile) {
+                console.log(`Perfil do usuário ${user.first_name} de id: ${user.id} foi criado!`, profile);
+                return profile;
+            }
+        } catch (error) {
+            console.log(error);
+        }
     }
 }
 

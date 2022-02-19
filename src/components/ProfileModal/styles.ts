@@ -16,7 +16,7 @@ export const styles = StyleSheet.create({
         width: "65%",
         height: 35,
         borderRadius: 50,
-        marginTop: 5,
+        marginTop: 10,
         backgroundColor: theme.colors.primary2,
     },
     title: {

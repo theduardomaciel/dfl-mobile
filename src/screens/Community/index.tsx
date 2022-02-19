@@ -16,7 +16,6 @@ import { styles } from "./styles";
 import { Entypo } from '@expo/vector-icons';
 
 import { useAuth } from "../../hooks/auth";
-import { api } from "../../services/api";
 import { ProfileModal } from "../../components/ProfileModal";
 import { DefaultCityPicker } from "../../components/ProfilePickers/DefaultCity";
 
@@ -46,16 +45,6 @@ const initialRegion = {
     longitudeDelta: 0.0121,
 }
 
-type Profile = {
-    username: string;
-    defaultCity: string;
-    level: number;
-}
-
-type ProfileCreationResponse = {
-    profile: Profile;
-}
-
 export function Community() {
     const [alreadyLoaded, setAlreadyLoaded] = useState(false)
     const { user } = useAuth();
@@ -63,14 +52,9 @@ export function Community() {
     const [isProfileModalVisible, setProfileModalVisible] = useState(false)
     const [secondModalIsVisible, setSecondModalVisible] = useState(false)
     useEffect(() => {
-        async function CheckIfProfileIsCreated() {
+        function CheckIfProfileIsCreated() {
             if (!user.profile) {
                 setProfileModalVisible(true)
-                /* let usernameTextInput = "";
-                let defaultCityTextInput = "";
-                const profileCreationResponse = await api.post("/profile/create", { user: user, username: usernameTextInput, defaultCity: defaultCityTextInput })
-                const { profile } = profileCreationResponse.data as ProfileCreationResponse;
-                console.log(profile) */
             }
         }
         CheckIfProfileIsCreated()

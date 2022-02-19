@@ -7,6 +7,7 @@ import {
     TouchableOpacityProps,
     ViewStyle,
     TextStyle,
+    ActivityIndicator,
 } from 'react-native';
 
 import { styles } from './styles';
@@ -22,9 +23,10 @@ type Props = TouchableOpacityProps & {
     buttonStyle?: ViewStyle;
     textStyle?: TextStyle;
     shadow?: boolean;
+    isLoading?: boolean;
 }
 
-export function TextButton({ title, colors, icon, buttonStyle, textStyle, shadow, ...rest }: Props) {
+export function TextButton({ title, colors, icon, buttonStyle, textStyle, shadow, isLoading, ...rest }: Props) {
     icon ? buttonStyle = { ...buttonStyle, justifyContent: "space-around", paddingHorizontal: 0 } : buttonStyle = buttonStyle;
     const shadowOptions = theme.shadowProperties
     shadow ?
@@ -35,6 +37,7 @@ export function TextButton({ title, colors, icon, buttonStyle, textStyle, shadow
         : buttonStyle = buttonStyle;
     const Button =
         <TouchableOpacity
+            disabled={isLoading ? true : false}
             activeOpacity={0.8}
             // Verificamos se o botão possui gradiente, se possuir, inserimos o estilo de gradiente, caso não, inserimos o estilo padrão
             // Também verificamos se a propriedade de sombra foi inserida, para também adicionarmos o efeito ao botão
@@ -42,12 +45,20 @@ export function TextButton({ title, colors, icon, buttonStyle, textStyle, shadow
             /** Colocamos a propriedade "...rest" para passar ao botão todas as propriedades restantes que pertencem a ele */
             {...rest}
         >
-            <View>
-                {icon}
-            </View>
-            <Text style={textStyle ? [styles.title, textStyle] : styles.title}>
-                {title}
-            </Text>
+            {
+                isLoading ?
+                    <ActivityIndicator size={"small"} color="#FFFFFF" animating={isLoading} />
+                    :
+                    <>
+                        <View>
+                            {icon}
+                        </View>
+                        <Text style={textStyle ? [styles.title, textStyle] : styles.title}>
+                            {title}
+                        </Text>
+                    </>
+            }
+
         </TouchableOpacity>
     return ( // A propriedade "activeOpacity" influencia na opacidade do botão ao ser pressionado
         colors ?

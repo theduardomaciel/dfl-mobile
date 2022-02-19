@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { View, Text, KeyboardAvoidingView } from 'react-native'
 import Modal from 'react-native-modal'
 
@@ -11,6 +11,9 @@ import { TextButton } from '../TextButton'
 
 import { styles } from './styles'
 
+import { api } from "../../services/api";
+import { useAuth } from '../../hooks/auth'
+
 type CustomModalProps = {
     isVisible: boolean;
     onBackdropPress?: () => void;
@@ -22,26 +25,63 @@ type Props = CustomModalProps & {
     secondToogleModal?: () => void;
 }
 
+type Profile = {
+    username: string;
+    defaultCity: string;
+    level: number;
+}
+
+type ProfileCreationResponse = {
+    profile: Profile;
+}
+
 export function ProfileModal({ toggleModal, isSecond, secondToogleModal, ...rest }: Props) {
+    const { user } = useAuth();
+
+    const [username, setUsername] = useState("");
+    const [defaultCity, setDefaultCity] = useState("Cidade não reconhecida");
+    const handleDefaultCityPicker = (selectedValue) => {
+        setDefaultCity(selectedValue)
+        console.log(selectedValue)
+    }
+
+    const [loading, setLoading] = useState(false)
+    async function CreateProfile() {
+        setLoading(true)
+        console.log("Nome de Usuário: ", username)
+        console.log("Cidade: ", defaultCity)
+        try {
+            const profileCreationResponse = await api.post("/profile/create", { user: user, username: username, defaultCity: defaultCity })
+            const { profile } = profileCreationResponse.data as ProfileCreationResponse;
+            console.log(profile)
+        } catch (error) {
+            console.log(error)
+        }
+        setLoading(false)
+    }
+
     const secondProfileModalContent = <KeyboardAvoidingView style={styles.modal}>
         <Text style={styles.title}>
             Participando da Comunidade
         </Text>
         <Text style={styles.description}>
             Como vai querer ser chamado?
-            Selecione um nome de usuário que os outros usuários visualizarão em relatórios e comentários!
+            Selecione um nome de usuário que os outros usuários visualizarão em seus relatórios e comentários!
         </Text>
         <Svg2 width={300} />
-        <UsernamePicker />
-        <TextButton title="ENTRAR NA COMUNIDADE" buttonStyle={styles.actionButton} textStyle={{ fontSize: 12 }} onPress={() => {
+        <UsernamePicker usernameState={setUsername} />
+        <TextButton isLoading={loading} title="ENTRAR NA COMUNIDADE" buttonStyle={styles.actionButton} textStyle={{ fontSize: 12 }} onPress={async () => {
+            await CreateProfile();
             toggleModal()
         }} />
     </KeyboardAvoidingView>
+
     return (
         <Modal
             statusBarTranslucent={true}
             deviceHeight={1920}
             style={{ alignItems: "center" }}
+            hideModalContentWhileAnimating
             animationInTiming={1500}
             animationIn={"fadeInLeft"}
             animationOut={"fadeOutRight"}
@@ -60,7 +100,7 @@ export function ProfileModal({ toggleModal, isSecond, secondToogleModal, ...rest
                             Para participar de uma comunidade composta de pessoas próximas a você, precisamos saber de que cidade você é!
                         </Text>
                         <Svg width={300} />
-                        <DefaultCityPicker />
+                        <DefaultCityPicker onSelectOption={handleDefaultCityPicker} />
                         <TextButton title="PRÓXIMO" buttonStyle={styles.actionButton} textStyle={{ fontSize: 12 }} onPress={() => {
                             toggleModal()
                             if (secondToogleModal) { secondToogleModal() }

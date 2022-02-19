@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useState } from 'react';
 
 import {
     View,
@@ -11,7 +11,12 @@ import { theme } from '../../../global/styles/theme';
 import { styles } from './styles';
 import { defaultStyles } from '../defaultStyles';
 
-export function DefaultCityPicker() {
+type PickerTypes = {
+    onSelectOption: (optionValue) => void;
+}
+
+export function DefaultCityPicker({ onSelectOption }: PickerTypes) {
+    const [defaultCity, setDefaultCity] = useState();
     return (
         <View style={styles.container}>
             <Text style={defaultStyles.title}>
@@ -19,18 +24,23 @@ export function DefaultCityPicker() {
             </Text>
             <View style={[defaultStyles.picker, theme.shadowPropertiesLow]}>
                 <Picker
-                    style={{ width: 150, fontSize: 12, color: theme.colors.secondary1, alignSelf: "center", marginLeft: 5 }}
+                    selectedValue={defaultCity}
+                    onValueChange={(value) => {
+                        setDefaultCity(value)
+                        onSelectOption(value)
+                    }}
+                    style={{ width: 155, fontSize: 12, color: theme.colors.secondary1, alignSelf: "center", marginLeft: 5 }}
                     dropdownIconColor={theme.colors.secondary1}
                     mode='dropdown'
                 >
-                    <Picker.Item label="Maceió" value="Maceió" />
-                    <Picker.Item label="Recife" value="js" />
-                    <Picker.Item label="Arapiraca" value="Maceió" />
-                    <Picker.Item label="Aracaju" value="js" />
-                    <Picker.Item label="Teresina" value="Maceió" />
-                    <Picker.Item label="São Paulo" value="js" />
-                    <Picker.Item label="Rio Largo" value="Maceió" />
-                    <Picker.Item label="Salvador" value="js" />
+                    <Picker.Item label="Maceió" value="Maceió, AL - Brasil" />
+                    <Picker.Item label="Recife" value="Recife, PE - Brasil" />
+                    <Picker.Item label="Arapiraca" value="Arapiraca, AL - Brasil" />
+                    <Picker.Item label="Aracaju" value="Aracaju, SE - Brasil" />
+                    <Picker.Item label="Teresina" value="Teresina, CE - Brasil" />
+                    <Picker.Item label="São Paulo" value="São Paulo, SP - Brasil" />
+                    <Picker.Item label="Rio Largo" value="Rio Largo, AL - Brasil" />
+                    <Picker.Item label="Salvador" value="Salvador, BA - Brasil" />
                 </Picker>
             </View>
         </View>

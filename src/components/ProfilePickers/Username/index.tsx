@@ -12,13 +12,13 @@ import { defaultStyles } from '../defaultStyles';
 import { TextForm } from '../../TextForm';
 import { TextInput } from 'react-native-gesture-handler';
 
-export function UsernamePicker() {
+export function UsernamePicker({ usernameState }) {
     return (
         <View style={styles.container}>
             <Text style={defaultStyles.title}>
                 Nome de Usuário
             </Text>
-            <TextInput placeholder='nomedeusuário' textAlign='center' autoCapitalize={"none"} style={[defaultStyles.picker, { width: 250 }, theme.shadowPropertiesLow]} />
+            <TextInput onChangeText={usernameState} placeholder='nomedeusuário' textAlign='center' autoCapitalize={"none"} style={[defaultStyles.picker, { width: 250 }, theme.shadowPropertiesLow]} />
         </View>
     );
 }
