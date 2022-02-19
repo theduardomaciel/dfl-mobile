@@ -56,11 +56,10 @@ export function ReportScreen1({ navigation }: any) {
             latitude: region.latitude,
             longitude: region.longitude
         }
-        const data = new FormData();
-        data.append("location", {
+        const data = {
             coordinates: coordinates,
             address: address
-        })
+        }
         return data;
     }
 
@@ -90,6 +89,9 @@ export function ReportScreen1({ navigation }: any) {
                         }}
                         /* userLocationFastestInterval={5000}
                         userLocationUpdateInterval={10000} */
+                        onRegionChangeComplete={() => {
+                            mapReference.animateToRegion(region, 2000)
+                        }}
                         onUserLocationChange={locationChangedResult => {
                             const coords = locationChangedResult.nativeEvent.coordinate
                             const newRegion = {
@@ -99,7 +101,6 @@ export function ReportScreen1({ navigation }: any) {
                                 longitudeDelta: 0.005
                             }
                             setRegion(newRegion);
-                            mapReference.animateToRegion(newRegion, 2000)
                             async function UpdateAddress() {
                                 const address = await getLocationAddress(newRegion.latitude, newRegion.longitude)
                                 if (address !== undefined) {
@@ -108,10 +109,9 @@ export function ReportScreen1({ navigation }: any) {
                             }
                             UpdateAddress()
                         }}
-                        /* region={region} */
                         showsUserLocation={true}
                         showsMyLocationButton={true}
-                        initialRegion={initialRegion}
+                        initialRegion={region}
                     />
                 </View>
                 <BottomBar info={"Endereço: " + address} viewStyle={{ marginBottom: 25 }} />

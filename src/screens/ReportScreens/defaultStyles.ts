@@ -11,6 +11,7 @@ export const defaultStyles = StyleSheet.create({
     },
     safeView: {
         flex: 1,
+        overflow: "hidden",
         width: "90%"
     },
     header: {

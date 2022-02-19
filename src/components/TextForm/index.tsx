@@ -4,7 +4,9 @@ import {
     TextInput,
     Text,
     View,
-    TextInputProps
+    TextInputProps,
+    ViewStyle,
+    TextStyle
 } from 'react-native';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -16,27 +18,19 @@ type Props = TextInputProps & {
     title?: string;
     icon?: any;
 
-    style?: any;
-    titleStyle?: any;
+    customStyle?: ViewStyle;
+    titleStyle?: TextStyle;
 
     textInputProps?: TextInputProps;
     shadow?: boolean;
 }
 
-export function TextForm({ title, icon, titleStyle, style, textInputProps, shadow }: Props) {
+export function TextForm({ title, icon, titleStyle, customStyle, textInputProps, shadow }: Props) {
     const shadowOptions = theme.shadowPropertiesLow;
-    // Estava dando erro pois, ao inserir o inputContainerStyle ao invés do styles.inputContainer, o ícone não aparecia
-    /* let inputContainerStyle = styles.inputContainer;
-    shadow ?
-        inputContainerStyle = {
-            ...inputContainerStyle,
-            ...shadowOptions
-        }
-        : inputContainerStyle = styles.inputContainer; */
     const decider = shadow ? [styles.inputContainer, shadowOptions] : styles.inputContainer
     // O problema estava na elevação (elevation), pois a da sombra era maior que a do ícone
     return (
-        <View style={style ? [styles.container, style] : styles.container}>
+        <View style={customStyle ? [styles.container, customStyle] : styles.container}>
             {
                 title ? <Text style={titleStyle ? [styles.title, titleStyle] : styles.title}>{title}</Text> : null
             }
@@ -51,5 +45,3 @@ export function TextForm({ title, icon, titleStyle, style, textInputProps, shado
         </View>
     );
 }
-
-// style ? [styles.inputContainer, style] : styles.inputContainer

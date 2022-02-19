@@ -25,6 +25,7 @@ type User = {
     first_name: string;
     last_name: string;
     image_url: string;
+    profile: Array<[]>;
     reports: Array<[]>;
     createdAt: Date;
 }

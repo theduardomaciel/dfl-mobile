@@ -76,7 +76,7 @@ export function Onboarding() {
             <View style={styles.footer}>
                 <Paginator data={onboarding_screens} scrollX={scrollX} scrollTo={scrollTo} />
                 <GoogleSigninButton
-                    style={{ width: 270, height: 55 }}
+                    /* style={{ width: 270, height: 55 }} */
                     size={GoogleSigninButton.Size.Wide}
                     color={GoogleSigninButton.Color.Light}
                     onPress={async () => {

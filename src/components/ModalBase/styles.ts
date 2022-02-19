@@ -24,7 +24,7 @@ export const styles = StyleSheet.create({
         width: "65%",
         height: 35,
         borderRadius: 50,
-        backgroundColor: theme.colors.primary2,
+        backgroundColor: theme.colors.primary4,
     },
     title: {
         fontSize: 36,

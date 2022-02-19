@@ -15,7 +15,7 @@ type Props = CustomModalProps & {
     title: string;
     description?: string;
     button?: boolean;
-    toggleModal: any;
+    toggleModal: () => void;
     children?: React.ReactNode;
 }
 

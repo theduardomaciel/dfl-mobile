@@ -10,7 +10,6 @@ export const styles = StyleSheet.create({
         lineHeight: 12
     },
     textForm: {
-        height: 125,
         backgroundColor: theme.colors.primary2,
         borderRadius: 10,
         color: theme.colors.text1,
@@ -18,6 +17,7 @@ export const styles = StyleSheet.create({
         fontFamily: theme.fonts.subtitle400,
         paddingHorizontal: 15,
         paddingVertical: 15,
-        textAlignVertical: "top"
+        textAlignVertical: "top",
+        marginBottom: 10
     }
 });

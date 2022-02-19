@@ -17,7 +17,9 @@ import { SectionTitle } from '../SectionTitle';
 import { MaterialIcons } from "@expo/vector-icons"
 
 type TagSectionProps = {
-    tags: Array<string>
+    tags: Array<string>;
+    section: string;
+    onSelectTags: (section, tags) => void;
 }
 
 function CreateSectionData(tags: string[]) {
@@ -33,7 +35,7 @@ function CreateSectionData(tags: string[]) {
     return data;
 }
 
-function TagSection({ tags }: TagSectionProps) {
+function TagSection({ tags, section, onSelectTags }: TagSectionProps) {
     const [sectionData, setSectionData] = useState([] as any);
 
     function UpdateTagsData() {
@@ -64,6 +66,7 @@ function TagSection({ tags }: TagSectionProps) {
                 updatedSectionData.find((x: any) => x.id === item.id).checked = !item.checked
                 LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut); //.spring
                 setSectionData(updatedSectionData)
+                onSelectTags(section, sectionData)
                 UpdateTagsData()
             }}
         >
@@ -87,23 +90,34 @@ function TagSection({ tags }: TagSectionProps) {
     )
 }
 
-export function TagsSelector() {
+type TagsSelectorTypes = {
+    onSelectTags: (tags) => void;
+}
+
+export function TagsSelector({ onSelectTags }: TagsSelectorTypes) {
+    const [selectorTags, setSelectorTags] = useState({});
+    const handleTags = (section, tags) => {
+        const tagsCopy = selectorTags;
+        tagsCopy[section] = tags;
+        setSelectorTags(tagsCopy)
+        onSelectTags(selectorTags)
+    }
     return (
         <View style={styles.container}>
             <SectionTitle title='Tempo de Permanência' marginBottom={1} fontStyle={{ fontSize: 18, color: theme.colors.secondary1, fontFamily: theme.fonts.section400 }} />
-            <TagSection tags={['Até 5 dias', '1 semana', '2 semanas', 'Mais de 1 mês']} />
+            <TagSection section="time" tags={['Até 5 dias', '1 semana', '2 semanas', 'Mais de 1 mês']} onSelectTags={handleTags} />
 
             <SectionTitle title='Vegetação' marginBottom={1} fontStyle={{ fontSize: 18, color: theme.colors.secondary1, fontFamily: theme.fonts.section400 }} />
-            <TagSection tags={['Rasteira', 'Alta', 'Inexistente']} />
+            <TagSection section="vegetation" tags={['Rasteira', 'Alta', 'Inexistente']} onSelectTags={handleTags} />
 
             <SectionTitle title='Animais' marginBottom={1} fontStyle={{ fontSize: 18, color: theme.colors.secondary1, fontFamily: theme.fonts.section400 }} />
-            <TagSection tags={['Moscas', 'Porcos', 'Cavalos', 'Escorpiões', 'Cobras', 'Sapos', 'Outros']} />
+            <TagSection section="animals" tags={['Moscas', 'Porcos', 'Cavalos', 'Escorpiões', 'Cobras', 'Sapos', 'Outros']} onSelectTags={handleTags} />
 
             <SectionTitle title='Terreno' marginBottom={1} fontStyle={{ fontSize: 18, color: theme.colors.secondary1, fontFamily: theme.fonts.section400 }} />
-            <TagSection tags={['Baldio', 'Abandonado', 'Íngrime', 'Inacessível']} />
+            <TagSection section="terrain" tags={['Baldio', 'Abandonado', 'Íngrime', 'Inacessível']} onSelectTags={handleTags} />
 
             <SectionTitle title='Contato' marginBottom={1} fontStyle={{ fontSize: 18, color: theme.colors.secondary1, fontFamily: theme.fonts.section400 }} />
-            <TagSection tags={['Desconhecido', 'Sem resposta']} />
+            <TagSection section="contact" tags={['Desconhecido', 'Sem resposta']} onSelectTags={handleTags} />
         </View>
     );
 }

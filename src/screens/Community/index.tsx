@@ -18,6 +18,7 @@ import { Entypo } from '@expo/vector-icons';
 import { useAuth } from "../../hooks/auth";
 import { api } from "../../services/api";
 import { ProfileModal } from "../../components/ProfileModal";
+import { DefaultCityPicker } from "../../components/ProfilePickers/DefaultCity";
 
 const Marcadores = [
     {
@@ -60,6 +61,7 @@ export function Community() {
     const { user } = useAuth();
 
     const [isProfileModalVisible, setProfileModalVisible] = useState(false)
+    const [secondModalIsVisible, setSecondModalVisible] = useState(false)
     useEffect(() => {
         async function CheckIfProfileIsCreated() {
             if (!user.profile) {
@@ -71,7 +73,8 @@ export function Community() {
                 console.log(profile) */
             }
         }
-        setTimeout(CheckIfProfileIsCreated, 1000);
+        CheckIfProfileIsCreated()
+        //setTimeout(CheckIfProfileIsCreated, 1000);
     }, []);
 
     const [isCityModalVisible, setCityModalVisible] = useState(false);
@@ -79,19 +82,24 @@ export function Community() {
         setCityModalVisible(!isCityModalVisible);
     };
 
+    const secondToogleModal = () => {
+        setSecondModalVisible(!secondModalIsVisible)
+    }
+
     const [region, setRegion] = useState(initialRegion);
     let mapReference: any;
     return (
         <View style={styles.container}>
-            <ProfileModal isVisible={isProfileModalVisible} toggleModal={() => { setProfileModalVisible(!isProfileModalVisible) }} />
+            <ProfileModal isVisible={isProfileModalVisible} toggleModal={() => { setProfileModalVisible(!isProfileModalVisible) }} secondToogleModal={secondToogleModal} />
+            <ProfileModal isSecond isVisible={secondModalIsVisible} toggleModal={secondToogleModal} />
             <ModalBase
                 title="Alterar cidade padrão"
                 isVisible={isCityModalVisible}
                 onBackdropPress={() => setCityModalVisible(false)}
                 toggleModal={() => { setCityModalVisible(false) }}
             >
-                <Text>Essa é a descrição do modal.</Text>
-                <TextButton title="ALTERAR CIDADE" buttonStyle={{ height: 40, width: 180, backgroundColor: theme.colors.primary1, borderRadius: 25 }} />
+                <DefaultCityPicker />
+                <TextButton title="ALTERAR CIDADE" textStyle={{ fontSize: 12 }} buttonStyle={{ backgroundColor: theme.colors.primary2, paddingVertical: 10, paddingHorizontal: 25, borderRadius: 25 }} />
             </ModalBase>
             <StatusBar
                 barStyle="dark-content"
