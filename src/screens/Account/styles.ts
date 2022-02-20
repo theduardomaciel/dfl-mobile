@@ -6,12 +6,13 @@ export const styles = StyleSheet.create({
     container: {
         backgroundColor: theme.colors.background,
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
+        justifyContent: "flex-start",
+        alignItems: "flex-start",
     },
     header: {
         //backgroundColor: "green",
         width: "90%",
+        alignSelf: "center",
         alignItems: "flex-start",
         flexDirection: "row",
         justifyContent: "space-between",
@@ -48,8 +49,8 @@ export const styles = StyleSheet.create({
     },
     report_info_container: {
         paddingVertical: 5,
+        justifyContent: "space-around",
         paddingHorizontal: 10,
-        justifyContent: "space-evenly",
         width: "65%",
     },
     report_image: {
@@ -64,8 +65,6 @@ export const styles = StyleSheet.create({
         color: theme.colors.primary1,
     },
     report_data: {
-        /*         textAlignVertical: "bottom",
-                justifyContent: "flex-end", */
         fontSize: 8,
         color: theme.colors.primary2
     }

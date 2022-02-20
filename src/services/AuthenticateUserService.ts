@@ -1,5 +1,6 @@
 import axios from "axios";
 import prismaClient from "../prisma";
+import { sign } from "jsonwebtoken";
 
 /* 
     - Recuperar informações do usuário na Google
@@ -61,7 +62,6 @@ class AuthenticateUserService {
         const { email, id, familyName, givenName, photo } = userInfo.user;
         //const [gender, birthday] = await GetAdditionalInfo(acess_token)
 
-        let token = "logado"
         let user = await prismaClient.user.findUnique({
             where: {
                 email: email
@@ -69,7 +69,6 @@ class AuthenticateUserService {
         })
 
         if (!user) {
-            token = "criado"
             user = await prismaClient.user.create({
                 data: {
                     google_id: id,
@@ -81,21 +80,21 @@ class AuthenticateUserService {
             })
         }
 
-        /* const token = sign(
+        const token = sign(
             {
                 user: {
-                name: user.name,
-                avatar_ur: user.avatar_url,
-                id: user.id,
+                    first_name: user.first_name,
+                    image_url: user.image_url,
+                    id: user.id,
                 },
             },
             process.env.JWT_SECRET,
             {
                 subject: user.id,
                 expiresIn: "1d",
+                aud: "mobile-app"
             }
-        ); */
-        //const token = ""
+        );
 
         return { token, user };
     }

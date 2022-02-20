@@ -14,6 +14,7 @@ import { TextInput } from "react-native-gesture-handler";
 import { ConclusionScreen } from "../../../components/ConclusionScreen";
 import { api } from "../../../services/api";
 import { useAuth } from "../../../hooks/auth";
+import axios from "axios";
 
 type ReportProps = {
     coordinates: {},
@@ -22,6 +23,11 @@ type ReportProps = {
     tags: string,
     suggestion: string,
     hasTrashBins: boolean,
+}
+
+type ImageUploadResponse = {
+    deletehash: string;
+    link: string;
 }
 
 export function ReportScreen3({ route, navigation }: any) {
@@ -38,22 +44,36 @@ export function ReportScreen3({ route, navigation }: any) {
     const [suggestion, setSuggestion] = useState("");
     const [hasTrashbin, setHasTrashbin] = useState(false);
 
-    async function SubmitReport(data: ReportProps) {
-        console.log(data)
+    async function UploadImage() {
         try {
+            const imageResponse = await api.post("/upload", { image_base64: data.image_base64, user_id: user.id });
+            const { deletehash, link } = imageResponse.data as ImageUploadResponse;
+            console.log(deletehash, link)
+            console.log(imageResponse.data)
+            return { deletehash, link }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    async function SubmitReport(data: ReportProps) {
+        try {
+            const { deletehash, link } = await UploadImage()
             const submitResponse = await api.post("/report/create", {
                 user_id: user.id,
                 coordinates: data.coordinates,
                 address: data.address,
-                image_url: data.image_url,
+                image_url: link,
+                image_deleteHash: deletehash,
                 tags: data.tags,
                 suggestion: data.suggestion,
                 hasTrashbin: data.hasTrashBins
             })
-            console.log(submitResponse)
+            console.log("Relatório criado com sucesso!", submitResponse)
             updateUser();
         } catch (error) {
             console.log(error)
+            return "error"
         }
     }
 
@@ -109,8 +129,9 @@ export function ReportScreen3({ route, navigation }: any) {
                         data.hasTrashBins = hasTrashbin
                         data.suggestion = suggestion
                         const response = await SubmitReport(data);
-                        console.log(response)
-                        setModalOpen(true)
+                        if (response !== "error") {
+                            setModalOpen(true)
+                        }
                     }}
                 />
                 {

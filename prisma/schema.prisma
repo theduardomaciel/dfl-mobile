@@ -36,14 +36,15 @@ model Profile {
 }
 
 model Report {
-  id           Int       @id @default(autoincrement())
-  createdAt    DateTime  @default(now())
-  address      String
-  coordinates  Decimal[]
-  image_url    String
-  tags         Json
-  suggestion   String
-  hasTrashBins Boolean   @default(true)
+  id               Int       @id @default(autoincrement())
+  createdAt        DateTime  @default(now())
+  address          String
+  coordinates      Decimal[]
+  image_url        String
+  image_deleteHash String
+  tags             Json
+  suggestion       String
+  hasTrashBins     Boolean   @default(true)
 
   ratings  Float[]
   resolved Boolean @default(false)

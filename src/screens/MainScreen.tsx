@@ -90,7 +90,7 @@ export function MainScreen() {
             />
             <Tab.Screen
                 name='Relatórios'
-                component={Reports}
+                component={FadeReportsScreen}
                 listeners={() => ({
                     tabPress: () => {
                         if (lastIndex !== 1) {
@@ -114,7 +114,7 @@ export function MainScreen() {
             />
             <Tab.Screen
                 name='Início'
-                component={FadeHomeScreen}
+                component={Home}
                 listeners={() => ({
                     tabPress: () => {
                         if (lastIndex !== 3) {
@@ -128,7 +128,7 @@ export function MainScreen() {
             />
             <Tab.Screen
                 name='Conta'
-                component={Account}
+                component={FadeAccountScreen}
             />
         </Tab.Navigator>
     )

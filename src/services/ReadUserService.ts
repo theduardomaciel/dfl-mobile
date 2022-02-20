@@ -11,6 +11,7 @@ class ReadUserService {
                 },
                 include: {
                     profile: true,
+                    reports: true
                 }
             })
             return user;

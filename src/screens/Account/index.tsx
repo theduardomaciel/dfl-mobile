@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { View, Text, ScrollView, Image, FlatList, SectionList, TouchableOpacity, RefreshControl } from "react-native";
+import { View, Text, ScrollView, Image, FlatList, SectionList, TouchableOpacity, RefreshControl, ActivityIndicator } from "react-native";
 
 import { ProfileIcon } from "../../components/ProfileIcon";
 import { SectionTitle } from "../../components/SectionTitle";
@@ -65,6 +65,7 @@ const SectionHeader = ({ section }: any) => (
     <SectionTitle
         title={section.title}
         color={theme.colors.primary1}
+        hasLine
         fontStyle={{
             fontFamily: theme.fonts.subtitle900,
             color: theme.colors.primary1
@@ -80,25 +81,29 @@ const SectionItem = ({ item }: any) => {
         >
             <View style={styles.report_info_container}>
                 <SectionTitle
+                    marginBottom={1}
                     title={item.address}
                     color={theme.colors.primary1}
+                    hasLine
                     fontStyle={{
-                        fontFamily: theme.fonts.subtitle900,
-                        color: theme.colors.primary1
+                        fontFamily: theme.fonts.subtitle500,
+                        color: theme.colors.primary1,
+                        fontSize: 14
                     }}
                 />
                 <Text style={styles.report_description}>
                     {item.suggestion ? item.suggestion : "[nenhuma sugestão provida]"}
                 </Text>
                 <Text style={styles.report_data}>
-                    {"Id do Relatório: " + item.id}
+                    {"Id do relatório: " + item.id}
                     {item.solved ? <Text style={{ color: theme.colors.primary1 }}> | solucionado</Text> : <Text style={{ color: theme.colors.red }}> | não solucionado</Text>}
                 </Text>
             </View>
+            {/* uri: item.image_url, */}
             <Image
                 style={styles.report_image}
                 source={{
-                    uri: item.image_url,
+                    uri: "https://github.com/theduardomaciel.png"
                 }}
             />
         </TouchableOpacity>
@@ -134,16 +139,6 @@ const EmptyItem = ({ item }: any) => {
     )
 }
 
-type Report = {
-    address: string,
-    coordinates: Array<number>,
-    image_url: string,
-    tags: string,
-    suggestion: string,
-    hasTrashbin: boolean,
-    createdAt: string;
-}
-
 export function Account() {
     const { user } = useAuth();
     if (user === null) {
@@ -165,28 +160,31 @@ export function Account() {
         )
     }
 
-    async function GetUserReports() {
-        const reportsResponse = await api.post("/user/reports", { user_id: user.id });
-        const reports = reportsResponse.data as Array<Report>
-        console.log(reports)
-        return reports;
-    }
-
+    // Código original: https://stackoverflow.com/questions/46802448/how-do-i-group-items-in-an-array-by-date
+    const [reportsData, setReportsData] = useState(null)
     useEffect(() => {
         async function LoadUserReports() {
-            const data = await GetUserReports();
+            const data = user.reports;
             const groups = data.reduce((groups, report) => {
                 const date = report.createdAt.split('T')[0];
-                if (!groups[date]) {
-                    groups[date] = [];
+                const dateSplit = date.split('-')
+                const title = dateSplit[2] + "/" + dateSplit[1]
+                if (!groups[title]) {
+                    groups[title] = [];
                 }
-                groups[date].push(report);
+                groups[title].push(report);
                 return groups;
             }, {});
-            console.log(groups)
+            const groupArrays = Object.keys(groups).map((title) => {
+                return {
+                    title,
+                    data: groups[title]
+                };
+            });
+            setReportsData(groupArrays)
         }
         LoadUserReports()
-    });
+    }, []);
 
     return (
         <View style={styles.container}>
@@ -205,23 +203,31 @@ export function Account() {
             >
                 { /* Histórico */}
                 <SectionTitle title="Histórico" />
-                <SectionList
-                    nestedScrollEnabled={true}
-                    style={[elements.subContainerWhite, { height: 375, marginBottom: 25 }]}
-                    contentContainerStyle={styles.container}
-                    // Configurações dos elementos do Relatório
-                    //sections={[...EXAMPLE_REPORTS, ...EXAMPLE_REPORTS2]}
-                    sections={EMPTY}
-                    /* keyExtractor={(item, index)=>index.toString()} */
-                    keyExtractor={item => item.id}
-                    renderItem={SectionItem}
-                    renderSectionHeader={SectionHeader}
-                    renderSectionFooter={() => (
-                        <View style={{ height: 10 }}></View>
-                    )}
-                    ListEmptyComponent={EmptyItem}
-                // Faz com que o Header fique grudado no início: stickySectionHeadersEnabled
-                />
+                {
+                    reportsData === null ?
+                        <View style={[elements.subContainerWhite, { height: 375, marginBottom: 25, alignItems: "center", justifyContent: "center" }]}>
+                            <ActivityIndicator size={"large"} color={theme.colors.secondary1} animating={reportsData === null} />
+                        </View>
+                        :
+                        <SectionList
+                            nestedScrollEnabled={true}
+                            style={[elements.subContainerWhite, { height: 375, marginBottom: 25 }]}
+                            contentContainerStyle={styles.container}
+                            // Configurações dos elementos do Relatório
+                            //sections={[...EXAMPLE_REPORTS, ...EXAMPLE_REPORTS2]}
+                            sections={reportsData}
+                            /* keyExtractor={(item, index)=>index.toString()} */
+                            keyExtractor={item => item.id}
+                            renderItem={SectionItem}
+                            renderSectionHeader={SectionHeader}
+                            renderSectionFooter={() => (
+                                <View style={{ height: 10 }}></View>
+                            )}
+                            ListEmptyComponent={EmptyItem}
+                        // Faz com que o Header fique grudado no início: stickySectionHeadersEnabled
+                        />
+                }
+
 
                 { /* Estatísticas */}
                 <SectionTitle title="Relatórios" />

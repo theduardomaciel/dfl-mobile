@@ -84,7 +84,6 @@ export function Home({ navigation }) {
         HasPermission();
     });
 
-    console.log(user)
     if (user === null) {
         return null
     }

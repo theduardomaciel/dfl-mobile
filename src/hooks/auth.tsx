@@ -18,6 +18,19 @@ import { api } from "../services/api";
 const SCOPE = "read:user";
 const USER_STORAGE = "@dfl:user";
 
+const TOKEN_STORAGE = "@dfl:token";
+
+type Report = {
+    address: string,
+    coordinates: Array<number>,
+    image_url: string,
+    image_deleteHash: string,
+    tags: string,
+    suggestion: string,
+    hasTrashbin: boolean,
+    createdAt: string;
+}
+
 type User = {
     id: string;
     google_id: string;
@@ -26,12 +39,13 @@ type User = {
     last_name: string;
     image_url: string;
     profile: Array<[]>;
-    reports: Array<[]>;
+    reports: Array<Report>;
     createdAt: Date;
 }
 
 type AuthContextData = {
     user: User | null;
+    //reports: Array<Report> | null;
     isSigningIn: boolean;
     creatingAccount: boolean;
     //signIn: () => Promise<void>;
@@ -54,6 +68,7 @@ export const AuthContext = createContext({} as AuthContextData)
 function AuthProvider({ children }: AuthProviderProps) {
     const [isSigningIn, setIsSigningIn] = useState(true)
     const [user, setUser] = useState<User | null>(null)
+    const [reports, setReports] = useState<Array<Report>>(null)
     const [creatingAccount, setCreatingAccount] = useState(false)
 
     async function signIn() {
@@ -74,10 +89,10 @@ function AuthProvider({ children }: AuthProviderProps) {
                 try {
                     const authResponse = await api.post("/authenticate", { user_info: userInfoWithScopes, access_token: tokens.accessToken })
                     const { user, token } = authResponse.data as AuthResponse;
-                    //api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+                    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
                     await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(user));
-                    //await AsyncStorage.setItem(TOKEN_STORAGE, token);
+                    await AsyncStorage.setItem(TOKEN_STORAGE, token);
 
                     setUser(user);
                     console.log(`Usuário ${token} com sucesso!`, user);
@@ -109,20 +124,24 @@ function AuthProvider({ children }: AuthProviderProps) {
         try {
             await GoogleSignin.signOut();
             await AsyncStorage.removeItem(USER_STORAGE);
-            //await AsyncStorage.removeItem(TOKEN_STORAGE);
+            await AsyncStorage.removeItem(TOKEN_STORAGE);
             setUser(null)
         } catch (error) {
             console.error(error);
         }
     }
 
+    /* async function GetUserReports() {
+        const reportsResponse = await api.post("/user/reports", { user_id: user.id });
+        const updatedReports = reportsResponse.data as Array<Report>
+        setReports(updatedReports)
+    } */
+
     async function updateUser() {
         const readResponse = await api.post("/user", { user_id: user.id })
         const updatedUser = readResponse.data as User;
-        //api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
         await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(updatedUser));
-        //await AsyncStorage.setItem(TOKEN_STORAGE, token);
 
         setUser(updatedUser);
         console.log(`Usuário atualizado com sucesso!`);
@@ -131,12 +150,12 @@ function AuthProvider({ children }: AuthProviderProps) {
     useEffect(() => {
         async function loadUserStorageData() {
             const userStorage = await AsyncStorage.getItem(USER_STORAGE);
-            //const tokenStorage = await AsyncStorage.getItem(TOKEN_STORAGE);
+            const parsedUser = JSON.parse(userStorage)
+            const tokenStorage = await AsyncStorage.getItem(TOKEN_STORAGE);
 
-            // && tokenStorage
-            if (userStorage) {
-                //api.defaults.headers.common['Authorization'] = `Bearer ${tokenStorage}`;
-                setUser(JSON.parse(userStorage));
+            if (userStorage && tokenStorage) {
+                api.defaults.headers.common['Authorization'] = `Bearer ${tokenStorage}`;
+                setUser(parsedUser);
                 console.log("Usuário logado com sucesso!", userStorage)
             }
 

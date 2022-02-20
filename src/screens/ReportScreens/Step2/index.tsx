@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, Modal, TouchableOpacity, Image, ActivityIndicator } from "react-native";
+import { View, Text, Modal, TouchableOpacity, Image, ActivityIndicator, Dimensions, Platform } from "react-native";
 
 import { Camera } from "expo-camera";
 
@@ -16,39 +16,35 @@ import { AntDesign } from '@expo/vector-icons';
 import { TextButton } from "../../../components/TextButton";
 import { BottomBar } from "../../../components/BottomBar";
 
-function cachePicture(data: any, capturedPhoto: any) {
-    if (capturedPhoto !== null) {
-        /* data.append("report_image", {
-            fileName: "provisório",
-            height: capturedPhoto.height,
-            width: capturedPhoto.width,
-            uri: capturedPhoto.uri,
-            type: 'type/jpeg'
-        }); */
-        return data;
-    }
-}
+import { useFocusEffect } from "@react-navigation/native";
+
+const { height, width } = Dimensions.get('window')
 
 export function ReportScreen2({ route, navigation }: any) {
     const { data } = route.params;
     const [isLoading, setIsLoading] = useState(false)
 
+    const options = { quality: 0.5, base64: true };
     const [cameraType, setCameraType] = useState(Camera.Constants.Type.back)
-    const [hasPermission, setHasPermission] = useState(null);
+    const [activateCamera, setActivateCamera] = useState(false)
 
-    const camRef = useRef(null)
-    const [capturedPhoto, setCapturedPhoto] = useState({} as any)
-
+    const cameraRef = useRef(null)
+    const [image, setImage] = useState({} as any)
     const [modalOpen, setModalOpen] = useState(false)
 
     async function takePicture() {
         //setIsLoading(true)
         try {
-            const picture = await camRef.current.takePictureAsync()
-            //camRef.current.pausePreview();
-            console.log(picture)
-            setCapturedPhoto(picture)
-            setModalOpen(true)
+            const imageData = await cameraRef.current.takePictureAsync(options)
+            const source = imageData.base64
+            if (source) {
+                cameraRef.current.pausePreview();
+                setImage(imageData)
+                data.image_base64 = source;
+                setModalOpen(true)
+            } else {
+                return console.log("A imagem não foi convertida em Base64.")
+            }
         } catch (error) {
             //setIsLoading(false)
             console.log(error)
@@ -56,21 +52,78 @@ export function ReportScreen2({ route, navigation }: any) {
     }
 
     async function backToPreview() {
-        setIsLoading(false)
-        await camRef.current.resumePreview();
+        //setIsLoading(false) 
+        await cameraRef.current.resumePreview();
         setModalOpen(false)
     }
 
-    /* useEffect(() => {
-        (async () => {
-            const { status } = await Camera.requestCameraPermissionsAsync();
-            setHasPermission(status === 'granted')
-        })();
-    }, []);
+    // RATIO SETTER - código original: https://askandroidquestions.com/2021/05/27/react-native-expo-camera-ratio-and-preview-not-configurable-enough/
+    const [imagePadding, setImagePadding] = useState(0)
+    const [ratio, setRatio] = useState('4:3') // default is 4:3
+    const screenRatio = height / width
+    const [isRatioSet, setIsRatioSet] = useState(false)
+    async function prepareRatio() {
+        let desiredRatio = '4:3' // Start with the system default
+        // This issue only affects Android
+        if (Platform.OS === 'android') {
+            const ratios = await cameraRef.current.getSupportedRatiosAsync()
+            let distances = {}
+            let realRatios = {}
+            let minDistance = null
+            for (const ratio of ratios) {
+                const parts = ratio.split(':')
+                const ratioHeight = parseInt(parts[0])
+                const ratioWidth = parseInt(parts[1])
+                const realRatio = ratioHeight / ratioWidth
+                realRatios[ratio] = realRatio
+                // ratio can't be taller than screen, so we don't want an abs()
+                const distance = screenRatio - realRatio
+                distances[ratio] = realRatio
+                if (minDistance == null) {
+                    minDistance = ratio
+                } else {
+                    if (distance >= 0 && distance < distances[minDistance]) {
+                        minDistance = ratio
+                    }
+                }
+            }
+            // set the best match
+            desiredRatio = minDistance
 
-    if (hasPermission === false || hasPermission === null) {
-        return <View />
-    } */
+            //  calculate the difference between the camera width and the screen height
+            const remainder = Math.floor(
+                (height - realRatios[desiredRatio] * width) / 2
+            )
+
+            // set the preview padding and preview ratio
+            setImagePadding(remainder / 2)
+            console.log(`okay look ${remainder / 2}`)
+            setRatio(desiredRatio)
+            // Set a flag so we don't do this
+            // calculation each time the screen refreshes
+            setIsRatioSet(true)
+        }
+    }
+
+    const setCameraReady = async () => {
+        if (!isRatioSet) {
+            await prepareRatio()
+        }
+    }
+
+    function flipCameraHandler() {
+        setCameraType(
+            cameraType === Camera.Constants.Type.back
+                ? Camera.Constants.Type.front
+                : Camera.Constants.Type.back
+        )
+    }
+
+    useFocusEffect(() => {
+        if (navigation.isFocused()) {
+            setActivateCamera(true)
+        }
+    })
 
     return (
         <View style={defaultStyles.container}>
@@ -85,16 +138,14 @@ export function ReportScreen2({ route, navigation }: any) {
                 <View style={styles.cameraView}>
                     <Camera
                         style={{ flex: 1 }}
+                        onCameraReady={setCameraReady}
                         type={cameraType}
-                        ref={camRef}
+                        ratio={ratio}
+                        autoFocus={"on"}
+                        ref={cameraRef}
                         useCamera2Api
                     >
-                        <TouchableOpacity activeOpacity={0.5} style={styles.flipCamera} onPress={() => {
-                            setCameraType(
-                                cameraType === Camera.Constants.Type.back ?
-                                    Camera.Constants.Type.front : Camera.Constants.Type.back
-                            )
-                        }}>
+                        <TouchableOpacity activeOpacity={0.5} style={styles.flipCamera} onPress={flipCameraHandler}>
                             <FlipCamera height={36} width={36} />
                         </TouchableOpacity>
                     </Camera>
@@ -110,7 +161,7 @@ export function ReportScreen2({ route, navigation }: any) {
                 />
 
                 {
-                    capturedPhoto &&
+                    image &&
                     <Modal
                         animationType="slide"
                         transparent={false}
@@ -123,7 +174,7 @@ export function ReportScreen2({ route, navigation }: any) {
                                 </Text>
                                 <Image
                                     style={[styles.cameraView, { borderRadius: 15 }]}
-                                    source={{ uri: capturedPhoto.uri }}
+                                    source={{ uri: image.uri }}
                                 />
                                 <TouchableOpacity
                                     activeOpacity={0.6}
@@ -137,8 +188,6 @@ export function ReportScreen2({ route, navigation }: any) {
                                     colors={[theme.colors.secondary1, theme.colors.secondary2]}
                                     buttonStyle={{ height: 45, width: "90%", marginBottom: 20, marginTop: 20 }}
                                     onPress={() => {
-                                        //const cache = cachePicture()
-                                        data.image_url = ""
                                         navigation.navigate("Step3", { data })
                                     }}
                                 />

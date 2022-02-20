@@ -10,6 +10,7 @@ class ReadUserReportsService {
                     id: user_id,
                 },
             })
+            console.log(reports)
             return reports;
         } catch (error) {
             console.log(error)
