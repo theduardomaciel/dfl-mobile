@@ -99,11 +99,10 @@ const SectionItem = ({ item }: any) => {
                     {item.solved ? <Text style={{ color: theme.colors.primary1 }}> | solucionado</Text> : <Text style={{ color: theme.colors.red }}> | não solucionado</Text>}
                 </Text>
             </View>
-            {/* uri: item.image_url, */}
             <Image
                 style={styles.report_image}
                 source={{
-                    uri: "https://github.com/theduardomaciel.png"
+                    uri: item.image_url
                 }}
             />
         </TouchableOpacity>
@@ -114,7 +113,7 @@ const EMPTY = []
 
 const EmptyItem = ({ item }: any) => {
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { alignItems: "center", justifyContent: "center", alignSelf: "center" }]}>
             <TrashbinSvg
                 width={50}
                 height={90}
@@ -162,27 +161,27 @@ export function Account() {
 
     // Código original: https://stackoverflow.com/questions/46802448/how-do-i-group-items-in-an-array-by-date
     const [reportsData, setReportsData] = useState(null)
+    async function LoadUserReports() {
+        const data = user.reports;
+        const groups = data.reduce((groups, report) => {
+            const date = report.createdAt.split('T')[0];
+            const dateSplit = date.split('-')
+            const title = dateSplit[2] + "/" + dateSplit[1]
+            if (!groups[title]) {
+                groups[title] = [];
+            }
+            groups[title].push(report);
+            return groups;
+        }, {});
+        const groupArrays = Object.keys(groups).map((title) => {
+            return {
+                title,
+                data: groups[title]
+            };
+        });
+        setReportsData(groupArrays)
+    }
     useEffect(() => {
-        async function LoadUserReports() {
-            const data = user.reports;
-            const groups = data.reduce((groups, report) => {
-                const date = report.createdAt.split('T')[0];
-                const dateSplit = date.split('-')
-                const title = dateSplit[2] + "/" + dateSplit[1]
-                if (!groups[title]) {
-                    groups[title] = [];
-                }
-                groups[title].push(report);
-                return groups;
-            }, {});
-            const groupArrays = Object.keys(groups).map((title) => {
-                return {
-                    title,
-                    data: groups[title]
-                };
-            });
-            setReportsData(groupArrays)
-        }
         LoadUserReports()
     }, []);
 
@@ -197,6 +196,7 @@ export function Account() {
 
                 refreshControl={
                     <RefreshControl
+                        onRefresh={LoadUserReports}
                         refreshing={false}
                     />
                 }

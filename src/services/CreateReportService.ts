@@ -1,8 +1,17 @@
 import prismaClient from "../prisma"
 
 class CreateReportService {
-    async execute(user_id: number, address: string, coordinates: number[], image_url: string, tags: string, suggestion: string, hasTrashBins: boolean) {
-        console.log(address, image_url, suggestion)
+    async execute(
+        user_id: number,
+        address: string,
+        coordinates: Array<number>,
+        image_url: string,
+        image_deleteHash: string,
+        tags: string,
+        suggestion: string,
+        hasTrashBins: boolean
+    ) {
+        console.log(coordinates)
         try {
             const report = await prismaClient.report.create({
                 data: {
@@ -12,6 +21,7 @@ class CreateReportService {
                     address: address,
                     coordinates: coordinates,
                     image_url: image_url,
+                    image_deleteHash: image_deleteHash,
                     tags: JSON.stringify(tags),
                     suggestion: suggestion,
                     hasTrashBins: hasTrashBins,

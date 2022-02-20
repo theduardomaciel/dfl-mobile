@@ -10,15 +10,20 @@ import {
 import { styles } from './styles';
 import { theme } from '../../global/styles/theme';
 
-type CustomProps<T = string | number> = {
-    //onValueChange?: (itemValue: T, itemIndex: number) => void;
-    //MapView?: React.Component<MapViewProps>;
-    biggerScope?: boolean;
-    setMapRegion: any;
-    actualRegion: any;
+type RegionType = {
+    latitude: number,
+    longitude: number,
+    latitudeDelta: number,
+    longitudeDelta: number,
 }
 
-export function MapScopePicker({ biggerScope, actualRegion, setMapRegion }: CustomProps) {
+type CustomProps = {
+    changedScope: (scope, newRegion) => void;
+    actualRegion: RegionType;
+    biggerScope?: boolean;
+}
+
+export function MapScopePicker({ actualRegion, changedScope, biggerScope }: CustomProps) {
     const [selectedScope, setSelectedScope] = useState();
     return (
         <View style={styles.scopeButton}>
@@ -28,37 +33,32 @@ export function MapScopePicker({ biggerScope, actualRegion, setMapRegion }: Cust
                 dropdownIconColor={theme.colors.text1}
                 selectedValue={selectedScope}
                 onValueChange={(itemValue, itemIndex) => {
-                    if (!actualRegion) return;
-                    console.log("Alterando escopo do mapa.")
                     setSelectedScope(itemValue)
                     // Função que altera o escopo do mapa
-                    let newRegion;
-                    if (itemValue === 'state') {
-                        newRegion = {
-                            latitude: actualRegion.latitude,
-                            longitude: actualRegion.longitude,
-                            latitudeDelta: 2,
-                            longitudeDelta: 2
-                        }
-                    } else if (itemValue === 'city') {
-                        newRegion = {
-                            latitude: actualRegion.latitude,
-                            longitude: actualRegion.longitude,
-                            latitudeDelta: 0.25,
-                            longitudeDelta: 0.25
-                        }
-                    } else if (itemValue === 'neighbrhood') {
-                        newRegion = {
-                            latitude: actualRegion.latitude,
-                            longitude: actualRegion.longitude,
-                            latitudeDelta: 0.05,
-                            longitudeDelta: 0.05
-                        }
+                    let newRegion = Object.assign({}, actualRegion)
+                    switch (itemValue) {
+                        case 'neighbourhood':
+                            newRegion.latitudeDelta = 0.025
+                            newRegion.longitudeDelta = 0.025
+                            break;
+                        case 'city':
+                            newRegion.latitudeDelta = 0.25
+                            newRegion.longitudeDelta = 0.25
+                            break;
+                        case 'state':
+                            newRegion.latitudeDelta = 0.75
+                            newRegion.longitudeDelta = 0.75
+                            break;
+                        case 'country':
+                            newRegion.latitudeDelta = 10
+                            newRegion.longitudeDelta = 10
+                            break;
                     }
-                    setMapRegion(newRegion)
+                    //console.log(`Atualizando escopo do mapa para ${itemValue}`, newRegion)
+                    changedScope(itemValue, newRegion)
                 }}
             >
-                <Picker.Item label="Bairro" value="neighborhood" color={theme.colors.secondary1} fontFamily={theme.fonts.title700} />
+                <Picker.Item label="Bairro" value="neighbourhood" color={theme.colors.secondary1} fontFamily={theme.fonts.title700} />
                 <Picker.Item label="Cidade" value="city" color={theme.colors.secondary1} fontFamily={theme.fonts.title700} />
                 <Picker.Item label="Estado" value="state" color={theme.colors.secondary1} fontFamily={theme.fonts.title700} />
                 {

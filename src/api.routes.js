@@ -16,7 +16,7 @@ const router = Router();
 router.post("/authenticate", new AuthenticateUserController().handle);
 
 router.post("/report/create", ensureAuthenticated, new CreateReportController().handle)
-router.post("/profile/create", ensureAuthenticated, new CreateProfileController().handle);
+router.post("/profile/create", new CreateProfileController().handle);
 
 router.post("/user", ensureAuthenticated, new ReadUserController().handle);
 router.post("/user/reports", new ReadUserReportsController().handle)

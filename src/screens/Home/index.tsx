@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, Image, RefreshControl, Platform } from "react-native";
 import { MapScopePicker } from "../../components/MapScopePicker";
 
-import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE, Marker, Region } from "react-native-maps";
 import { check, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 import { ProfileIcon } from "../../components/ProfileIcon";
@@ -43,6 +43,13 @@ const Marcadores = [
     }
 ]
 
+type RegionType = {
+    latitude: number,
+    longitude: number,
+    latitudeDelta: number,
+    longitudeDelta: number,
+}
+
 const initialRegion = {
     latitude: -23.6821604,
     longitude: -46.9057052,
@@ -51,18 +58,10 @@ const initialRegion = {
 }
 
 export function Home({ navigation }) {
-    const [refreshing, setRefreshing] = useState(false)
-    const onRefresh = () => {
-        setRefreshing(true);
-        console.log("Usuário atualizou página Home.")
-        setRefreshing(false);
-    }
-
     let mapReference: any;
-    const [region, setRegion] = useState(initialRegion);
     const [alreadyLoaded, setAlreadyLoaded] = useState(false)
 
-    const { user, creatingAccount } = useAuth();
+    const { user, creatingAccount, updateUser } = useAuth();
     useEffect(() => {
         async function HasPermission() {
             let permissionToCheck;
@@ -73,7 +72,6 @@ export function Home({ navigation }) {
             }
             check(permissionToCheck)
                 .then((result) => {
-                    console.log(result)
                     if (result !== RESULTS.GRANTED) {
                         creatingAccount ?
                             navigation.navigate("PermissionsExplanation")
@@ -82,13 +80,33 @@ export function Home({ navigation }) {
                 });
         }
         HasPermission();
-    });
+    }, []);
 
-    if (user === null) {
-        return null
+    if (user === null) return null;
+
+    const userReportsAmount = user.reports.length
+    const userReportsSolvedAmount = [...user.reports].filter(report => report.solved === true).length;
+    const onRefresh = async () => {
+        await updateUser()
+        console.log("Usuário atualizou página Home.")
     }
 
-    const userReportsAmount = user.reports ? user.reports.length : 0
+    const [region, setRegion] = useState(initialRegion as RegionType);
+    const [scopeText, setScopeText] = useState("seu bairro")
+    const getScopePicked = (scope, newRegion) => {
+        switch (scope) {
+            case "neighbourhood":
+                setScopeText("em seu bairro")
+                break;
+            case "city":
+                setScopeText("na sua cidade")
+                break;
+            case "state":
+                setScopeText("em seu estado")
+                break;
+        }
+        setRegion(newRegion)
+    }
 
     return (
         <View style={styles.container}>
@@ -109,7 +127,7 @@ export function Home({ navigation }) {
                 fadingEdgeLength={50}
                 refreshControl={
                     <RefreshControl
-                        refreshing={refreshing}
+                        refreshing={false}
                         onRefresh={onRefresh}
                     />
                 }
@@ -150,7 +168,7 @@ export function Home({ navigation }) {
                             {userReportsAmount === 1 ? `Deste 1 foco,` : `Destes ${userReportsAmount} focos,`}
                         </Text>
                         <Text style={[styles.info, { fontSize: 24, textAlign: "center" }]}>
-                            4 já foram recolhidos pelos órgãos responsáveis
+                            {userReportsSolvedAmount === 1 ? `1 já foi recolhido pelos órgãos responsáveis` : userReportsSolvedAmount + " já foram recolhidos pelos órgãos responsáveis"}
                         </Text>
                     </View>
                 </View>
@@ -160,14 +178,14 @@ export function Home({ navigation }) {
                     <Text style={[styles.title, { marginLeft: 12 }]}>
                         Engajamento da Comunidade
                     </Text>
-                    <MapScopePicker actualRegion={region} setMapRegion={setRegion} />
+                    <MapScopePicker changedScope={getScopePicked} actualRegion={region} />
                 </View>
                 <View style={[elements.subContainerGreen, theme.shadowProperties, { height: 256 }]}>
                     <Text style={[styles.info, { fontSize: 36 }]}>
-                        28 focos de lixo
+                        {userReportsAmount === 1 ? `1 foco de lixo` : `${userReportsAmount} focos de lixo`}
                     </Text>
                     <Text style={styles.subtitle}>
-                        foram encontrados em seu bairro este mês
+                        {userReportsAmount === 1 ? `foi encontrado ${scopeText}` : `foram encontrados ${scopeText}`}
                     </Text>
                     <View style={styles.mapView}>
                         <MapView
@@ -187,11 +205,10 @@ export function Home({ navigation }) {
                                         latitudeDelta: 0.05,
                                         longitudeDelta: 0.05
                                     }
-                                    setRegion(newRegion);
+                                    setRegion(newRegion as RegionType);
                                     mapReference.animateToRegion(newRegion, 2000)
                                 }
                             }}
-                            initialRegion={initialRegion}
                         >
                             {Marcadores.map((marker, index) => (
                                 <Marker

@@ -118,6 +118,7 @@ export function ReportScreen1({ navigation }: any) {
                     buttonStyle={{ height: 45, width: "90%", marginTop: 20, marginBottom: 20 }}
                     onPress={() => {
                         const data = cacheLocation()
+                        console.log(data)
                         navigation.navigate("Step2", { data })
                     }}
                 />

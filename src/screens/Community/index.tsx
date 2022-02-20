@@ -18,6 +18,7 @@ import { Entypo } from '@expo/vector-icons';
 import { useAuth } from "../../hooks/auth";
 import { ProfileModal } from "../../components/ProfileModal";
 import { DefaultCityPicker } from "../../components/ProfilePickers/DefaultCity";
+import { MapScopePicker } from "../../components/MapScopePicker";
 
 const Marcadores = [
     {
@@ -51,6 +52,31 @@ export function Community() {
 
     const [isProfileModalVisible, setProfileModalVisible] = useState(false)
     const [secondModalIsVisible, setSecondModalVisible] = useState(false)
+
+    const [markers, setMarkers] = useState([])
+
+    function ListMarkersOnMap(scope) {
+        switch (scope) {
+            case "neighbourhood":
+                let markersArray = []
+                user.reports.forEach((report) => {
+                    markersArray.push({
+                        title: report.address,
+                        description: report.suggestion,
+                        coordinates: {
+                            latitude: report.coordinates[0],
+                            longitude: report.coordinates[1],
+                        }
+                    })
+                })
+                setMarkers(markersArray)
+                break;
+            case "city":
+
+                break;
+        }
+    }
+
     useEffect(() => {
         function CheckIfProfileIsCreated() {
             console.log(user.profile)
@@ -59,7 +85,7 @@ export function Community() {
             }
         }
         CheckIfProfileIsCreated()
-        //setTimeout(CheckIfProfileIsCreated, 1000);
+        ListMarkersOnMap("neighbourhood")
     }, []);
 
     const [isCityModalVisible, setCityModalVisible] = useState(false);
@@ -69,6 +95,14 @@ export function Community() {
 
     const secondToogleModal = () => {
         setSecondModalVisible(!secondModalIsVisible)
+    }
+
+    const getScopePicked = (scope, newRegion) => {
+        setRegion(newRegion)
+        ListMarkersOnMap(scope)
+    }
+    const onDefaultCityPicked = (city) => {
+        //
     }
 
     const [region, setRegion] = useState(initialRegion);
@@ -83,7 +117,7 @@ export function Community() {
                 onBackdropPress={() => setCityModalVisible(false)}
                 toggleModal={() => { setCityModalVisible(false) }}
             >
-                <DefaultCityPicker />
+                <DefaultCityPicker onSelectOption={onDefaultCityPicked} />
                 <TextButton title="ALTERAR CIDADE" textStyle={{ fontSize: 12 }} buttonStyle={{ backgroundColor: theme.colors.primary2, paddingVertical: 10, paddingHorizontal: 25, borderRadius: 25 }} />
             </ModalBase>
             <StatusBar
@@ -124,7 +158,7 @@ export function Community() {
                         }}
                         initialRegion={initialRegion}
                     >
-                        {Marcadores.map((marker, index) => (
+                        {markers.map((marker, index) => (
                             <Marker
                                 key={index}
                                 coordinate={marker.coordinates}
@@ -133,6 +167,9 @@ export function Community() {
                             />
                         ))}
                     </MapView>
+                    <View style={{ position: "absolute", bottom: 0, right: 0 }}>
+                        <MapScopePicker changedScope={getScopePicked} actualRegion={region} />
+                    </View>
                 </View>
                 <BottomBar
                     viewStyle={{ width: "90%" }}

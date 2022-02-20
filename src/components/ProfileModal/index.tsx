@@ -47,7 +47,7 @@ export function ProfileModal({ toggleModal, isSecond, secondToogleModal, ...rest
         console.log("Nome de Usuário: ", username)
         console.log("Cidade: ", defaultCity)
         try {
-            const profileCreationResponse = await api.post("/profile/create", { user: user, username: username, defaultCity: defaultCity })
+            await api.post("/profile/create", { user: user, username: username, defaultCity: defaultCity })
             await updateUser();
             console.log(user)
         } catch (error) {

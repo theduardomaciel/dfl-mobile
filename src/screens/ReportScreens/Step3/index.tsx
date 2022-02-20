@@ -17,7 +17,7 @@ import { useAuth } from "../../../hooks/auth";
 import axios from "axios";
 
 type ReportProps = {
-    coordinates: {},
+    coordinates: Array<number>,
     address: string,
     image_url: string,
     tags: string,
@@ -48,8 +48,6 @@ export function ReportScreen3({ route, navigation }: any) {
         try {
             const imageResponse = await api.post("/upload", { image_base64: data.image_base64, user_id: user.id });
             const { deletehash, link } = imageResponse.data as ImageUploadResponse;
-            console.log(deletehash, link)
-            console.log(imageResponse.data)
             return { deletehash, link }
         } catch (error) {
             console.log(error)
@@ -58,7 +56,9 @@ export function ReportScreen3({ route, navigation }: any) {
 
     async function SubmitReport(data: ReportProps) {
         try {
-            const { deletehash, link } = await UploadImage()
+            //const { deletehash, link } = await UploadImage()
+            const deletehash = ""
+            const link = ""
             const submitResponse = await api.post("/report/create", {
                 user_id: user.id,
                 coordinates: data.coordinates,
@@ -69,7 +69,7 @@ export function ReportScreen3({ route, navigation }: any) {
                 suggestion: data.suggestion,
                 hasTrashbin: data.hasTrashBins
             })
-            console.log("Relatório criado com sucesso!", submitResponse)
+            console.log("Relatório criado com sucesso!", submitResponse.data)
             updateUser();
         } catch (error) {
             console.log(error)

@@ -58,7 +58,6 @@ export function ReportScreen2({ route, navigation }: any) {
     }
 
     // RATIO SETTER - código original: https://askandroidquestions.com/2021/05/27/react-native-expo-camera-ratio-and-preview-not-configurable-enough/
-    const [imagePadding, setImagePadding] = useState(0)
     const [ratio, setRatio] = useState('4:3') // default is 4:3
     const screenRatio = height / width
     const [isRatioSet, setIsRatioSet] = useState(false)
@@ -90,14 +89,7 @@ export function ReportScreen2({ route, navigation }: any) {
             // set the best match
             desiredRatio = minDistance
 
-            //  calculate the difference between the camera width and the screen height
-            const remainder = Math.floor(
-                (height - realRatios[desiredRatio] * width) / 2
-            )
-
             // set the preview padding and preview ratio
-            setImagePadding(remainder / 2)
-            console.log(`okay look ${remainder / 2}`)
             setRatio(desiredRatio)
             // Set a flag so we don't do this
             // calculation each time the screen refreshes
@@ -135,21 +127,24 @@ export function ReportScreen2({ route, navigation }: any) {
                 <Text style={defaultStyles.title}>
                     Tire uma foto para mostrar o local afetado pelo foco de lixo.
                 </Text>
-                <View style={styles.cameraView}>
-                    <Camera
-                        style={{ flex: 1 }}
-                        onCameraReady={setCameraReady}
-                        type={cameraType}
-                        ratio={ratio}
-                        autoFocus={"on"}
-                        ref={cameraRef}
-                        useCamera2Api
-                    >
-                        <TouchableOpacity activeOpacity={0.5} style={styles.flipCamera} onPress={flipCameraHandler}>
-                            <FlipCamera height={36} width={36} />
-                        </TouchableOpacity>
-                    </Camera>
-                </View>
+                {activateCamera && (
+                    <View style={styles.cameraView}>
+                        <Camera
+                            style={{ flex: 1 }}
+                            onCameraReady={setCameraReady}
+                            type={cameraType}
+                            ratio={ratio}
+                            autoFocus={"on"}
+                            ref={cameraRef}
+                            useCamera2Api
+                        >
+                            <TouchableOpacity activeOpacity={0.5} style={styles.flipCamera} onPress={flipCameraHandler}>
+                                <FlipCamera height={36} width={36} />
+                            </TouchableOpacity>
+                        </Camera>
+                    </View>
+                )}
+
                 <BottomBar
                     viewStyle={{ marginBottom: 35 }}
                     element={

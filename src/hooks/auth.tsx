@@ -29,6 +29,7 @@ type Report = {
     suggestion: string,
     hasTrashbin: boolean,
     createdAt: string;
+    solved: boolean;
 }
 
 type User = {
@@ -68,7 +69,6 @@ export const AuthContext = createContext({} as AuthContextData)
 function AuthProvider({ children }: AuthProviderProps) {
     const [isSigningIn, setIsSigningIn] = useState(true)
     const [user, setUser] = useState<User | null>(null)
-    const [reports, setReports] = useState<Array<Report>>(null)
     const [creatingAccount, setCreatingAccount] = useState(false)
 
     async function signIn() {
@@ -87,8 +87,11 @@ function AuthProvider({ children }: AuthProviderProps) {
                 const tokens = await GoogleSignin.getTokens();
                 // Chamar o backend com o usuário e o acess_token
                 try {
+                    console.log("e lá vamos nós 1")
                     const authResponse = await api.post("/authenticate", { user_info: userInfoWithScopes, access_token: tokens.accessToken })
+                    console.log("e lá vamos nós 2")
                     const { user, token } = authResponse.data as AuthResponse;
+                    console.log("e lá vamos nós 3", user, token)
                     api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
                     await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(user));

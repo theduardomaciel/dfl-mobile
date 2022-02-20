@@ -62,9 +62,14 @@ class AuthenticateUserService {
         const { email, id, familyName, givenName, photo } = userInfo.user;
         //const [gender, birthday] = await GetAdditionalInfo(acess_token)
 
-        let user = await prismaClient.user.findUnique({
+        let user;
+        user = await prismaClient.user.findUnique({
             where: {
                 email: email
+            },
+            include: {
+                profile: true,
+                reports: true
             }
         })
 
@@ -79,22 +84,13 @@ class AuthenticateUserService {
                 }
             })
         }
-
-        const token = sign(
-            {
-                user: {
-                    first_name: user.first_name,
-                    image_url: user.image_url,
-                    id: user.id,
-                },
+        const token = sign({
+            user: {
+                first_name: user.first_name,
+                image_url: user.image_url,
+                id: user.id,
             },
-            process.env.JWT_SECRET,
-            {
-                subject: user.id,
-                expiresIn: "1d",
-                aud: "mobile-app"
-            }
-        );
+        }, process.env.JWT_SECRET, { subject: user.google_id, expiresIn: "1d", audience: "mobile-app" });
 
         return { token, user };
     }
