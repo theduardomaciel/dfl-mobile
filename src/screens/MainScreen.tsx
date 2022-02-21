@@ -4,7 +4,7 @@ import { Home } from "./Home"
 import { Community } from "./Community"
 import { Reports } from "./Reports"
 import { Account } from "./Account"
-import { ReportScreen1 } from "../screens/ReportScreens/Step1"
+import { ReportScreen1 } from "./ReportForm/Step1"
 
 import { menuAnimations } from '../global/animations/menuAnimations';
 import { FadeInView } from '../global/animations/fadeInView'

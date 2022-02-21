@@ -13,6 +13,11 @@ export const elements = StyleSheet.create({
         justifyContent: "space-between",
         backgroundColor: theme.colors.primary1,
     },
+    mapView: {
+        flex: 1,
+        borderRadius: 10,
+        overflow: 'hidden'
+    },
     subContainerWhite: {
         height: 200,
         width: "90%",

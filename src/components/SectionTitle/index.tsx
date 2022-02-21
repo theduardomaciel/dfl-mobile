@@ -25,7 +25,7 @@ export function SectionTitle({ title, info, fontStyle, color, hasLine, marginBot
             <View style={styles.textContainer}>
                 <Text
                     style={
-                        fontStyle ? fontStyle : styles.title
+                        fontStyle ? [styles.title, fontStyle] : styles.title
                     }
                 >
                     {title}

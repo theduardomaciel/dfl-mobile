@@ -4,7 +4,8 @@ import {
     StyleSheet,
     Text,
     View,
-    ViewProps
+    ViewProps,
+    ViewStyle
 } from 'react-native';
 
 import { styles } from './styles';
@@ -12,8 +13,8 @@ import { styles } from './styles';
 type Props = ViewProps & {
     // A ? faz com que o elemento não seja obrigatório
     info?: string;
-    element?: any;
-    viewStyle?: any;
+    element?: React.ReactNode;
+    viewStyle?: ViewStyle;
 }
 
 export function BottomBar({ info, element, viewStyle, ...rest }: Props) {

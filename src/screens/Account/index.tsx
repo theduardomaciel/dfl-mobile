@@ -73,42 +73,6 @@ const SectionHeader = ({ section }: any) => (
     />
 );
 
-const SectionItem = ({ item }: any) => {
-    return (
-        <TouchableOpacity
-            activeOpacity={0.9}
-            style={styles.report_container}
-        >
-            <View style={styles.report_info_container}>
-                <SectionTitle
-                    marginBottom={1}
-                    title={item.address}
-                    color={theme.colors.primary1}
-                    hasLine
-                    fontStyle={{
-                        fontFamily: theme.fonts.subtitle500,
-                        color: theme.colors.primary1,
-                        fontSize: 14
-                    }}
-                />
-                <Text style={styles.report_description}>
-                    {item.suggestion ? item.suggestion : "[nenhuma sugestão provida]"}
-                </Text>
-                <Text style={styles.report_data}>
-                    {"Id do relatório: " + item.id}
-                    {item.solved ? <Text style={{ color: theme.colors.primary1 }}> | solucionado</Text> : <Text style={{ color: theme.colors.red }}> | não solucionado</Text>}
-                </Text>
-            </View>
-            <Image
-                style={styles.report_image}
-                source={{
-                    uri: item.image_url
-                }}
-            />
-        </TouchableOpacity>
-    )
-}
-
 const EMPTY = []
 
 const EmptyItem = ({ item }: any) => {
@@ -138,7 +102,7 @@ const EmptyItem = ({ item }: any) => {
     )
 }
 
-export function Account() {
+export function Account({ navigation }) {
     const { user } = useAuth();
     if (user === null) {
         return null;
@@ -156,6 +120,46 @@ export function Account() {
                 </View>
                 <ProfileIcon uri={user.image_url} openConfig />
             </View>
+        )
+    }
+
+    const SectionItem = ({ item }: any) => {
+        /* const report = user.reports.find(report => {
+            return report.id === item.id
+        }) */
+        return (
+            <TouchableOpacity
+                activeOpacity={0.9}
+                style={styles.report_container}
+                onPress={() => { navigation.navigate("Report", { item }) }}
+            >
+                <View style={styles.report_info_container}>
+                    <SectionTitle
+                        marginBottom={1}
+                        title={item.address}
+                        color={theme.colors.primary1}
+                        hasLine
+                        fontStyle={{
+                            fontFamily: theme.fonts.subtitle500,
+                            color: theme.colors.primary1,
+                            fontSize: 14
+                        }}
+                    />
+                    <Text style={styles.report_description}>
+                        {item.suggestion ? item.suggestion : "[nenhuma sugestão provida]"}
+                    </Text>
+                    <Text style={styles.report_data}>
+                        {"Id do relatório: " + item.id}
+                        {item.solved ? <Text style={{ color: theme.colors.primary1 }}> | solucionado</Text> : <Text style={{ color: theme.colors.red }}> | não solucionado</Text>}
+                    </Text>
+                </View>
+                <Image
+                    style={styles.report_image}
+                    source={{
+                        uri: item.image_url
+                    }}
+                />
+            </TouchableOpacity>
         )
     }
 

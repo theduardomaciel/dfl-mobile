@@ -57,7 +57,7 @@ export function Community() {
 
     function ListMarkersOnMap(scope) {
         switch (scope) {
-            case "neighbourhood":
+            case "district":
                 let markersArray = []
                 user.reports.forEach((report) => {
                     markersArray.push({
@@ -85,7 +85,7 @@ export function Community() {
             }
         }
         CheckIfProfileIsCreated()
-        ListMarkersOnMap("neighbourhood")
+        ListMarkersOnMap("district")
     }, []);
 
     const [isCityModalVisible, setCityModalVisible] = useState(false);

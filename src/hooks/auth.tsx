@@ -21,6 +21,7 @@ const USER_STORAGE = "@dfl:user";
 const TOKEN_STORAGE = "@dfl:token";
 
 type Report = {
+    id: number;
     address: string,
     coordinates: Array<number>,
     image_url: string,

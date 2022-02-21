@@ -37,7 +37,7 @@ export function MapScopePicker({ actualRegion, changedScope, biggerScope }: Cust
                     // Função que altera o escopo do mapa
                     let newRegion = Object.assign({}, actualRegion)
                     switch (itemValue) {
-                        case 'neighbourhood':
+                        case 'district':
                             newRegion.latitudeDelta = 0.025
                             newRegion.longitudeDelta = 0.025
                             break;
@@ -58,7 +58,7 @@ export function MapScopePicker({ actualRegion, changedScope, biggerScope }: Cust
                     changedScope(itemValue, newRegion)
                 }}
             >
-                <Picker.Item label="Bairro" value="neighbourhood" color={theme.colors.secondary1} fontFamily={theme.fonts.title700} />
+                <Picker.Item label="Bairro" value="district" color={theme.colors.secondary1} fontFamily={theme.fonts.title700} />
                 <Picker.Item label="Cidade" value="city" color={theme.colors.secondary1} fontFamily={theme.fonts.title700} />
                 <Picker.Item label="Estado" value="state" color={theme.colors.secondary1} fontFamily={theme.fonts.title700} />
                 {

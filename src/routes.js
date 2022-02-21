@@ -4,12 +4,14 @@ import React from 'react';
 import { Onboarding } from './screens/Onboarding';
 import { MainScreen } from './screens/MainScreen';
 
+import { Report } from "./screens/Report"
+
 import { PermissionsExplanation } from './screens/PermissionScreens/PermissionsExplanation';
 import { PermissionsResquest } from './screens/PermissionScreens/PermissionsRequest';
 
-import { ReportScreen1 } from "./screens/ReportScreens/Step1"
-import { ReportScreen2 } from "./screens/ReportScreens/Step2"
-import { ReportScreen3 } from "./screens/ReportScreens/Step3"
+import { ReportScreen1 } from "./screens/ReportForm/Step1"
+import { ReportScreen2 } from "./screens/ReportForm/Step2"
+import { ReportScreen3 } from "./screens/ReportForm/Step3"
 
 import { useAuth } from './hooks/auth';
 
@@ -25,6 +27,11 @@ export default function Routes() {
                     <Stack.Screen
                         name="Main"
                         component={MainScreen}
+                        options={{ headerShown: false, presentation: "modal" }}
+                    />
+                    <Stack.Screen
+                        name="Report"
+                        component={Report}
                         options={{ headerShown: false }}
                     />
                     <Stack.Group screenOptions={{ presentation: 'modal' }}>

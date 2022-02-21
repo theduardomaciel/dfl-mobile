@@ -24,25 +24,6 @@ function GetGreeting() {
     }
 }
 
-const Marcadores = [
-    {
-        title: "Marcador 1",
-        description: "Coiso",
-        coordinates: {
-            latitude: 39.09802,
-            longitude: 43.14820
-        }
-    },
-    {
-        title: "Marcador 2",
-        description: "Coiso 2",
-        coordinates: {
-            latitude: 23.52260,
-            longitude: 34.16131
-        }
-    }
-]
-
 type RegionType = {
     latitude: number,
     longitude: number,
@@ -86,8 +67,12 @@ export function Home({ navigation }) {
 
     const userReportsAmount = user.reports.length
     const userReportsSolvedAmount = [...user.reports].filter(report => report.solved === true).length;
+
+    const [isRefreshing, setIsRefreshing] = useState(false)
     const onRefresh = async () => {
+        setIsRefreshing(true)
         await updateUser()
+        setIsRefreshing(false)
         console.log("Usuário atualizou página Home.")
     }
 
@@ -95,7 +80,7 @@ export function Home({ navigation }) {
     const [scopeText, setScopeText] = useState("seu bairro")
     const getScopePicked = (scope, newRegion) => {
         switch (scope) {
-            case "neighbourhood":
+            case "district":
                 setScopeText("em seu bairro")
                 break;
             case "city":
@@ -127,7 +112,7 @@ export function Home({ navigation }) {
                 fadingEdgeLength={50}
                 refreshControl={
                     <RefreshControl
-                        refreshing={false}
+                        refreshing={isRefreshing}
                         onRefresh={onRefresh}
                     />
                 }
@@ -210,14 +195,6 @@ export function Home({ navigation }) {
                                 }
                             }}
                         >
-                            {Marcadores.map((marker, index) => (
-                                <Marker
-                                    key={index}
-                                    coordinate={marker.coordinates}
-                                    title={marker.title}
-                                    description={marker.description}
-                                />
-                            ))}
                         </MapView>
                     </View>
                 </View>
