@@ -47,28 +47,33 @@ export function Report({ route, navigation }) {
 
     let groups = [];
     const tagGroups = JSON.parse(report.tags);
-    console.log(tagGroups)
-
-    const { height, width } = useWindowDimensions();
     const [tags, setTags] = useState(Array)
-    useEffect(() => {
+
+    /*
+        onLayout={(event) => {
+            const { x, y, width, height } = event.nativeEvent.layout;
+            tagsInArrayWidth += width
+        }}
+                let tagsInArrayWidth = 0
+
+            const { height, width } = useWindowDimensions();
         const tagsViewWidth = (parseInt(elements.subContainerWhite.width) / 100) * width
-        let tagsInArrayWidth = 0
+
+    */
+
+    useEffect(() => {
         for (const [key, tagGroup] of Object.entries(tagGroups)) {
             for (const [key, tag] of Object.entries(tagGroup)) {
-                console.log(tag)
-                groups.push(
-                    <View onLayout={(event) => {
-                        const { x, y, width, height } = event.nativeEvent.layout;
-                        tagsInArrayWidth += width
-                    }} style={[styles.tag, { width: tagsInArrayWidth <= (tagsViewWidth / 2) ? "50%" : "25%" }]}>
-                        <Text style={styles.tagText}>{tag.title}</Text>
-                        <MaterialIcons name="done" size={18} color="white" />
-                    </View>
-                )
+                if (tag.checked) {
+                    groups.push(
+                        <View style={[styles.tag]}>
+                            <Text style={styles.tagText}>{tag.title}</Text>
+                            <MaterialIcons name="done" size={18} color="white" />
+                        </View>
+                    )
+                }
             }
         }
-        console.log(tagsInArrayWidth)
         setTags(groups)
     }, [])
 
@@ -125,7 +130,7 @@ export function Report({ route, navigation }) {
             </View>
             <BottomBar info={report.address} viewStyle={{ marginBottom: 15 }} />
             <SectionTitle title="Detalhes:" fontStyle={{ fontSize: 18 }} marginBottom={5} />
-            <ScrollView style={[elements.subContainerWhite, styles.tagsContainer]}>
+            <ScrollView showsVerticalScrollIndicator={false} style={[elements.subContainerWhite, styles.tagsContainer]}>
                 <TextButton title="+" buttonStyle={{ paddingHorizontal: 8, paddingVertical: 1, borderRadius: 8, position: "absolute", right: 0, top: -30 }} />
                 <View style={styles.gridContainer}>
                     {tags}

@@ -15,10 +15,10 @@ const router = Router();
 
 router.post("/authenticate", new AuthenticateUserController().handle);
 
-router.post("/report/create", ensureAuthenticated, new CreateReportController().handle)
+router.post("/report/create", new CreateReportController().handle)
 router.post("/profile/create", new CreateProfileController().handle);
 
-router.post("/user", ensureAuthenticated, new ReadUserController().handle);
+router.post("/user", new ReadUserController().handle);
 router.post("/user/reports", new ReadUserReportsController().handle)
 
 router.post("/upload", ensureAuthenticated, new UploadImageController().handle);

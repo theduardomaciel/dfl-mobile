@@ -70,5 +70,45 @@ export const styles = StyleSheet.create({
         color: theme.colors.primary4,
         fontSize: 10,
         fontFamily: theme.fonts.subtitle400
-    }
+    },
+
+    tagsContainer: {
+        flex: 1,
+    },
+    tag: {
+        backgroundColor: theme.colors.secondary1,
+        borderRadius: 30,
+
+        height: 40,
+        flexDirection: "row",
+        paddingHorizontal: 15,
+        paddingVertical: 5,
+        marginRight: 10,
+        marginBottom: 5,
+
+        alignItems: "center",
+        justifyContent: "center",
+        borderColor: theme.colors.primary1,
+        borderWidth: 3
+    },
+    tagText: {
+        color: theme.colors.text1,
+        fontFamily: theme.fonts.subtitle500,
+        fontSize: 14,
+
+        marginRight: 5,
+
+        textAlign: "center",
+        textAlignVertical: "center"
+    },
+
+    gridContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        alignSelf: "center",
+        alignItems: "center",
+        alignContent: "center",
+        justifyContent: "space-around"
+    },
 });
