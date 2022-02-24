@@ -12,6 +12,8 @@ import { MaterialIcons, Entypo } from "@expo/vector-icons"
 import { SectionTitle } from "../../components/SectionTitle";
 import { BottomBar } from "../../components/BottomBar";
 import { TextButton } from "../../components/TextButton";
+import { ModalBase } from "../../components/ModalBase";
+import { TagsSelector } from "../../components/TagsSelector";
 
 type Report = {
     id: number,
@@ -77,6 +79,14 @@ export function Report({ route, navigation }) {
         setTags(groups)
     }, [])
 
+    const [isModalVisible, setModalVisible] = useState(false)
+
+    const handleTagsChange = () => {
+
+    }
+
+    const tagsSelector = <TagsSelector style={{ height: "77%", width: "90%" }} onSelectTags={handleTagsChange} />
+
     return (
         <View style={styles.container}>
             <StatusBar barStyle="light-content" />
@@ -129,11 +139,29 @@ export function Report({ route, navigation }) {
                 </View>
             </View>
             <BottomBar info={report.address} viewStyle={{ marginBottom: 15 }} />
-            <SectionTitle title="Detalhes:" fontStyle={{ fontSize: 18 }} marginBottom={5} />
+            <View style={{ flexDirection: "row", width: "90%", justifyContent: "space-between" }}>
+                <SectionTitle title="Detalhes:" fontStyle={{ fontSize: 18 }} marginBottom={5} />
+                <TextButton title="+" onPress={() => { setModalVisible(true) }} buttonStyle={{ paddingHorizontal: 8, paddingVertical: 1, borderRadius: 8, }} />
+            </View>
+
+            {
+                isModalVisible &&
+                <ModalBase
+                    isVisible={isModalVisible}
+                    title="Adicionar tags"
+                    description="Adicione tags com informações relacionadas à situação do foco de lixo relatado."
+                    children={tagsSelector}
+                    toggleModal={() => { setModalVisible(!isModalVisible) }}
+                    style={{ height: 500, paddingVertical: 15 }}
+                    descriptionStyle={{ textAlign: "left", fontSize: 14 }}
+                    button
+                />
+            }
+
             <ScrollView showsVerticalScrollIndicator={false} style={[elements.subContainerWhite, styles.tagsContainer]}>
-                <TextButton title="+" buttonStyle={{ paddingHorizontal: 8, paddingVertical: 1, borderRadius: 8, position: "absolute", right: 0, top: -30 }} />
                 <View style={styles.gridContainer}>
                     {tags}
+                    <View style={{ width: "100%", height: 20 }} />
                 </View>
             </ScrollView>
             <LinearGradient

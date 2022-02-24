@@ -56,9 +56,7 @@ export function ReportScreen3({ route, navigation }: any) {
 
     async function SubmitReport(data: ReportProps) {
         try {
-            //const { deletehash, link } = await UploadImage()
-            const deletehash = ""
-            const link = ""
+            const { deletehash, link } = await UploadImage()
             const submitResponse = await api.post("/report/create", {
                 user_id: user.id,
                 coordinates: data.coordinates,

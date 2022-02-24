@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, GestureResponderEvent } from 'react-native'
+import { View, Text, GestureResponderEvent, ViewStyle, TextStyle } from 'react-native'
 import Modal, { ModalProps } from 'react-native-modal'
 
 import { TextButton } from '../TextButton'
@@ -15,11 +15,13 @@ type Props = CustomModalProps & {
     title: string;
     description?: string;
     button?: boolean;
+    style?: ViewStyle;
+    descriptionStyle: TextStyle;
     toggleModal: () => void;
     children?: React.ReactNode;
 }
 
-export function ModalBase({ title, description, button, toggleModal, children, ...rest }: Props) {
+export function ModalBase({ title, description, button, toggleModal, children, style, descriptionStyle, ...rest }: Props) {
     return (
         <Modal
             statusBarTranslucent={true}
@@ -29,7 +31,7 @@ export function ModalBase({ title, description, button, toggleModal, children, .
             backdropTransitionOutTiming={0}
             {...rest}
         >
-            <View style={styles.modal}>
+            <View style={style ? [styles.modal, style] : styles.modal}>
                 <Text style={styles.title}>
                     {title}
                 </Text>
@@ -37,7 +39,7 @@ export function ModalBase({ title, description, button, toggleModal, children, .
                     !button && <TextButton title="X" buttonStyle={styles.closeButton} onPress={toggleModal} />
                 }
                 {
-                    description ? <Text style={styles.description}>{description}</Text> : null
+                    description ? <Text style={descriptionStyle ? [styles.description, descriptionStyle] : styles.description}>{description}</Text> : null
                 }
                 {children}
                 {

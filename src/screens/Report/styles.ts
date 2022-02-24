@@ -55,7 +55,7 @@ export const styles = StyleSheet.create({
         height: 50,
         width: "80%",
         borderRadius: 15,
-        marginTop: 25,
+        marginTop: 20,
         alignItems: "center",
         justifyContent: "center",
     },
@@ -65,7 +65,7 @@ export const styles = StyleSheet.create({
         fontFamily: theme.fonts.title500
     },
     reportInfo: {
-        marginTop: 5,
+        marginTop: 3,
         marginBottom: 15,
         color: theme.colors.primary4,
         fontSize: 10,
@@ -83,7 +83,7 @@ export const styles = StyleSheet.create({
         flexDirection: "row",
         paddingHorizontal: 15,
         paddingVertical: 5,
-        marginRight: 10,
+        marginRight: 5,
         marginBottom: 5,
 
         alignItems: "center",
@@ -103,12 +103,19 @@ export const styles = StyleSheet.create({
     },
 
     gridContainer: {
-        flex: 1,
         flexDirection: 'row',
         flexWrap: 'wrap',
-        alignSelf: "center",
-        alignItems: "center",
-        alignContent: "center",
-        justifyContent: "space-around"
+        justifyContent: "center"
     },
+
+    modal: {
+        justifyContent: "space-evenly",
+        minHeight: 475,
+        alignItems: "center",
+        height: 500,
+        width: 350,
+        borderRadius: 15,
+        backgroundColor: theme.colors.modalBackground,
+        paddingVertical: 20,
+    }
 });

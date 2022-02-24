@@ -7,7 +7,8 @@ import {
     UIManager,
     FlatList,
     LayoutAnimation,
-    Platform
+    Platform,
+    ViewStyle
 } from 'react-native';
 
 import { styles } from './styles';
@@ -92,9 +93,10 @@ function TagSection({ tags, section, onSelectTags }: TagSectionProps) {
 
 type TagsSelectorTypes = {
     onSelectTags: (tags) => void;
+    style?: ViewStyle;
 }
 
-export function TagsSelector({ onSelectTags }: TagsSelectorTypes) {
+export function TagsSelector({ onSelectTags, style }: TagsSelectorTypes) {
     const [selectorTags, setSelectorTags] = useState({});
     const handleTags = (section, tags) => {
         const tagsCopy = selectorTags;
@@ -103,7 +105,7 @@ export function TagsSelector({ onSelectTags }: TagsSelectorTypes) {
         onSelectTags(selectorTags)
     }
     return (
-        <View style={styles.container}>
+        <View style={style ? [styles.container, style] : styles.container}>
             <SectionTitle title='Tempo de Permanência' marginBottom={1} fontStyle={{ fontSize: 18, color: theme.colors.secondary1, fontFamily: theme.fonts.section400 }} />
             <TagSection section="time" tags={['Até 5 dias', '1 semana', '2 semanas', 'Mais de 1 mês']} onSelectTags={handleTags} />
 
