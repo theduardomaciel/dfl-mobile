@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Profile" ADD COLUMN     "experience" DOUBLE PRECISION NOT NULL DEFAULT 0;

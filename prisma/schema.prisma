@@ -30,6 +30,7 @@ model Profile {
   username    String    @unique
   defaultCity String
   level       Int       @default(0)
+  experience  Float     @default(0)
   comments    Comment[]
   user        User      @relation(fields: [user_id], references: [id], onDelete: SetDefault)
   user_id     Int       @unique

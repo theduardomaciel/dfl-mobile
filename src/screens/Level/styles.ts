@@ -2,11 +2,9 @@ import { StyleSheet, Dimensions } from "react-native";
 import { theme } from "../../global/styles/theme";
 
 const { width } = Dimensions.get('window');
-export const ITEM_LENGTH = width * 0.8; // Item is a square. Therefore, its height and width are of the same length.
 
-export const CURRENT_ITEM_TRANSLATE_Y = 25;
-const SPACING = 5;
-const BORDER_RADIUS = 20;
+export const SPACING = 5
+export const ITEM_LENGTH = width * 0.8; // Item is a square. Therefore, its height and width are of the same length.
 
 export const styles = StyleSheet.create({
     container: {
@@ -47,30 +45,19 @@ export const styles = StyleSheet.create({
     levelOverview: {
 
     },
-
-    // Carousel
-    flatListContent: {
-        alignItems: 'center',
-    },
-    item: {},
-    itemContent: {
-        marginHorizontal: SPACING * 3,
-        alignItems: 'center',
-        height: "50%"
-    },
     itemImage: {
-        width: '100%',
-        height: ITEM_LENGTH,
-        resizeMode: 'contain',
+        width: ITEM_LENGTH,
+        //height: "50%",
+        flex: 1,
+        resizeMode: "contain",
+        //backgroundColor: "red"
     },
-    //
 
     levelTitle: {
         textAlign: "center",
         fontFamily: theme.fonts.title700,
         color: theme.colors.text1,
         fontSize: 28,
-        backgroundColor: "green"
     },
     levelDescription: {
         textAlign: "center",
@@ -86,14 +73,10 @@ export const styles = StyleSheet.create({
         fontSize: 12
     },
 
-    modal: {
-        justifyContent: "space-evenly",
-        minHeight: 475,
-        alignItems: "center",
-        height: 500,
-        width: 350,
-        borderRadius: 15,
-        backgroundColor: theme.colors.modalBackground,
-        paddingVertical: 20,
+    progressBar: {
+        flex: 1,
+        borderRadius: 17.5,
+        height: 25,
+        backgroundColor: theme.colors.primary4
     }
 });

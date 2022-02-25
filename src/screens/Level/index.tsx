@@ -1,17 +1,24 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
+    Alert,
     Animated,
     FlatList,
     Image,
+    LayoutAnimation,
+    Platform,
+    Pressable,
+    Share,
     StatusBar,
     Text,
+    UIManager,
     View,
+    ViewToken,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
 import { elements } from "../../global/styles/elements";
 import { theme } from "../../global/styles/theme";
-import { ITEM_LENGTH, styles, CURRENT_ITEM_TRANSLATE_Y } from "./styles";
+import { ITEM_LENGTH, styles, SPACING } from "./styles";
 
 import { AntDesign, Entypo } from "@expo/vector-icons"
 
@@ -21,76 +28,87 @@ import { TextButton } from "../../components/TextButton";
 import { useAuth } from "../../hooks/auth";
 import { LEVELS_DATA } from "../../utils/levels";
 
-interface ImageCarouselItem {
-    id: number;
-    title: string;
-    exp: number;
-    icon: any;
+const onShare = async () => {
+    try {
+        const result = await Share.share({
+            message:
+                'DFL - Detector de Focos de Lixo',
+        });
+        if (result.action === Share.sharedAction) {
+            if (result.activityType) {
+                // shared with activity type of result.activityType
+            } else {
+                // shared
+            }
+        } else if (result.action === Share.dismissedAction) {
+            // dismissed
+        }
+    } catch (error) {
+        Alert.alert(error.message);
+    }
+};
+
+type PropTypes = {
+    viewableItems: Array<ViewToken>;
 }
 
 export function Level({ route, navigation }) {
     const { user } = useAuth();
 
+    const [currentIndex, setCurrentIndex] = useState(0)
     const scrollX = useRef(new Animated.Value(0)).current;
-    const currentIndex = useRef<number>(0);
     const flatListRef = useRef<FlatList<any>>(null);
-    const [isNextDisabled, setIsNextDisabled] = useState<boolean>(false);
-    const [isPrevDisabled, setIsPrevDisabled] = useState<boolean>(false);
 
-    useEffect(() => {
-        currentIndex.current = 0;
-        setIsPrevDisabled(true);
-    }, [LEVELS_DATA]);
+    const viewabilityConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
 
-    const handleOnViewableItemsChanged = useCallback(({ viewableItems }) => {
-        const itemsInView = viewableItems.filter(
-            ({ item }: { item: ImageCarouselItem }) => item.icon && item.title,
-        );
-
-        if (itemsInView.length === 0) {
-            return;
+    const scrollTo = (index: number) => {
+        if (flatListRef.current !== null) {
+            LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+            flatListRef.current.scrollToIndex({ index: index })
         }
+    };
 
-        currentIndex.current = itemsInView[0].index;
-
-        setIsNextDisabled(currentIndex.current === LEVELS_DATA.length);
-        setIsPrevDisabled(currentIndex.current === 1);
+    // Utilizamos o "callback" para que o valor do "state" seja atualizado apenas quando o usuário clicar no botão
+    const onViewableItemsChanged = useCallback(({ viewableItems }: PropTypes) => {
+        return setCurrentIndex(viewableItems[0].index)
     }, []);
 
-    const viewabilityConfig = useRef({ viewAreaCoveragePercentThreshold: 100 }).current;
-    const viewabilityConfigCallbackPairs = useRef([{ viewabilityConfig, handleOnViewableItemsChanged }])
+    const viewabilityConfigCallbackPairs = useRef([{ viewabilityConfig, onViewableItemsChanged }])
 
     const handleOnPrev = () => {
-        if (currentIndex.current === 1) {
+        console.log(currentIndex)
+        if (currentIndex === 0) {
             return;
         }
-
         if (flatListRef.current) {
             flatListRef.current.scrollToIndex({
                 animated: true,
-                index: currentIndex.current - 1,
+                index: currentIndex - 1,
             });
         }
     };
 
     const handleOnNext = () => {
-        if (currentIndex.current === LEVELS_DATA.length) {
+        // Removemos 1 por padrão, e outro pois o primeiro nível não é visualizado
+        if (currentIndex === LEVELS_DATA.length - 2) {
             return;
         }
-
         if (flatListRef.current) {
             flatListRef.current.scrollToIndex({
                 animated: true,
-                index: currentIndex.current + 1,
+                index: currentIndex + 1,
             });
         }
     };
 
-    const getItemLayout = (_data: any, index: number) => ({
-        length: ITEM_LENGTH,
-        offset: ITEM_LENGTH * (index - 1),
-        index,
-    });
+    const USER_EXP = 12;
+    const BAR_WIDTH = ((USER_EXP * 100) / LEVELS_DATA[currentIndex + 1].exp)
+
+    if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+        UIManager.setLayoutAnimationEnabledExperimental(true);
+    }
+
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
 
     return (
         <View style={styles.container}>
@@ -127,74 +145,70 @@ export function Level({ route, navigation }) {
                 title="Compartilhar meu nível"
                 icon={<Entypo name="share" size={24} color="white" />}
                 buttonStyle={{ paddingHorizontal: 20, paddingVertical: 5, borderRadius: 10 }}
+                onPress={onShare}
             />
             <SectionTitle title="Níveis" hasLine />
             <View style={[elements.subContainerGreen, { flex: 1, marginBottom: 20, alignItems: "center", justifyContent: "space-around" }]}>
                 <View style={styles.levelOverview}>
-                    <AntDesign style={{ position: "absolute" }} name="arrowleft" size={36} color="white" onPress={handleOnPrev} />
+                    <View>
+                        <Text style={styles.levelDescription} >
+                            Nível {LEVELS_DATA[currentIndex + 1].id}
+                        </Text>
+                        <Text style={[styles.levelTitle, { fontSize: 32 }]} ellipsizeMode={"middle"} numberOfLines={1}>
+                            {LEVELS_DATA[currentIndex + 1].title}
+                        </Text>
+                    </View>
                     <FlatList
-                        data={LEVELS_DATA}
-                        renderItem={({ item, index }) => {
-
-                            const inputRange = [
-                                (index - 2) * ITEM_LENGTH,
-                                (index - 1) * ITEM_LENGTH,
-                                index * ITEM_LENGTH,
-                            ];
-
-                            const translateY = scrollX.interpolate({
-                                inputRange,
-                                outputRange: [
-                                    CURRENT_ITEM_TRANSLATE_Y,
-                                    CURRENT_ITEM_TRANSLATE_Y * -2,
-                                    CURRENT_ITEM_TRANSLATE_Y,
-                                ],
-                                extrapolate: 'clamp',
-                            });
-
-                            return (
-                                <View style={{ width: ITEM_LENGTH, justifyContent: "space-between" }}>
-                                    <Text style={styles.levelDescription}>
-                                        Nível {item.id}
-                                    </Text>
-                                    <Text style={[styles.levelTitle, { fontSize: 36 }]}>
-                                        {item.title}
-                                    </Text>
-                                    <Animated.View style={[
-                                        {
-                                            transform: [{ translateY }],
-                                        },
-                                        styles.itemContent,
-                                    ]}>
-                                        <Image source={item.icon} style={styles.itemImage} />
-                                    </Animated.View>
-                                </View>
-                            );
-                        }}
-                        getItemLayout={getItemLayout}
+                        data={LEVELS_DATA.slice(1, LEVELS_DATA.length)}
                         horizontal
                         showsHorizontalScrollIndicator={false}
-                        keyExtractor={item => item.id.toString()}
+                        pagingEnabled
                         bounces={false}
-                        decelerationRate={0}
-                        renderToHardwareTextureAndroid
-                        contentContainerStyle={styles.flatListContent}
-                        snapToInterval={ITEM_LENGTH}
-                        snapToAlignment="start"
-                        onScroll={Animated.event(
-                            [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-                            { useNativeDriver: false },
+                        keyExtractor={item => item.id}
+                        renderItem={({ item, index }) => {
+                            return (
+                                <View style={{ width: ITEM_LENGTH, marginHorizontal: SPACING * 1.5, justifyContent: "space-between" }}>
+                                    {/* <View>
+                                        <Text style={styles.levelDescription} >
+                                            Nível {item.id}
+                                        </Text>
+                                        <Text style={[styles.levelTitle, { fontSize: 32 }]} ellipsizeMode={"middle"} numberOfLines={1}>
+                                            {item.title}
+                                        </Text>
+                                    </View> */}
+                                    <Image source={item.icon} style={styles.itemImage} />
+                                    <Text style={[styles.levelDescription2, { marginBottom: 20 }]}>
+                                        {`faltam ${item.exp - USER_EXP}xp para esse nível`}
+                                    </Text>
+                                </View>
+                            )
+                        }}
+                        onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }],
+                            { useNativeDriver: false }
                         )}
                         scrollEventThrottle={32}
                         viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
                         viewabilityConfig={viewabilityConfig}
+                        ref={flatListRef}
                     />
-                    <AntDesign style={{ position: "absolute" }} name="arrowright" size={36} color="white" onPress={handleOnNext} />
-
-                    <Text style={styles.levelDescription2}>
+                    <AntDesign style={{ position: "absolute", top: "35%", left: 0 }} name="arrowleft" size={36} color="white" onPress={handleOnPrev} />
+                    <AntDesign style={{ position: "absolute", top: "35%", right: 0 }} name="arrowright" size={36} color="white" onPress={handleOnNext} />
+                    <View style={{ flexDirection: "row", marginBottom: 15, alignItems: "center", justifyContent: "center" }}>
+                        <View style={styles.progressBar}>
+                            <View style={[styles.progressBar, {
+                                backgroundColor: theme.colors.primary3,
+                                borderRadius: 25 / 2,
+                                width: `${BAR_WIDTH > 5 ? BAR_WIDTH : 5}%`
+                            }]} />
+                        </View>
+                        <Text style={[styles.levelDescription2, { marginLeft: 3 }]}>
+                            {`${BAR_WIDTH}%`}
+                        </Text>
+                    </View>
+                    {/* <Text style={[styles.levelDescription2, { marginBottom: 10, fontSize: 10 }]}>
                         115 pessoas na sua cidade estão em um nível mais alto que o seu.{`\n`}
                         <Text style={{ fontWeight: "bold" }}>Que tal reportar mais focos de lixo?</Text>
-                    </Text>
+                    </Text> */}
                 </View>
             </View>
             <View style={[elements.subContainerGreen, { height: 85, marginBottom: 25 }]}>
