@@ -11,7 +11,7 @@ import { theme } from "../../global/styles/theme";
 
 import { styles } from "./styles";
 
-import { useAuth } from "../../hooks/auth";
+import { useAuth } from "../../hooks/useAuth";
 import { ListMarkersOnMap } from "../../utils/ListMarkersOnMap";
 
 function GetGreeting() {
@@ -68,8 +68,8 @@ export function Home({ navigation }) {
 
     if (user === null) return null;
 
-    const userReportsAmount = user.reports.length
-    const userReportsSolvedAmount = [...user.reports].filter(report => report.resolved === true).length;
+    const userReportsAmount = user.reports ? user.reports.length : 0
+    const userReportsSolvedAmount = user.reports ? [...user.reports].filter(report => report.resolved === true).length : 0
 
     const [isRefreshing, setIsRefreshing] = useState(false)
     const onRefresh = async () => {

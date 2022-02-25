@@ -52,4 +52,9 @@ export const styles = StyleSheet.create({
         backgroundColor: theme.colors.primary3,
         marginBottom: 35
     },
+    animatedTextView: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center"
+    }
 });

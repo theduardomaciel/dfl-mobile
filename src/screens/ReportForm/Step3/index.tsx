@@ -15,7 +15,7 @@ import { ConclusionScreen } from "../../../components/ConclusionScreen";
 
 import axios from "axios";
 import { api } from "../../../services/api";
-import { useAuth } from "../../../hooks/auth";
+import { useAuth } from "../../../hooks/useAuth";
 
 import { Report, User } from "../../../@types/application";
 
@@ -25,7 +25,7 @@ type ImageUploadResponse = {
 }
 
 type ReportResponse = {
-    updatedUser: User;
+    user: User;
     updatedReport: Report;
 }
 
@@ -56,7 +56,7 @@ export function ReportScreen3({ route, navigation }: any) {
     const [gainedExperience, setGainedExperience] = useState(25 || null)
     async function SubmitReport(data: Report) {
         try {
-            /* const { deletehash, link } = await UploadImage()
+            const { deletehash, link } = await UploadImage()
             const submitResponse = await api.post("/report/create", {
                 user: user,
                 coordinates: data.coordinates,
@@ -67,14 +67,16 @@ export function ReportScreen3({ route, navigation }: any) {
                 suggestion: data.suggestion,
                 hasTrashbin: data.hasTrashBins
             })
-            const { updatedReport, updatedUser } = submitResponse.data as ReportResponse
-            if (updatedUser.profile.level > user.profile.level) {
+            const response = submitResponse.data as ReportResponse
+            const updatedUserProfile = response.user.profile
+            if (updatedUserProfile.level > updatedUserProfile.level) {
+                // Caso o usuário tenha subido de nível, indicamos que ele não ganhou nenhuma experiência, e realizamos a tratativa no modal
                 setGainedExperience(null)
             } else {
                 // Caso não, somente mostramos o quanto o usuário ganhou de exp
-                setGainedExperience(updatedUser.profile.experience - user.profile.experience)
+                setGainedExperience(updatedUserProfile.experience - user.profile.experience)
             }
-            updateUser(updatedUser); */
+            updateUser(response.user);
         } catch (error) {
             console.log(error)
             return "error"

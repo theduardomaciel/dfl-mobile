@@ -33,7 +33,7 @@ model Profile {
   experience  Float     @default(0)
   comments    Comment[]
   user        User      @relation(fields: [user_id], references: [id], onDelete: SetDefault)
-  user_id     Int       @unique
+  user_id     Int       
 }
 
 model Report {

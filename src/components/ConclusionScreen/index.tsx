@@ -14,7 +14,7 @@ import { styles } from './styles';
 import { levelStyles } from '../../screens/Level/styles';
 
 import { LEVELS_DATA } from '../../utils/levels';
-import { useAuth } from '../../hooks/auth';
+import { useAuth } from '../../hooks/useAuth';
 
 import AnimatedNumbers from 'react-native-animated-numbers';
 import Confetti from '../Confetti';
@@ -33,10 +33,12 @@ export function ConclusionScreen({ title, info, backButtonText, icon, gainedExpe
     const { user } = useAuth();
 
     // [0] = quanto xp o usuário ganhou | [1] = porcentagem da xp que o usuário ganhou | [2] = quanto xp ele precisa pra subir de nível
-    const [animateToNumber, setAnimateToNumber] = React.useState([0, 0, 0]);
-    //const USER_EXP = user.profile.experience;
-    const USER_EXP = 25
-    const USER_LEVEL = 2
+    const [number0, setNumber0] = React.useState(0);
+    const [number1, setNumber1] = React.useState(0);
+    const [number2, setNumber2] = React.useState(0);
+
+    const USER_EXP = user.profile.experience;
+    const USER_LEVEL = user.profile.level
     const BAR_WIDTH = ((USER_EXP * 100) / LEVELS_DATA[USER_LEVEL].exp)
 
     const barAnimation = useRef(new Animated.Value(0)).current;
@@ -52,7 +54,15 @@ export function ConclusionScreen({ title, info, backButtonText, icon, gainedExpe
             duration: 3000,
             useNativeDriver: false,
         }).start();
-        setAnimateToNumber([15, BAR_WIDTH, LEVELS_DATA[USER_LEVEL].exp - USER_EXP]);
+        setTimeout(() => {
+            setNumber0(25)
+        }, 10);
+        setTimeout(() => {
+            setNumber1(BAR_WIDTH)
+        }, 1500);
+        setTimeout(() => {
+            setNumber2(LEVELS_DATA[USER_LEVEL + 1].exp - USER_EXP)
+        }, 300);
     }, [])
 
     return (
@@ -69,9 +79,18 @@ export function ConclusionScreen({ title, info, backButtonText, icon, gainedExpe
                 <Text style={{ fontSize: 64 }}>{icon ? icon : "✅"}</Text>
             </View>
             <View style={styles.levelBackground}>
-                <Text style={levelStyles.levelDescription}>
-                    {`Você ganhou +${user.profile.experience}xp!`}
-                </Text>
+                <View style={styles.animatedTextView}>
+                    <Text style={levelStyles.levelDescription}>
+                        Você ganhou{` `}
+                    </Text>
+                    <AnimatedNumbers
+                        animateToNumber={number0}
+                        fontStyle={levelStyles.levelDescription}
+                    />
+                    <Text style={levelStyles.levelDescription}>
+                        xp!
+                    </Text>
+                </View>
                 <View style={{ flexDirection: "row", marginBottom: 5, marginTop: 5, alignItems: "center", justifyContent: "center" }}>
                     <View style={levelStyles.progressBar}>
                         <Animated.View style={[levelStyles.progressBar, {
@@ -80,13 +99,29 @@ export function ConclusionScreen({ title, info, backButtonText, icon, gainedExpe
                             width: barWidth
                         }]} />
                     </View>
-                    <Text style={[levelStyles.levelDescription2, { marginLeft: 3 }]}>
-                        {`${BAR_WIDTH}%`}
+                    <View style={styles.animatedTextView}>
+                        <AnimatedNumbers
+                            animateToNumber={number1}
+                            fontStyle={levelStyles.levelDescription2}
+                        />
+                        <Text style={levelStyles.levelDescription2}>
+                            %
+                        </Text>
+                    </View>
+                </View>
+
+                <View style={styles.animatedTextView}>
+                    <Text style={levelStyles.levelDescription2}>
+                        Faltam mais{` `}
+                    </Text>
+                    <AnimatedNumbers
+                        animateToNumber={number2}
+                        fontStyle={levelStyles.levelDescription}
+                    />
+                    <Text style={levelStyles.levelDescription2}>
+                        xp para subir de nível!
                     </Text>
                 </View>
-                <Text style={levelStyles.levelDescription2}>
-                    {`Faltam mais ${LEVELS_DATA[user.profile.level].exp - USER_EXP}xp para subir de nível!`}
-                </Text>
             </View>
             <TextButton
                 title={backButtonText ? backButtonText : "Voltar para a tela inicial"}

@@ -11,7 +11,7 @@ import { theme } from "../../global/styles/theme";
 import { OnboardingItem } from "../../components/OnboardingItem";
 import { Paginator } from "../../components/Paginator";
 
-import { useAuth } from "../../hooks/auth"
+import { useAuth } from "../../hooks/useAuth"
 import { ModalBase } from "../../components/ModalBase";
 
 type PropTypes = {

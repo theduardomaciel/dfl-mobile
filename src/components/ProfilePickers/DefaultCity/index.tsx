@@ -34,13 +34,15 @@ export function DefaultCityPicker({ onSelectOption }: PickerTypes) {
                     mode='dropdown'
                 >
                     <Picker.Item label="Maceió" value="Maceió, AL - Brasil" />
-                    <Picker.Item label="Recife" value="Recife, PE - Brasil" />
+                    <Picker.Item label="Rio Largo [beta]" value="Rio Largo, AL - Brasil" />
+                    <Picker.Item label="Satuba [beta]" value="Satuba, AL - Brasil" />
+                    {/* <Picker.Item label="Recife" value="Recife, PE - Brasil" />
                     <Picker.Item label="Arapiraca" value="Arapiraca, AL - Brasil" />
                     <Picker.Item label="Aracaju" value="Aracaju, SE - Brasil" />
                     <Picker.Item label="Teresina" value="Teresina, CE - Brasil" />
                     <Picker.Item label="São Paulo" value="São Paulo, SP - Brasil" />
-                    <Picker.Item label="Rio Largo" value="Rio Largo, AL - Brasil" />
-                    <Picker.Item label="Salvador" value="Salvador, BA - Brasil" />
+                    
+                    <Picker.Item label="Salvador" value="Salvador, BA - Brasil" /> */}
                 </Picker>
             </View>
         </View>

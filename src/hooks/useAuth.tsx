@@ -67,11 +67,14 @@ function AuthProvider({ children }: AuthProviderProps) {
                 const tokens = await GoogleSignin.getTokens();
                 // Chamar o backend com o usuário e o access_token
                 try {
-                    console.log("e lá vamos nós 1")
+                    console.log("Requerindo dados ao servidor...")
+                    setTimeout(() => {
+                        // Caso o servidor demore muito para responder a requisição, iremos supor que a internet do usuário caiu, ou o servidor está indisponível
+                        return "error"
+                    }, 10 * 1000)
                     const authResponse = await api.post("/authenticate", { user_info: userInfoWithScopes, access_token: tokens.accessToken })
-                    console.log("e lá vamos nós 2")
                     const { user, token } = authResponse.data as AuthResponse;
-                    console.log("e lá vamos nós 3", user, token)
+                    console.log("Dados obtidos com sucesso!")
                     api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
                     await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(user));

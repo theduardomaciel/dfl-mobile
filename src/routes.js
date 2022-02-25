@@ -14,7 +14,7 @@ import { ReportScreen1 } from "./screens/ReportForm/Step1"
 import { ReportScreen2 } from "./screens/ReportForm/Step2"
 import { ReportScreen3 } from "./screens/ReportForm/Step3"
 
-import { useAuth } from './hooks/auth';
+import { useAuth } from './hooks/useAuth';
 
 import { createStackNavigator } from '@react-navigation/stack';
 const Stack = createStackNavigator();

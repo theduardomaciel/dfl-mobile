@@ -1,6 +1,7 @@
 import axios from "axios";
 import prismaClient from "../prisma";
 import { sign } from "jsonwebtoken";
+import { Report } from "../@types/application";
 
 /* 
     - Recuperar informações do usuário na Google
@@ -11,7 +12,7 @@ import { sign } from "jsonwebtoken";
 
 require('dotenv').config()
 
-async function GetAdditionalInfo(acess_token: string) {
+async function GetAdditionalInfo(access_token: string) {
     /* const axiosConfig = {
             headers: {
                 "Authorization": `Bearer ${code}`,
@@ -25,7 +26,7 @@ async function GetAdditionalInfo(acess_token: string) {
             `https://people.googleapis.com/v1/people/*?personFields=genders&key=AIzaSyCKZMrAWYeOHOoIHLnCDKoGxyi4VMlaa9A`,
             {
                 headers: {
-                    "Authorization": `Bearer ${acess_token}`,
+                    "Authorization": `Bearer ${access_token}`,
                     "Accept": 'application/json'
                 },
             })
@@ -48,19 +49,10 @@ async function GetAdditionalInfo(acess_token: string) {
     }
 }
 
-/* interface IUserResponse {
-    email: string,
-    id: string,
-    name: string,
-    first_name: string,
-    last_name: string,
-    image_url: string,
-} */
-
 class AuthenticateUserService {
-    async execute(userInfo, acess_token: string) {
+    async execute(userInfo, access_token: string) {
         const { email, id, familyName, givenName, photo } = userInfo.user;
-        //const [gender, birthday] = await GetAdditionalInfo(acess_token)
+        //const [gender, birthday] = await GetAdditionalInfo(access_token)
 
         let user;
         user = await prismaClient.user.findUnique({

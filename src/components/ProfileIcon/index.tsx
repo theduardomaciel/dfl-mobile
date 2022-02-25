@@ -15,7 +15,7 @@ import { styles } from './styles';
 import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../../global/styles/theme';
 
-import { useAuth } from '../../hooks/auth';
+import { useAuth } from '../../hooks/useAuth';
 import { AccordionOptions } from "../AccordionOptions"
 
 type Props = {

@@ -16,6 +16,9 @@ import { TextButton } from "../../../components/TextButton";
 async function getLocationAddress(latitude: number, longitude: number) {
     try {
         const fullAddress = await Location.reverseGeocodeAsync({ latitude: latitude, longitude: longitude })
+        if (!fullAddress) {
+            return getLocationAddress(latitude, longitude)
+        }
         const address = fullAddress[0].street + ", " + fullAddress[0].streetNumber + ", " + fullAddress[0].postalCode + " - " + fullAddress[0].subregion + ", " + fullAddress[0].region
         return address
     } catch (error) {

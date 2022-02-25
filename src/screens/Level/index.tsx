@@ -25,7 +25,7 @@ import { AntDesign, Entypo } from "@expo/vector-icons"
 import { SectionTitle } from "../../components/SectionTitle";
 import { TextButton } from "../../components/TextButton";
 
-import { useAuth } from "../../hooks/auth";
+import { useAuth } from "../../hooks/useAuth";
 import { LEVELS_DATA } from "../../utils/levels";
 
 const onShare = async () => {

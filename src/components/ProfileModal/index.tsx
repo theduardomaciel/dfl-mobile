@@ -12,7 +12,8 @@ import { TextButton } from '../TextButton'
 import { styles } from './styles'
 
 import { api } from "../../services/api";
-import { useAuth } from '../../hooks/auth'
+import { useAuth } from '../../hooks/useAuth'
+import { Profile, User } from '../../@types/application'
 
 type CustomModalProps = {
     isVisible: boolean;
@@ -25,11 +26,10 @@ type Props = CustomModalProps & {
     secondToogleModal?: () => void;
 }
 
-/* type Profile = {
-    username: string;
-    defaultCity: string;
-    level: number;
-} */
+type ProfileResponse = {
+    user: User;
+    profile: Profile;
+}
 
 export function ProfileModal({ toggleModal, isSecond, secondToogleModal, ...rest }: Props) {
     const { user, updateUser } = useAuth();
@@ -47,9 +47,11 @@ export function ProfileModal({ toggleModal, isSecond, secondToogleModal, ...rest
         console.log("Nome de Usuário: ", username)
         console.log("Cidade: ", defaultCity)
         try {
-            await api.post("/profile/create", { user: user, username: username, defaultCity: defaultCity })
-            await updateUser();
-            console.log(user)
+            const profileResponse = await api.post("/profile/create", { user: user, username: username, defaultCity: defaultCity })
+            const response = profileResponse.data as ProfileResponse;
+            console.log(response, response.user)
+            await updateUser(response.user);
+            console.log(user.profile)
         } catch (error) {
             console.log(error)
         }

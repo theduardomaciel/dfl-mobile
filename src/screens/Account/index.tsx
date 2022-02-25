@@ -10,8 +10,9 @@ import { theme } from "../../global/styles/theme";
 import { styles } from "./styles";
 
 import TrashbinSvg from "../../assets/trashbin_2.svg"
+import TrashbinSvgWhite from "../../assets/trashbin_white.svg"
 
-import { useAuth } from "../../hooks/auth";
+import { useAuth } from "../../hooks/useAuth";
 import { api } from "../../services/api";
 import { response } from "express";
 
@@ -76,25 +77,32 @@ const SectionHeader = ({ section }: any) => (
 
 const EMPTY = []
 
-const EmptyItem = ({ item }: any) => {
+const EmptyItem = ({ item, color, fontSize }: any) => {
     return (
-        <View style={[styles.container, { alignItems: "center", justifyContent: "center", alignSelf: "center" }]}>
-            <TrashbinSvg
-                width={50}
-                height={90}
-            />
+        <View style={[styles.container, { alignItems: "center", justifyContent: "center", alignSelf: "center", backgroundColor: "transparent" }]}>
+            {
+                color ?
+                    <TrashbinSvgWhite
+                        width={25}
+                        height={45}
+                    /> :
+                    <TrashbinSvg
+                        width={50}
+                        height={90}
+                    />
+            }
             <Text style={{
                 fontFamily: theme.fonts.title700,
-                color: theme.colors.secondary1,
-                fontSize: 18,
+                color: color ? color : theme.colors.secondary1,
+                fontSize: fontSize ? fontSize : 18,
                 textAlign: "center"
             }}>
                 Está um pouco vazio aqui...
             </Text>
             <Text style={{
                 fontFamily: theme.fonts.subtitle400,
-                color: theme.colors.secondary1,
-                fontSize: 16,
+                color: color ? color : theme.colors.secondary1,
+                fontSize: fontSize ? fontSize : 16,
                 textAlign: "center"
             }}>
                 Que tal reportar um foco de lixo para que ele apareça aqui?
@@ -129,7 +137,7 @@ export function Account({ navigation }) {
                         {user.first_name + " " + user.last_name}
                     </Text>
                     <Text style={styles.username}>
-                        @nomedousuário
+                        {user.profile ? user.profile.username : ""}
                     </Text>
                 </View>
                 <ProfileIcon uri={user.image_url} openConfig />
@@ -219,7 +227,6 @@ export function Account({ navigation }) {
             const month = date.getMonth()
             amountsByMonth[month] = amountsByMonth[month] + 1;
         }
-        console.log(amountsByMonth)
         return amountsByMonth
     }
 
@@ -249,8 +256,13 @@ export function Account({ navigation }) {
     }
 
     useEffect(() => {
-        LoadUserReports()
-        GetReportsAmountBars()
+        if (user.reports) {
+            LoadUserReports()
+            GetReportsAmountBars()
+        } else {
+            setReportsData([])
+            setReportsAmountBars([<EmptyItem fontSize={12} color={"white"} />])
+        }
     }, []);
 
     // Ano = 0 | mês = 1 | dia = 2 (tem que dar o slice)
@@ -312,7 +324,7 @@ export function Account({ navigation }) {
 
                 <View style={[elements.subContainerGreen, { height: 85, marginBottom: 15, alignItems: "center" }]}>
                     <Text style={styles.statisticsTitle}>
-                        {user.reports.length + " focos reportados no total"}
+                        {user.reports ? user.reports.length + " focos reportados no total" : "0 focos reportados no total"}
                     </Text>
                     <View style={{ width: "80%", height: 1, backgroundColor: theme.colors.primary2 }} />
                     <Text style={styles.statisticsTitle}>
@@ -328,7 +340,7 @@ export function Account({ navigation }) {
                     <View style={{ width: 1, height: "80%", backgroundColor: theme.colors.text1 }} />
                     <View style={{ flexDirection: "column" }}>
                         <Text style={[styles.statisticsTitle, { width: 125 }]}>Nível:</Text>
-                        <Text style={styles.statisticsDescription}>{user.profile.level}</Text>
+                        <Text style={styles.statisticsDescription}>{user.profile ? user.profile.level : 0}</Text>
                     </View>
                 </View>
 

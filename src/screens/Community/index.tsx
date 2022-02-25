@@ -15,7 +15,7 @@ import { styles } from "./styles";
 
 import { Entypo } from '@expo/vector-icons';
 
-import { useAuth } from "../../hooks/auth";
+import { useAuth } from "../../hooks/useAuth";
 import { ProfileModal } from "../../components/ProfileModal";
 import { DefaultCityPicker } from "../../components/ProfilePickers/DefaultCity";
 import { MapScopePicker } from "../../components/MapScopePicker";

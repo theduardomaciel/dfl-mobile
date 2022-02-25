@@ -1,6 +1,6 @@
 import { Profile, User } from "../@types/application";
 import prismaClient from "../prisma"
-import { LEVELS_DATA } from "../utils/levels";
+import { NODE_LEVELS_DATA } from "../utils/friendlyForNodeLevels";
 
 function CheckUserLevelAndExperience(userProfile: Profile) {
     let newExperience = userProfile.experience
@@ -13,8 +13,8 @@ function CheckUserLevelAndExperience(userProfile: Profile) {
     }
 
     let newLevel = userProfile.level;
-    for (let index = 0; index < LEVELS_DATA.length; index++) {
-        const level_data = LEVELS_DATA[index];
+    for (let index = 0; index < NODE_LEVELS_DATA.length; index++) {
+        const level_data = NODE_LEVELS_DATA[index];
         if (newExperience >= level_data.exp) {
             newLevel = level_data.id
             newExperience = 0
