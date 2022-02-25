@@ -51,7 +51,7 @@ class UpdateUserExperienceService {
                     experience: userProfile.experience + gainedExperience
                 }
             })
-            return
+            return newLevel
         } catch (error) {
             console.log(error);
         }

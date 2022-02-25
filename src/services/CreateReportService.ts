@@ -1,8 +1,10 @@
+import { User } from "../@types/application";
 import prismaClient from "../prisma"
+
 
 class CreateReportService {
     async execute(
-        user_id: number,
+        user: User,
         address: string,
         coordinates: Array<number>,
         image_url: string,
@@ -16,7 +18,7 @@ class CreateReportService {
             const report = await prismaClient.report.create({
                 data: {
                     user: {
-                        connect: { id: user_id },
+                        connect: { id: user.id },
                     },
                     address: address,
                     coordinates: coordinates,

@@ -4,6 +4,8 @@ import { AuthenticateUserController } from "./controllers/AuthenticateUserContro
 import { CreateProfileController } from "./controllers/CreateProfileController";
 import { CreateReportController } from "./controllers/CreateReportController";
 
+import { UpdateUserExperienceController } from "./controllers/UpdateUserExperienceController";
+
 import { ReadUserController } from "./controllers/ReadUserController";
 import { ReadUserReportsController } from "./controllers/GetUserReportsController";
 
@@ -17,6 +19,8 @@ router.post("/authenticate", new AuthenticateUserController().handle);
 
 router.post("/report/create", new CreateReportController().handle)
 router.post("/profile/create", new CreateProfileController().handle);
+
+router.post("/profile/update/experience", new UpdateUserExperienceController().handle);
 
 router.post("/user", new ReadUserController().handle);
 router.post("/user/reports", new ReadUserReportsController().handle)

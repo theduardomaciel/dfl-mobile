@@ -15,15 +15,7 @@ import { ConclusionScreen } from "../../../components/ConclusionScreen";
 import { api } from "../../../services/api";
 import { useAuth } from "../../../hooks/auth";
 import axios from "axios";
-
-type ReportProps = {
-    coordinates: Array<number>,
-    address: string,
-    image_url: string,
-    tags: string,
-    suggestion: string,
-    hasTrashBins: boolean,
-}
+import { Report } from "../../../@types/application";
 
 type ImageUploadResponse = {
     deletehash: string;
@@ -54,11 +46,11 @@ export function ReportScreen3({ route, navigation }: any) {
         }
     }
 
-    async function SubmitReport(data: ReportProps) {
+    async function SubmitReport(data: Report) {
         try {
             const { deletehash, link } = await UploadImage()
             const submitResponse = await api.post("/report/create", {
-                user_id: user.id,
+                user: user,
                 coordinates: data.coordinates,
                 address: data.address,
                 image_url: link,
@@ -68,6 +60,13 @@ export function ReportScreen3({ route, navigation }: any) {
                 hasTrashbin: data.hasTrashBins
             })
             console.log("Relatório criado com sucesso!", submitResponse.data)
+            const levelResponse = await api.post("/profile/update/experience", { user: user })
+            const newLevel = levelResponse.data as number;
+            if (newLevel > user.profile.level) {
+                // Mostrar modal de subida de nível
+            } else {
+                // Mostrar modal de ganho de exp
+            }
             updateUser();
         } catch (error) {
             console.log(error)

@@ -15,41 +15,14 @@ GoogleSignin.configure({
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { api } from "../services/api";
 
+import { User } from "../@types/application";
+
 const SCOPE = "read:user";
 const USER_STORAGE = "@dfl:user";
 
 const TOKEN_STORAGE = "@dfl:token";
 
-type Report = {
-    id: number;
-    address: string,
-    coordinates: Array<number>,
-    image_url: string,
-    image_deleteHash: string,
-    tags: string,
-    suggestion: string,
-    hasTrashbin: boolean,
-    createdAt: string;
-    solved: boolean;
-}
 
-type Profile = {
-    username: string;
-    defaultCity: string;
-    level: number;
-}
-
-type User = {
-    id: string;
-    google_id: string;
-    email: string;
-    first_name: string;
-    last_name: string;
-    image_url: string;
-    profile: Profile;
-    reports: Array<Report>;
-    createdAt: string;
-}
 
 type AuthContextData = {
     user: User | null;
@@ -92,7 +65,7 @@ function AuthProvider({ children }: AuthProviderProps) {
                     ],
                 });
                 const tokens = await GoogleSignin.getTokens();
-                // Chamar o backend com o usuário e o acess_token
+                // Chamar o backend com o usuário e o access_token
                 try {
                     console.log("e lá vamos nós 1")
                     const authResponse = await api.post("/authenticate", { user_info: userInfoWithScopes, access_token: tokens.accessToken })

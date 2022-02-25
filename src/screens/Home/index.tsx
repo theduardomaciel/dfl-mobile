@@ -69,7 +69,7 @@ export function Home({ navigation }) {
     if (user === null) return null;
 
     const userReportsAmount = user.reports.length
-    const userReportsSolvedAmount = [...user.reports].filter(report => report.solved === true).length;
+    const userReportsSolvedAmount = [...user.reports].filter(report => report.resolved === true).length;
 
     const [isRefreshing, setIsRefreshing] = useState(false)
     const onRefresh = async () => {
