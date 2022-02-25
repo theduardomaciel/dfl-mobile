@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, Image, RefreshControl, Platform } from "react-native";
+import { View, Text, ScrollView, Image, RefreshControl, Platform, Pressable } from "react-native";
 import { MapScopePicker } from "../../components/MapScopePicker";
 
 import MapView, { PROVIDER_GOOGLE, Marker, Region } from "react-native-maps";
@@ -12,6 +12,7 @@ import { theme } from "../../global/styles/theme";
 import { styles } from "./styles";
 
 import { useAuth } from "../../hooks/auth";
+import { ListMarkersOnMap } from "../../utils/ListMarkersOnMap";
 
 function GetGreeting() {
     const hour = new Date().getHours();
@@ -43,7 +44,9 @@ export function Home({ navigation }) {
     const [alreadyLoaded, setAlreadyLoaded] = useState(false)
 
     const { user, creatingAccount, updateUser } = useAuth();
+    const [markers, setMarkers] = useState([]);
     useEffect(() => {
+        setMarkers(ListMarkersOnMap(user, "district"))
         async function HasPermission() {
             let permissionToCheck;
             if (Platform.OS === "android") {
@@ -121,7 +124,7 @@ export function Home({ navigation }) {
                 <Text style={[styles.title, { paddingTop: 0 }]}>
                     Seu nível
                 </Text>
-                <View style={[elements.subContainerGreen, theme.shadowProperties, { flexDirection: "row" }]}>
+                <Pressable style={[elements.subContainerGreen, theme.shadowProperties, { flexDirection: "row" }]} onPress={() => { navigation.navigate("Level") }}>
                     <View>
                         <Text style={styles.subtitle}>
                             Nível Atual:
@@ -131,7 +134,7 @@ export function Home({ navigation }) {
                         </Text>
                     </View>
                     <Image source={require("../../assets/level_placeholder.png")} />
-                </View>
+                </Pressable>
 
                 {/* Seu engajamento */}
                 <Text style={styles.title}>
@@ -195,6 +198,18 @@ export function Home({ navigation }) {
                                 }
                             }}
                         >
+                            {
+                                markers ?
+                                    markers.map((marker, index) => (
+                                        <Marker
+                                            key={index}
+                                            coordinate={marker.coordinates}
+                                            title={marker.title}
+                                            description={marker.description}
+                                        />
+                                    ))
+                                    : null
+                            }
                         </MapView>
                     </View>
                 </View>

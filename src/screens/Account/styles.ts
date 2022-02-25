@@ -67,5 +67,27 @@ export const styles = StyleSheet.create({
     report_data: {
         fontSize: 8,
         color: theme.colors.primary2
+    },
+
+    userActivityView: {
+        flex: 1,
+        flexDirection: "row",
+        backgroundColor: theme.colors.primary2,
+        borderRadius: 10,
+        paddingHorizontal: 12,
+        paddingVertical: 5,
+        justifyContent: "space-between",
+        alignItems: "flex-end"
+    },
+
+    statisticsTitle: {
+        fontSize: 18,
+        color: theme.colors.text1,
+        fontFamily: theme.fonts.subtitle700
+    },
+    statisticsDescription: {
+        fontSize: 16,
+        color: theme.colors.text1,
+        fontFamily: theme.fonts.subtitle400
     }
 });

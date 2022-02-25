@@ -33,6 +33,12 @@ type Report = {
     solved: boolean;
 }
 
+type Profile = {
+    username: string;
+    defaultCity: string;
+    level: number;
+}
+
 type User = {
     id: string;
     google_id: string;
@@ -40,9 +46,9 @@ type User = {
     first_name: string;
     last_name: string;
     image_url: string;
-    profile: Array<[]>;
+    profile: Profile;
     reports: Array<Report>;
-    createdAt: Date;
+    createdAt: string;
 }
 
 type AuthContextData = {

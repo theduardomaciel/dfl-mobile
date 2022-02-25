@@ -68,7 +68,8 @@ const SectionHeader = ({ section }: any) => (
         hasLine
         fontStyle={{
             fontFamily: theme.fonts.subtitle900,
-            color: theme.colors.primary1
+            color: theme.colors.primary1,
+            fontSize: 12
         }}
     />
 );
@@ -101,6 +102,19 @@ const EmptyItem = ({ item }: any) => {
         </View>
     )
 }
+
+const months = ["Jan.", "Fev.", "Mar.", "Abr.", "Jun.", "Jul.", "Ago.", "Set.", "Out.", "Nov.", "Dez."]
+
+/* function maxValue(arr) {
+    let max = arr[0];
+
+    for (let val of arr) {
+    if (val > max) {
+        max = val;
+    }
+    }
+    return max;
+} */
 
 export function Account({ navigation }) {
     const { user } = useAuth();
@@ -156,7 +170,7 @@ export function Account({ navigation }) {
                 <Image
                     style={styles.report_image}
                     source={{
-                        uri: item.image_url
+                        uri: item.image_url !== "" ? item.image_url : "https://github.com/theduardomaciel.png"
                     }}
                 />
             </TouchableOpacity>
@@ -185,9 +199,62 @@ export function Account({ navigation }) {
         });
         setReportsData(groupArrays)
     }
+
+    function GetReportsAmountByMonth() {
+        const data = user.reports;
+        const amountsByMonth = new Array(12).fill(0) as Array<number>;
+        /* const groups = data.reduce((groups, report) => {
+            const date = new Date(report.createdAt);
+            const month = date.getMonth()
+            if (!groups[month]) {
+                groups[month] = 0;
+            }
+            groups[month] += 1;
+            return groups;
+        }, [] as Array<number>); */
+        for (let index = 0; index < data.length; index++) {
+            const report = data[index];
+            const date = new Date(report.createdAt);
+            const month = date.getMonth()
+            amountsByMonth[month] = amountsByMonth[month] + 1;
+        }
+        console.log(amountsByMonth)
+        return amountsByMonth
+    }
+
+    const [reportsAmountBars, setReportsAmountBars] = useState([])
+    function GetReportsAmountBars() {
+
+        const reportsAmountByMonth = GetReportsAmountByMonth()
+        const max = Math.max(...reportsAmountByMonth);
+
+        let bars = []
+        for (let index = 0; index < 11; index++) {
+            const monthAmount = reportsAmountByMonth[index];
+            const height = monthAmount ? `${((100 * monthAmount) / max) - 25}%` : "10%"
+            bars.push(
+                <View style={{ alignItems: "center" }}>
+                    <Text style={{ fontSize: 7, color: theme.colors.primary3, fontFamily: theme.fonts.subtitle400 }}>
+                        {monthAmount ? monthAmount : 0}
+                    </Text>
+                    <View style={{ backgroundColor: theme.colors.primary3, borderRadius: 15, height: height, width: 12 }} />
+                    <Text style={{ fontSize: 9, color: theme.colors.primary3, fontFamily: theme.fonts.title700 }}>
+                        {months[index]}
+                    </Text>
+                </View>
+            )
+        }
+        setReportsAmountBars(bars)
+    }
+
     useEffect(() => {
         LoadUserReports()
+        GetReportsAmountBars()
     }, []);
+
+    // Ano = 0 | mês = 1 | dia = 2 (tem que dar o slice)
+    const userCreatedAtSplit = user.createdAt.split("-")
+    const userCreatedAt = userCreatedAtSplit[2].slice(0, 2) + "/" + userCreatedAtSplit[1] + "/" + userCreatedAtSplit[0]
 
     return (
         <View style={styles.container}>
@@ -206,7 +273,7 @@ export function Account({ navigation }) {
                 }
             >
                 { /* Histórico */}
-                <SectionTitle title="Histórico" />
+                <SectionTitle title="Histórico" hasLine />
                 {
                     reportsData === null ?
                         <View style={[elements.subContainerWhite, { height: 375, marginBottom: 25, alignItems: "center", justifyContent: "center" }]}>
@@ -234,9 +301,34 @@ export function Account({ navigation }) {
 
 
                 { /* Estatísticas */}
-                <SectionTitle title="Relatórios" />
-                <View style={[elements.subContainerGreen, { height: 325 }]}>
+                <SectionTitle title="Estatísticas" hasLine />
+                <View style={[elements.subContainerGreen, { height: 175, marginBottom: 15 }]}>
+                    <SectionTitle title="Atividade de Contribuições" marginBottom={5} fontStyle={styles.statisticsTitle} />
+                    <View style={styles.userActivityView}>
+                        {reportsAmountBars}
+                    </View>
+                </View>
 
+                <View style={[elements.subContainerGreen, { height: 85, marginBottom: 15, alignItems: "center" }]}>
+                    <Text style={styles.statisticsTitle}>
+                        {user.reports.length + " focos reportados no total"}
+                    </Text>
+                    <View style={{ width: "80%", height: 1, backgroundColor: theme.colors.primary2 }} />
+                    <Text style={styles.statisticsTitle}>
+                        {"0 focos reportados foram resolvidos"}
+                    </Text>
+                </View>
+
+                <View style={[elements.subContainerGreen, { backgroundColor: theme.colors.primary2, height: 75, flexDirection: "row", alignItems: "center", justifyContent: "space-around" }]}>
+                    <View style={{ flexDirection: "column" }}>
+                        <Text style={styles.statisticsTitle}>Data de Entrada:</Text>
+                        <Text style={styles.statisticsDescription}>{userCreatedAt}</Text>
+                    </View>
+                    <View style={{ width: 1, height: "80%", backgroundColor: theme.colors.text1 }} />
+                    <View style={{ flexDirection: "column" }}>
+                        <Text style={[styles.statisticsTitle, { width: 125 }]}>Nível:</Text>
+                        <Text style={styles.statisticsDescription}>{user.profile.level}</Text>
+                    </View>
                 </View>
 
                 <View style={{ height: 25 }} />

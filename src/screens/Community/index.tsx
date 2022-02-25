@@ -19,6 +19,7 @@ import { useAuth } from "../../hooks/auth";
 import { ProfileModal } from "../../components/ProfileModal";
 import { DefaultCityPicker } from "../../components/ProfilePickers/DefaultCity";
 import { MapScopePicker } from "../../components/MapScopePicker";
+import { ListMarkersOnMap } from "../../utils/ListMarkersOnMap";
 
 const Marcadores = [
     {
@@ -54,29 +55,6 @@ export function Community() {
     const [secondModalIsVisible, setSecondModalVisible] = useState(false)
 
     const [markers, setMarkers] = useState([])
-
-    function ListMarkersOnMap(scope) {
-        switch (scope) {
-            case "district":
-                let markersArray = []
-                user.reports.forEach((report) => {
-                    markersArray.push({
-                        title: report.address,
-                        description: report.suggestion,
-                        coordinates: {
-                            latitude: report.coordinates[0],
-                            longitude: report.coordinates[1],
-                        }
-                    })
-                })
-                setMarkers(markersArray)
-                break;
-            case "city":
-
-                break;
-        }
-    }
-
     useEffect(() => {
         function CheckIfProfileIsCreated() {
             console.log(user.profile)
@@ -85,7 +63,7 @@ export function Community() {
             }
         }
         CheckIfProfileIsCreated()
-        ListMarkersOnMap("district")
+        setMarkers(ListMarkersOnMap(user, "district"))
     }, []);
 
     const [isCityModalVisible, setCityModalVisible] = useState(false);
@@ -99,7 +77,7 @@ export function Community() {
 
     const getScopePicked = (scope, newRegion) => {
         setRegion(newRegion)
-        ListMarkersOnMap(scope)
+        setMarkers(ListMarkersOnMap(user, scope))
     }
     const onDefaultCityPicked = (city) => {
         //
@@ -158,14 +136,18 @@ export function Community() {
                         }}
                         initialRegion={initialRegion}
                     >
-                        {markers.map((marker, index) => (
-                            <Marker
-                                key={index}
-                                coordinate={marker.coordinates}
-                                title={marker.title}
-                                description={marker.description}
-                            />
-                        ))}
+                        {
+                            markers ?
+                                markers.map((marker, index) => (
+                                    <Marker
+                                        key={index}
+                                        coordinate={marker.coordinates}
+                                        title={marker.title}
+                                        description={marker.description}
+                                    />
+                                ))
+                                : null
+                        }
                     </MapView>
                     <View style={{ position: "absolute", bottom: 0, right: 0 }}>
                         <MapScopePicker changedScope={getScopePicked} actualRegion={region} />

@@ -27,7 +27,7 @@ type Props = TouchableOpacityProps & {
 }
 
 export function TextButton({ title, colors, icon, buttonStyle, textStyle, shadow, isLoading, ...rest }: Props) {
-    icon ? buttonStyle = { ...buttonStyle, justifyContent: "space-around", paddingHorizontal: 0 } : buttonStyle = buttonStyle;
+    icon ? buttonStyle = { ...buttonStyle, justifyContent: "space-around" } : buttonStyle = buttonStyle;
     const shadowOptions = theme.shadowProperties
     shadow ?
         buttonStyle = {

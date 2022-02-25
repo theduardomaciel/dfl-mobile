@@ -4,6 +4,7 @@ import React from 'react';
 import { Onboarding } from './screens/Onboarding';
 import { MainScreen } from './screens/MainScreen';
 
+import { Level } from "./screens/Level"
 import { Report } from "./screens/Report"
 
 import { PermissionsExplanation } from './screens/PermissionScreens/PermissionsExplanation';
@@ -28,6 +29,11 @@ export default function Routes() {
                         name="Main"
                         component={MainScreen}
                         options={{ headerShown: false, presentation: "modal" }}
+                    />
+                    <Stack.Screen
+                        name="Level"
+                        component={Level}
+                        options={{ headerShown: false }}
                     />
                     <Stack.Screen
                         name="Report"

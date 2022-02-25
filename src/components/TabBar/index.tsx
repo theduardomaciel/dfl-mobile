@@ -14,7 +14,9 @@ const communityButtonDriver = new Animated.Value(0)
 const reportsButtonDriver = new Animated.Value(0)
 const homeButtonDriver = new Animated.Value(1)
 const accountButtonDriver = new Animated.Value(0)
-export const buttonDrivers = [communityButtonDriver, reportsButtonDriver, null, homeButtonDriver, accountButtonDriver]
+
+const backgroundDriver = new Animated.Value(0)
+export const buttonDrivers = [communityButtonDriver, reportsButtonDriver, null, homeButtonDriver, accountButtonDriver, backgroundDriver]
 
 const BottomTab = ({ title, index }) => {
     const icon = index == 0 ? 'home' : 'heart';
@@ -27,6 +29,15 @@ const BottomTab = ({ title, index }) => {
 export function TabBar({ state, descriptors, navigation }) {
     return (
         <View>
+            <Animated.View style={[styles.bottomBar, {
+                width: "100%", height: 200, position: "absolute", bottom: -175,
+                transform: [{
+                    translateY: buttonDrivers[5].interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, -175]
+                    })
+                }]
+            }]} />
             <View style={styles.bottomBar}>
                 {state.routes.map((route, index) => {
                     const isFocused = state.index === index;

@@ -16,7 +16,7 @@ type Props = CustomModalProps & {
     description?: string;
     button?: boolean;
     style?: ViewStyle;
-    descriptionStyle: TextStyle;
+    descriptionStyle?: TextStyle;
     toggleModal: () => void;
     children?: React.ReactNode;
 }

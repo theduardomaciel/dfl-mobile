@@ -45,6 +45,10 @@ const FadeAccountScreen = (props) => (
                     if (lastIndex !== 4) {
                         riseTrashbin(buttonDrivers[4]);
                         downTrashbin(buttonDrivers[lastIndex]);
+
+                        if (lastIndex === 1) {
+                            downTrashbin(buttonDrivers[5]);
+                        }
                         lastIndex = 4;
                     }
                 });
@@ -83,6 +87,10 @@ export function MainScreen() {
                             //console.log("Levantando botão de comunidade");
                             riseTrashbin(buttonDrivers[0]);
                             downTrashbin(buttonDrivers[lastIndex]);
+
+                            if (lastIndex === 1) {
+                                downTrashbin(buttonDrivers[5]);
+                            }
                             lastIndex = 0;
                         }
                     }
@@ -97,6 +105,9 @@ export function MainScreen() {
                             //console.log("Levantando botão de relatórios");
                             riseTrashbin(buttonDrivers[1]);
                             downTrashbin(buttonDrivers[lastIndex]);
+
+                            // Subimos a barra inferior para cima na tela de relatórios
+                            riseTrashbin(buttonDrivers[5]);
                             lastIndex = 1;
                         }
                     }
@@ -121,6 +132,10 @@ export function MainScreen() {
                             //console.log("Levantando botão de início");
                             riseTrashbin(buttonDrivers[3]);
                             downTrashbin(buttonDrivers[lastIndex]);
+
+                            if (lastIndex === 1) {
+                                downTrashbin(buttonDrivers[5]);
+                            }
                             lastIndex = 3;
                         }
                     }
