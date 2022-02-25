@@ -32,7 +32,7 @@ type AuthContextData = {
     //signIn: () => Promise<void>;
     signIn: () => Promise<void>;
     signOut: () => Promise<void>;
-    updateUser: () => Promise<void>;
+    updateUser: (updated_user?) => Promise<void>;
 }
 
 type AuthProviderProps = {
@@ -120,14 +120,16 @@ function AuthProvider({ children }: AuthProviderProps) {
         setReports(updatedReports)
     } */
 
-    async function updateUser() {
-        const readResponse = await api.post("/user", { user_id: user.id })
-        const updatedUser = readResponse.data as User;
-
-        await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(updatedUser));
-
-        setUser(updatedUser);
-        console.log(`Usuário atualizado com sucesso!`);
+    async function updateUser(updated_user) {
+        let updatedUser = updated_user || undefined
+        if (updatedUser === undefined) {
+            console.log("Objeto do usuário atualizado não definido, atualizando via rede...")
+            const readResponse = await api.post("/user", { user_id: user.id })
+            updatedUser = readResponse.data as User;
+        }
+        await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(updated_user));
+        setUser(updated_user);
+        console.log("Objeto do usuário atualizado com sucesso!")
     }
 
     useEffect(() => {

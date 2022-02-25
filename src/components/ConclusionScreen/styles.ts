@@ -6,10 +6,11 @@ export const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: theme.colors.conclusionBackground,
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'space-around',
         paddingVertical: 15
     },
     title: {
+        marginTop: 100,
         color: theme.colors.secondary1,
         fontSize: 36,
         fontFamily: theme.fonts.title900,
@@ -41,5 +42,14 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: "center",
         textAlign: "center"
-    }
+    },
+
+    levelBackground: {
+        height: 100,
+        width: "80%",
+        borderRadius: 15,
+        padding: 15,
+        backgroundColor: theme.colors.primary3,
+        marginBottom: 35
+    },
 });

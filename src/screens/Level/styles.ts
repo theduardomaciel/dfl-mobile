@@ -6,7 +6,7 @@ const { width } = Dimensions.get('window');
 export const SPACING = 5
 export const ITEM_LENGTH = width * 0.8; // Item is a square. Therefore, its height and width are of the same length.
 
-export const styles = StyleSheet.create({
+export const levelStyles = StyleSheet.create({
     container: {
         backgroundColor: theme.colors.background,
         flex: 1,

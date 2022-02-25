@@ -1,6 +1,7 @@
-import { User } from "../@types/application";
 import prismaClient from "../prisma"
 
+import { User, Profile } from "../@types/application";
+import { CheckUserLevelAndExperience } from "./UpdateUserExperienceService";
 
 class CreateReportService {
     async execute(
@@ -13,8 +14,18 @@ class CreateReportService {
         suggestion: string,
         hasTrashBins: boolean
     ) {
-        console.log(coordinates)
+        const { newLevel, newExperience } = CheckUserLevelAndExperience(user.profile)
         try {
+            // Adicionando XP ao perfil do usuário, e o subindo de nível caso haja experiência suficiente
+            await prismaClient.profile.update({
+                where: {
+                    user_id: user.id
+                },
+                data: {
+                    level: newLevel,
+                    experience: newExperience
+                }
+            })
             const report = await prismaClient.report.create({
                 data: {
                     user: {
@@ -28,6 +39,14 @@ class CreateReportService {
                     suggestion: suggestion,
                     hasTrashBins: hasTrashBins,
                 },
+                include: {
+                    user: {
+                        include: {
+                            reports: true,
+                            profile: true
+                        }
+                    }
+                }
             });
             return report;
         } catch (error) {

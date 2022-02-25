@@ -18,7 +18,7 @@ import { LinearGradient } from "expo-linear-gradient";
 
 import { elements } from "../../global/styles/elements";
 import { theme } from "../../global/styles/theme";
-import { ITEM_LENGTH, styles, SPACING } from "./styles";
+import { ITEM_LENGTH, levelStyles, SPACING } from "./styles";
 
 import { AntDesign, Entypo } from "@expo/vector-icons"
 
@@ -111,17 +111,17 @@ export function Level({ route, navigation }) {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
 
     return (
-        <View style={styles.container}>
+        <View style={levelStyles.container}>
             <StatusBar barStyle="light-content" />
             <LinearGradient
                 colors={[theme.colors.secondary1, theme.colors.primary1]}
                 start={{ x: 0, y: 0.5 }}
                 end={{ x: 1, y: 0.5 }}
-                style={styles.header}
+                style={levelStyles.header}
             >
-                <View style={styles.headerContent}>
+                <View style={levelStyles.headerContent}>
                     <AntDesign style={{ position: "absolute", left: 20 }} name="close" size={24} color={"#FFFFFF"} onPress={() => { navigation.goBack() }} />
-                    <Text style={styles.headerText}>
+                    <Text style={levelStyles.headerText}>
                         Seu Nível
                     </Text>
                     <View />
@@ -131,12 +131,12 @@ export function Level({ route, navigation }) {
                 colors={[theme.colors.secondary1, theme.colors.primary1]}
                 start={{ x: 0, y: 0.5 }}
                 end={{ x: 1, y: 0.5 }}
-                style={styles.actualLevelOverview}
+                style={levelStyles.actualLevelOverview}
             >
-                <Text style={styles.levelTitle}>
+                <Text style={levelStyles.levelTitle}>
                     Relator Iniciante
                 </Text>
-                <Text style={styles.levelDescription}>
+                <Text style={levelStyles.levelDescription}>
                     25xp para o próximo nível
                 </Text>
                 <Image source={require("../../assets/level_placeholder.png")} />
@@ -149,12 +149,12 @@ export function Level({ route, navigation }) {
             />
             <SectionTitle title="Níveis" hasLine />
             <View style={[elements.subContainerGreen, { flex: 1, marginBottom: 20, alignItems: "center", justifyContent: "space-around" }]}>
-                <View style={styles.levelOverview}>
+                <View style={levelStyles.levelOverview}>
                     <View>
-                        <Text style={styles.levelDescription} >
+                        <Text style={levelStyles.levelDescription} >
                             Nível {LEVELS_DATA[currentIndex + 1].id}
                         </Text>
-                        <Text style={[styles.levelTitle, { fontSize: 32 }]} ellipsizeMode={"middle"} numberOfLines={1}>
+                        <Text style={[levelStyles.levelTitle, { fontSize: 32 }]} ellipsizeMode={"middle"} numberOfLines={1}>
                             {LEVELS_DATA[currentIndex + 1].title}
                         </Text>
                     </View>
@@ -169,15 +169,15 @@ export function Level({ route, navigation }) {
                             return (
                                 <View style={{ width: ITEM_LENGTH, marginHorizontal: SPACING * 1.5, justifyContent: "space-between" }}>
                                     {/* <View>
-                                        <Text style={styles.levelDescription} >
+                                        <Text style={levelStyles.levelDescription} >
                                             Nível {item.id}
                                         </Text>
-                                        <Text style={[styles.levelTitle, { fontSize: 32 }]} ellipsizeMode={"middle"} numberOfLines={1}>
+                                        <Text style={[levelStyles.levelTitle, { fontSize: 32 }]} ellipsizeMode={"middle"} numberOfLines={1}>
                                             {item.title}
                                         </Text>
                                     </View> */}
-                                    <Image source={item.icon} style={styles.itemImage} />
-                                    <Text style={[styles.levelDescription2, { marginBottom: 20 }]}>
+                                    <Image source={item.icon} style={levelStyles.itemImage} />
+                                    <Text style={[levelStyles.levelDescription2, { marginBottom: 20 }]}>
                                         {`faltam ${item.exp - USER_EXP}xp para esse nível`}
                                     </Text>
                                 </View>
@@ -194,25 +194,25 @@ export function Level({ route, navigation }) {
                     <AntDesign style={{ position: "absolute", top: "35%", left: 0 }} name="arrowleft" size={36} color="white" onPress={handleOnPrev} />
                     <AntDesign style={{ position: "absolute", top: "35%", right: 0 }} name="arrowright" size={36} color="white" onPress={handleOnNext} />
                     <View style={{ flexDirection: "row", marginBottom: 15, alignItems: "center", justifyContent: "center" }}>
-                        <View style={styles.progressBar}>
-                            <View style={[styles.progressBar, {
+                        <View style={levelStyles.progressBar}>
+                            <View style={[levelStyles.progressBar, {
                                 backgroundColor: theme.colors.primary3,
                                 borderRadius: 25 / 2,
                                 width: `${BAR_WIDTH > 5 ? BAR_WIDTH : 5}%`
                             }]} />
                         </View>
-                        <Text style={[styles.levelDescription2, { marginLeft: 3 }]}>
+                        <Text style={[levelStyles.levelDescription2, { marginLeft: 3 }]}>
                             {`${BAR_WIDTH}%`}
                         </Text>
                     </View>
-                    {/* <Text style={[styles.levelDescription2, { marginBottom: 10, fontSize: 10 }]}>
+                    {/* <Text style={[levelStyles.levelDescription2, { marginBottom: 10, fontSize: 10 }]}>
                         115 pessoas na sua cidade estão em um nível mais alto que o seu.{`\n`}
                         <Text style={{ fontWeight: "bold" }}>Que tal reportar mais focos de lixo?</Text>
                     </Text> */}
                 </View>
             </View>
             <View style={[elements.subContainerGreen, { height: 85, marginBottom: 25 }]}>
-                <Text style={[styles.levelDescription2, { fontSize: 14 }]}>
+                <Text style={[levelStyles.levelDescription2, { fontSize: 14 }]}>
                     Média geral de avaliação dos seus relatórios{`\n`}
                     <Text style={{ fontFamily: theme.fonts.subtitle900, fontSize: 28 }}>
                         1.832/5

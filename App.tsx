@@ -1,4 +1,6 @@
 import * as Svg from "react-native-svg";
+import 'react-native-gesture-handler'
+
 import React from "react";
 import { StatusBar } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
@@ -11,11 +13,7 @@ import { Roboto_400Regular, Roboto_500Medium, Roboto_700Bold, Roboto_900Black } 
 import { Alatsi_400Regular } from "@expo-google-fonts/alatsi"
 
 import Routes from "./src/routes";
-import { AuthProvider } from "./src/hooks/auth";
-
-import { PermissionsExplanation } from "./src/screens/PermissionScreens/PermissionsExplanation";
-import { PermissionsResquest } from "./src/screens/PermissionScreens/PermissionsRequest";
-
+import { AuthProvider } from "./src/hooks/auth"
 
 export default function App() {
     const [fontsLoaded] = useFonts({

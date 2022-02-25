@@ -13,22 +13,6 @@ import { AntDesign } from '@expo/vector-icons';
 import { BottomBar } from "../../../components/BottomBar";
 import { TextButton } from "../../../components/TextButton";
 
-// Dispatch<SetStateAction<{}>>
-/* async function getCurrentLocation() {
-    try {
-        const geoLocation = await Location.getCurrentPositionAsync({});
-        const coords = geoLocation.coords;
-        const region = {
-            latitude: coords.latitude,
-            longitude: coords.longitude,
-            latitudeDelta: 0.005,
-            longitudeDelta: 0.005
-        }!;
-        return region
-    } catch (error) {
-        console.log(error)
-    }
-} */
 async function getLocationAddress(latitude: number, longitude: number) {
     try {
         const fullAddress = await Location.reverseGeocodeAsync({ latitude: latitude, longitude: longitude })

@@ -12,14 +12,21 @@ import { TextButton } from "../../../components/TextButton";
 import { TagsSelector } from "../../../components/TagsSelector";
 import { TextInput } from "react-native-gesture-handler";
 import { ConclusionScreen } from "../../../components/ConclusionScreen";
+
+import axios from "axios";
 import { api } from "../../../services/api";
 import { useAuth } from "../../../hooks/auth";
-import axios from "axios";
-import { Report } from "../../../@types/application";
+
+import { Report, User } from "../../../@types/application";
 
 type ImageUploadResponse = {
     deletehash: string;
     link: string;
+}
+
+type ReportResponse = {
+    updatedUser: User;
+    updatedReport: Report;
 }
 
 export function ReportScreen3({ route, navigation }: any) {
@@ -46,9 +53,10 @@ export function ReportScreen3({ route, navigation }: any) {
         }
     }
 
+    const [gainedExperience, setGainedExperience] = useState(25 || null)
     async function SubmitReport(data: Report) {
         try {
-            const { deletehash, link } = await UploadImage()
+            /* const { deletehash, link } = await UploadImage()
             const submitResponse = await api.post("/report/create", {
                 user: user,
                 coordinates: data.coordinates,
@@ -59,15 +67,14 @@ export function ReportScreen3({ route, navigation }: any) {
                 suggestion: data.suggestion,
                 hasTrashbin: data.hasTrashBins
             })
-            console.log("Relatório criado com sucesso!", submitResponse.data)
-            const levelResponse = await api.post("/profile/update/experience", { user: user })
-            const newLevel = levelResponse.data as number;
-            if (newLevel > user.profile.level) {
-                // Mostrar modal de subida de nível
+            const { updatedReport, updatedUser } = submitResponse.data as ReportResponse
+            if (updatedUser.profile.level > user.profile.level) {
+                setGainedExperience(null)
             } else {
-                // Mostrar modal de ganho de exp
+                // Caso não, somente mostramos o quanto o usuário ganhou de exp
+                setGainedExperience(updatedUser.profile.experience - user.profile.experience)
             }
-            updateUser();
+            updateUser(updatedUser); */
         } catch (error) {
             console.log(error)
             return "error"
@@ -137,10 +144,17 @@ export function ReportScreen3({ route, navigation }: any) {
                         animationType={"slide"}
                         statusBarTranslucent
                     >
-                        <ConclusionScreen title="O relato foi registrado com sucesso!" info="Os órgãos responsáveis de sua cidade serão notificados." onPress={() => {
-                            navigation.navigate('Início')
-                            setModalOpen(false)
-                        }} />
+                        {
+                            <ConclusionScreen
+                                gainedExperience={gainedExperience}
+                                title="O relato foi registrado com sucesso!"
+                                info="Os órgãos responsáveis de sua cidade serão notificados."
+                                onPress={() => {
+                                    navigation.navigate('Início')
+                                    setModalOpen(false)
+                                }}
+                            />
+                        }
                     </Modal>
                 }
             </ScrollView>

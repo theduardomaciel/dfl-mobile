@@ -143,6 +143,7 @@ export function Account({ navigation }) {
         }) */
         return (
             <TouchableOpacity
+                key={item.id}
                 activeOpacity={0.9}
                 style={styles.report_container}
                 onPress={() => { navigation.navigate("Report", { item }) }}
