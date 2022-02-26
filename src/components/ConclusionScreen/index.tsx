@@ -40,6 +40,7 @@ export function ConclusionScreen({ title, info, backButtonText, icon, gainedExpe
     const USER_EXP = user.profile.experience;
     const USER_LEVEL = user.profile.level
     const BAR_WIDTH = ((USER_EXP * 100) / LEVELS_DATA[USER_LEVEL].exp)
+    console.log("USER_EXP, USER_LEVEL, BAR_WIDTH: ", USER_EXP, USER_LEVEL, BAR_WIDTH)
 
     const barAnimation = useRef(new Animated.Value(0)).current;
     const barWidth = barAnimation.interpolate({
@@ -55,14 +56,14 @@ export function ConclusionScreen({ title, info, backButtonText, icon, gainedExpe
             useNativeDriver: false,
         }).start();
         setTimeout(() => {
-            setNumber0(25)
-        }, 10);
+            setNumber0(gainedExperience)
+        }, 150);
         setTimeout(() => {
             setNumber1(BAR_WIDTH)
         }, 1500);
         setTimeout(() => {
             setNumber2(LEVELS_DATA[USER_LEVEL + 1].exp - USER_EXP)
-        }, 300);
+        }, 3000);
     }, [])
 
     return (
@@ -99,7 +100,7 @@ export function ConclusionScreen({ title, info, backButtonText, icon, gainedExpe
                             width: barWidth
                         }]} />
                     </View>
-                    <View style={styles.animatedTextView}>
+                    <View style={[styles.animatedTextView, { marginLeft: 5 }]}>
                         <AnimatedNumbers
                             animateToNumber={number1}
                             fontStyle={levelStyles.levelDescription2}

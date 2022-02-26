@@ -40,10 +40,14 @@ const initialRegion = {
 }
 
 export function Home({ navigation }) {
+    const { user, creatingAccount, updateUser } = useAuth();
+    if (user === null) return (
+        <View style={{ flex: 1 }} />
+    );
+
     let mapReference: any;
     const [alreadyLoaded, setAlreadyLoaded] = useState(false)
 
-    const { user, creatingAccount, updateUser } = useAuth();
     const [markers, setMarkers] = useState([]);
     useEffect(() => {
         setMarkers(ListMarkersOnMap(user, "district"))
@@ -65,8 +69,6 @@ export function Home({ navigation }) {
         }
         HasPermission();
     }, []);
-
-    if (user === null) return null;
 
     const userReportsAmount = user.reports ? user.reports.length : 0
     const userReportsSolvedAmount = user.reports ? [...user.reports].filter(report => report.resolved === true).length : 0

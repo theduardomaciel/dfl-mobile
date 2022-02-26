@@ -5,45 +5,37 @@ import {
     Text
 } from 'react-native';
 
-import { Picker } from '@react-native-picker/picker';
+import { Picker as SelectPicker } from '@react-native-picker/picker';
 
 import { theme } from '../../../global/styles/theme';
 import { styles } from './styles';
 import { defaultStyles } from '../defaultStyles';
 
 type PickerTypes = {
-    onSelectOption: (optionValue) => void;
+    state: any;
+    setState: any;
 }
 
-export function DefaultCityPicker({ onSelectOption }: PickerTypes) {
-    const [defaultCity, setDefaultCity] = useState();
+export function DefaultCityPicker({ state, setState }: PickerTypes) {
     return (
         <View style={styles.container}>
             <Text style={defaultStyles.title}>
                 Sua Cidade
             </Text>
             <View style={[defaultStyles.picker, theme.shadowPropertiesLow]}>
-                <Picker
-                    selectedValue={defaultCity}
+                <SelectPicker
+                    selectedValue={state}
                     onValueChange={(value) => {
-                        setDefaultCity(value)
-                        onSelectOption(value)
+                        setState(value)
                     }}
                     style={{ width: 155, fontSize: 12, color: theme.colors.secondary1, alignSelf: "center", marginLeft: 5 }}
                     dropdownIconColor={theme.colors.secondary1}
                     mode='dropdown'
                 >
-                    <Picker.Item label="Maceió" value="Maceió, AL - Brasil" />
-                    <Picker.Item label="Rio Largo [beta]" value="Rio Largo, AL - Brasil" />
-                    <Picker.Item label="Satuba [beta]" value="Satuba, AL - Brasil" />
-                    {/* <Picker.Item label="Recife" value="Recife, PE - Brasil" />
-                    <Picker.Item label="Arapiraca" value="Arapiraca, AL - Brasil" />
-                    <Picker.Item label="Aracaju" value="Aracaju, SE - Brasil" />
-                    <Picker.Item label="Teresina" value="Teresina, CE - Brasil" />
-                    <Picker.Item label="São Paulo" value="São Paulo, SP - Brasil" />
-                    
-                    <Picker.Item label="Salvador" value="Salvador, BA - Brasil" /> */}
-                </Picker>
+                    <SelectPicker.Item label="Maceió" value="Maceió, AL - Brasil" />
+                    <SelectPicker.Item label="Rio Largo [beta]" value="Rio Largo, AL - Brasil" />
+                    <SelectPicker.Item label="Satuba [beta]" value="Satuba, AL - Brasil" />
+                </SelectPicker>
             </View>
         </View>
     );

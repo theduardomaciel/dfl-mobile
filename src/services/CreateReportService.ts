@@ -5,7 +5,7 @@ import { CheckUserLevelAndExperience } from "./UpdateUserExperienceService";
 
 class CreateReportService {
     async execute(
-        user: User,
+        user_id: number,
         address: string,
         coordinates: Array<number>,
         image_url: string,
@@ -14,18 +14,29 @@ class CreateReportService {
         suggestion: string,
         hasTrashBins: boolean
     ) {
-        const { newLevel, newExperience } = CheckUserLevelAndExperience(user.profile)
         try {
-            // Adicionando XP ao perfil do usuário, e o subindo de nível caso haja experiência suficiente
-            await prismaClient.profile.update({
+            const user = await prismaClient.user.findUnique({
                 where: {
-                    user_id: user.id
+                    id: user_id,
                 },
-                data: {
-                    level: newLevel,
-                    experience: newExperience
+                include: {
+                    profile: true,
                 }
             })
+            // Adicionando XP ao perfil do usuário, e o subindo de nível caso haja experiência suficiente
+            if (user.profile) {
+                const { USER_LEVEL, USER_EXPERIENCE } = CheckUserLevelAndExperience(user.profile)
+                console.log("USER LEVEL AND EXPERIENCE: ", USER_LEVEL, USER_EXPERIENCE)
+                await prismaClient.profile.update({
+                    where: {
+                        user_id: user.id
+                    },
+                    data: {
+                        level: USER_LEVEL,
+                        experience: USER_EXPERIENCE
+                    }
+                })
+            }
             const report = await prismaClient.report.create({
                 data: {
                     user: {
@@ -43,7 +54,7 @@ class CreateReportService {
                     user: {
                         include: {
                             reports: true,
-                            profile: true
+                            profile: user.profile ? true : false
                         }
                     }
                 }

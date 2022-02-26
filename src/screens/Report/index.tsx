@@ -158,7 +158,7 @@ export function Report({ route, navigation }) {
                 />
             }
 
-            <ScrollView showsVerticalScrollIndicator={false} style={[elements.subContainerWhite, styles.tagsContainer]}>
+            <ScrollView contentContainerStyle={{ alignItems: "center", justifyContent: "center" }} showsVerticalScrollIndicator={false} style={[elements.subContainerWhite, styles.tagsContainer]}>
                 <View style={styles.gridContainer}>
                     {tags}
                     <View style={{ width: "100%", height: 20 }} />

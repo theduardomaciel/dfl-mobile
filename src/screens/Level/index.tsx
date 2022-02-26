@@ -70,13 +70,14 @@ export function Level({ route, navigation }) {
 
     // Utilizamos o "callback" para que o valor do "state" seja atualizado apenas quando o usuário clicar no botão
     const onViewableItemsChanged = useCallback(({ viewableItems }: PropTypes) => {
-        return setCurrentIndex(viewableItems[0].index)
+        if (viewableItems[0]) {
+            return setCurrentIndex(viewableItems[0].index)
+        }
     }, []);
 
     const viewabilityConfigCallbackPairs = useRef([{ viewabilityConfig, onViewableItemsChanged }])
 
     const handleOnPrev = () => {
-        console.log(currentIndex)
         if (currentIndex === 0) {
             return;
         }
@@ -101,8 +102,15 @@ export function Level({ route, navigation }) {
         }
     };
 
-    const USER_EXP = 12;
-    const BAR_WIDTH = ((USER_EXP * 100) / LEVELS_DATA[currentIndex + 1].exp)
+    useEffect(() => {
+        if (user.profile === undefined) {
+            return navigation.goBack();
+        }
+    }, [])
+
+    const USER_LEVEL = user.profile.level
+    const USER_EXP = user.profile.experience;
+    const BAR_WIDTH = ((USER_EXP * 100) / LEVELS_DATA[currentIndex].exp)
 
     if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
         UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -134,10 +142,10 @@ export function Level({ route, navigation }) {
                 style={levelStyles.actualLevelOverview}
             >
                 <Text style={levelStyles.levelTitle}>
-                    Relator Iniciante
+                    {LEVELS_DATA[USER_LEVEL].title}
                 </Text>
                 <Text style={levelStyles.levelDescription}>
-                    25xp para o próximo nível
+                    {`${LEVELS_DATA[USER_LEVEL + 1].exp - USER_EXP}xp para o próximo nível`}
                 </Text>
                 <Image source={require("../../assets/level_placeholder.png")} />
             </LinearGradient>
@@ -164,21 +172,15 @@ export function Level({ route, navigation }) {
                         showsHorizontalScrollIndicator={false}
                         pagingEnabled
                         bounces={false}
+                        renderToHardwareTextureAndroid
+                        initialScrollIndex={USER_LEVEL}
                         keyExtractor={item => item.id}
                         renderItem={({ item, index }) => {
                             return (
-                                <View style={{ width: ITEM_LENGTH, marginHorizontal: SPACING * 1.5, justifyContent: "space-between" }}>
-                                    {/* <View>
-                                        <Text style={levelStyles.levelDescription} >
-                                            Nível {item.id}
-                                        </Text>
-                                        <Text style={[levelStyles.levelTitle, { fontSize: 32 }]} ellipsizeMode={"middle"} numberOfLines={1}>
-                                            {item.title}
-                                        </Text>
-                                    </View> */}
+                                <View style={{ opacity: 1, width: ITEM_LENGTH, marginHorizontal: SPACING * 1.5, justifyContent: "space-between" }}>
                                     <Image source={item.icon} style={levelStyles.itemImage} />
                                     <Text style={[levelStyles.levelDescription2, { marginBottom: 20 }]}>
-                                        {`faltam ${item.exp - USER_EXP}xp para esse nível`}
+                                        {USER_LEVEL < item.id ? `faltam ${item.exp - USER_EXP}xp para esse nível` : `Você já passou por esse nível!`}
                                     </Text>
                                 </View>
                             )
@@ -193,18 +195,23 @@ export function Level({ route, navigation }) {
                     />
                     <AntDesign style={{ position: "absolute", top: "35%", left: 0 }} name="arrowleft" size={36} color="white" onPress={handleOnPrev} />
                     <AntDesign style={{ position: "absolute", top: "35%", right: 0 }} name="arrowright" size={36} color="white" onPress={handleOnNext} />
-                    <View style={{ flexDirection: "row", marginBottom: 15, alignItems: "center", justifyContent: "center" }}>
-                        <View style={levelStyles.progressBar}>
-                            <View style={[levelStyles.progressBar, {
-                                backgroundColor: theme.colors.primary3,
-                                borderRadius: 25 / 2,
-                                width: `${BAR_WIDTH > 5 ? BAR_WIDTH : 5}%`
-                            }]} />
-                        </View>
-                        <Text style={[levelStyles.levelDescription2, { marginLeft: 3 }]}>
-                            {`${BAR_WIDTH}%`}
-                        </Text>
-                    </View>
+                    {
+                        USER_LEVEL <= LEVELS_DATA[currentIndex].id ?
+                            <View style={{ flexDirection: "row", marginBottom: 15, alignItems: "center", justifyContent: "center" }}>
+                                <View style={levelStyles.progressBar}>
+                                    <View style={[levelStyles.progressBar, {
+                                        backgroundColor: theme.colors.primary3,
+                                        borderRadius: 25 / 2,
+                                        width: `${BAR_WIDTH > 5 ? BAR_WIDTH : 5}%`
+                                    }]} />
+                                </View>
+                                <Text style={[levelStyles.levelDescription2, { marginLeft: 3 }]}>
+                                    {`${BAR_WIDTH}%`}
+                                </Text>
+                            </View>
+                            : null
+                    }
+
                     {/* <Text style={[levelStyles.levelDescription2, { marginBottom: 10, fontSize: 10 }]}>
                         115 pessoas na sua cidade estão em um nível mais alto que o seu.{`\n`}
                         <Text style={{ fontWeight: "bold" }}>Que tal reportar mais focos de lixo?</Text>

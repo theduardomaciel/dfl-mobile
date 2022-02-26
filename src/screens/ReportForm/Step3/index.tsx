@@ -37,7 +37,6 @@ export function ReportScreen3({ route, navigation }: any) {
     const [tags, setTags] = useState({});
     const handleTags = (tags) => {
         setTags(tags)
-        console.log(tags)
     }
 
     const [suggestion, setSuggestion] = useState("");
@@ -55,10 +54,11 @@ export function ReportScreen3({ route, navigation }: any) {
 
     const [gainedExperience, setGainedExperience] = useState(25 || null)
     async function SubmitReport(data: Report) {
+        console.log("Iniciando processo de upload do relatório.")
         try {
             const { deletehash, link } = await UploadImage()
             const submitResponse = await api.post("/report/create", {
-                user: user,
+                user_id: user.id,
                 coordinates: data.coordinates,
                 address: data.address,
                 image_url: link,

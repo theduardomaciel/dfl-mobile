@@ -1,13 +1,12 @@
-import { User } from "../@types/application";
 import prismaClient from "../prisma"
 
 class CreateProfileService {
-    async execute(user: User, username: string, defaultCity: string) {
+    async execute(user_id: number, username: string, defaultCity: string) {
         try {
-            const profile = await prismaClient.profile.create({
+            const response = await prismaClient.profile.create({
                 data: {
                     user: {
-                        connect: { id: user.id },
+                        connect: { id: user_id },
                     },
                     username: username,
                     defaultCity: defaultCity,
@@ -21,9 +20,9 @@ class CreateProfileService {
                     }
                 }
             });
-            if (profile) {
-                console.log(`Perfil do usuário ${user.first_name} de id: ${user.id} foi criado!`, profile);
-                return profile;
+            if (response) {
+                console.log(`Perfil do usuário ${response.user.first_name} de id: ${response.user.id} foi criado!`);
+                return response;
             }
         } catch (error) {
             console.log(error);

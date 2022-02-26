@@ -1,42 +1,63 @@
 import { Profile, User } from "../@types/application";
 import prismaClient from "../prisma"
 import { NODE_LEVELS_DATA } from "../utils/friendlyForNodeLevels";
+import { ReadUserService } from "./ReadUserService";
 
 function CheckUserLevelAndExperience(userProfile: Profile) {
-    let newExperience = userProfile.experience
+    console.log(userProfile)
+
+    let USER_EXPERIENCE = userProfile.experience
     if (userProfile.level < 3) {
-        newExperience += 100
+        USER_EXPERIENCE += 100
     } else if (userProfile.level >= 5 && userProfile.level <= 7) {
-        newExperience += 150
+        USER_EXPERIENCE += 150
     } else {
-        newExperience += 175
+        USER_EXPERIENCE += 175
+    }
+    console.log(`O usuário agora possui ${USER_EXPERIENCE}xp!`)
+
+    let USER_LEVEL = userProfile.level;
+    function GetLevelObtainedWithActualXp() {
+        let maxLevel = 0
+        for (let index = 0; index < NODE_LEVELS_DATA.length; index++) {
+            if (USER_EXPERIENCE >= NODE_LEVELS_DATA[index].exp) {
+                console.log(`A experiência do usuário supersede o nível ${index}, iremos verificar novamente, para saber se ainda supersede o de algum outro nível.`)
+                maxLevel = index
+                continue;
+            }
+        }
+        console.log(maxLevel)
+        return maxLevel
     }
 
-    let newLevel = userProfile.level;
-    for (let index = 0; index < NODE_LEVELS_DATA.length; index++) {
-        const level_data = NODE_LEVELS_DATA[index];
-        if (newExperience >= level_data.exp) {
-            newLevel = level_data.id
-            newExperience = 0
-        }
+    const LEVEL_OBTAINED_WITH_ACTUAL_XP = GetLevelObtainedWithActualXp()
+
+    // Caso o usuário tenha subido de nível, atualizamos esse valor e resetamos a quantidade de experiência que ele tem
+    if (LEVEL_OBTAINED_WITH_ACTUAL_XP > USER_LEVEL) {
+        USER_LEVEL = LEVEL_OBTAINED_WITH_ACTUAL_XP
+        USER_EXPERIENCE = 0
+        console.log(`O usuário agora pertence ao nível ${NODE_LEVELS_DATA[USER_LEVEL].title} (${LEVEL_OBTAINED_WITH_ACTUAL_XP})!`)
     }
-    return { newLevel, newExperience }
+
+    return { USER_LEVEL, USER_EXPERIENCE }
 }
 
 class UpdateUserExperienceService {
-    async execute(user: User) {
+    async execute(user_id: number) {
         try {
-            const { newLevel, newExperience } = CheckUserLevelAndExperience(user.profile);
+            const service = new ReadUserService();
+            const user = await service.execute(user_id)
+            const { USER_LEVEL, USER_EXPERIENCE } = CheckUserLevelAndExperience(user.profile);
             await prismaClient.profile.update({
                 where: {
                     id: user.id,
                 },
                 data: {
-                    level: newLevel,
-                    experience: user.profile.experience + newExperience
+                    level: USER_LEVEL,
+                    experience: USER_EXPERIENCE
                 }
             })
-            return newLevel
+            return { USER_LEVEL, USER_EXPERIENCE }
         } catch (error) {
             console.log(error);
         }

@@ -4,6 +4,7 @@ require('dotenv').config()
 
 class ReadUserService {
     async execute(user_id) {
+        console.log(user_id)
         try {
             const user = await prismaClient.user.findUnique({
                 where: {

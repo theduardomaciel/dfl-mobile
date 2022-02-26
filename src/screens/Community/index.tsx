@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, Image, StatusBar, Pressable } from "react-native";
 
-import Modal from "react-native-modal"
 import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
 
 import { TextButton } from "../../components/TextButton";
 import { ModalBase } from "../../components/ModalBase";
 import { BottomBar } from "../../components/BottomBar";
 import { SectionTitle } from "../../components/SectionTitle";
+import { ProfileModal } from "../../components/ProfileModal";
+import { DefaultCityPicker } from "../../components/ProfilePickers/DefaultCity";
+import { MapScopePicker } from "../../components/MapScopePicker";
 
 import { elements } from "../../global/styles/elements";
 import { theme } from "../../global/styles/theme";
@@ -16,9 +18,6 @@ import { styles } from "./styles";
 import { Entypo } from '@expo/vector-icons';
 
 import { useAuth } from "../../hooks/useAuth";
-import { ProfileModal } from "../../components/ProfileModal";
-import { DefaultCityPicker } from "../../components/ProfilePickers/DefaultCity";
-import { MapScopePicker } from "../../components/MapScopePicker";
 import { ListMarkersOnMap } from "../../utils/ListMarkersOnMap";
 
 const Marcadores = [
@@ -30,14 +29,6 @@ const Marcadores = [
             longitude: 43.14820
         }
     },
-    {
-        title: "Marcador 2",
-        description: "Coiso 2",
-        coordinates: {
-            latitude: 23.52260,
-            longitude: 34.16131
-        }
-    }
 ]
 
 const initialRegion = {
@@ -48,54 +39,69 @@ const initialRegion = {
 }
 
 export function Community() {
-    const [alreadyLoaded, setAlreadyLoaded] = useState(false)
     const { user } = useAuth();
 
-    const [isProfileModalVisible, setProfileModalVisible] = useState(false)
-    const [secondModalIsVisible, setSecondModalVisible] = useState(false)
+    const [isFirstModalVisible, setFirstModalVisible] = useState(false)
+    const [isSecondModalVisible, setSecondModalVisible] = useState(false)
+    const firstToggleModal = () => {
+        setFirstModalVisible(!isFirstModalVisible)
+    }
+    const secondToggleModal = () => {
+        setSecondModalVisible(!isSecondModalVisible)
+    }
 
     const [markers, setMarkers] = useState([])
     useEffect(() => {
         function CheckIfProfileIsCreated() {
-            console.log(user.profile)
             if (user.profile === undefined) {
-                setProfileModalVisible(true)
+                console.log("Usuário não possui perfil. Exibindo modal para criação.")
+                setFirstModalVisible(true)
             }
         }
         CheckIfProfileIsCreated()
         setMarkers(ListMarkersOnMap(user, "district"))
     }, []);
 
+    const [region, setRegion] = useState(initialRegion);
+    const [alreadyLoaded, setAlreadyLoaded] = useState(false)
+
+    let mapReference: any;
+    const getScopePicked = (scope, newRegion) => {
+        setRegion(newRegion)
+        setMarkers(ListMarkersOnMap(user, scope))
+    }
+
     const [isCityModalVisible, setCityModalVisible] = useState(false);
     const toggleCityModal = () => {
         setCityModalVisible(!isCityModalVisible);
     };
 
-    const secondToogleModal = () => {
-        setSecondModalVisible(!secondModalIsVisible)
-    }
+    const [defaultCity, setDefaultCity] = "Cidade não selecionada"
 
-    const getScopePicked = (scope, newRegion) => {
-        setRegion(newRegion)
-        setMarkers(ListMarkersOnMap(user, scope))
-    }
-    const onDefaultCityPicked = (city) => {
-        //
-    }
-
-    const [region, setRegion] = useState(initialRegion);
-    let mapReference: any;
     return (
         <View style={styles.container}>
-            <ProfileModal isVisible={isProfileModalVisible} toggleModal={() => { setProfileModalVisible(!isProfileModalVisible) }} secondToogleModal={secondToogleModal} />
-            <ProfileModal isSecond isVisible={secondModalIsVisible} toggleModal={secondToogleModal} />
+            <ProfileModal
+                isVisible={isFirstModalVisible}
+                toggleModal={firstToggleModal}
+                secondToggleModal={secondToggleModal}
+            />
+            <ProfileModal
+                onBackdropPress={() => {
+                    firstToggleModal()
+                    secondToggleModal()
+                }}
+                isSecond
+                isVisible={isSecondModalVisible}
+                toggleModal={secondToggleModal}
+                secondToggleModal={firstToggleModal}
+            />
             <ModalBase
                 title="Alterar cidade padrão"
                 isVisible={isCityModalVisible}
                 onBackdropPress={() => setCityModalVisible(false)}
                 toggleModal={() => { setCityModalVisible(false) }}
             >
-                <DefaultCityPicker onSelectOption={onDefaultCityPicked} />
+                <DefaultCityPicker state={defaultCity} setState={setDefaultCity} />
                 <TextButton title="ALTERAR CIDADE" textStyle={{ fontSize: 12 }} buttonStyle={{ backgroundColor: theme.colors.primary2, paddingVertical: 10, paddingHorizontal: 25, borderRadius: 25 }} />
             </ModalBase>
             <StatusBar

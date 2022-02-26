@@ -126,9 +126,9 @@ const months = ["Jan.", "Fev.", "Mar.", "Abr.", "Jun.", "Jul.", "Ago.", "Set.", 
 
 export function Account({ navigation }) {
     const { user } = useAuth();
-    if (user === null) {
-        return null;
-    }
+    if (user === null) return (
+        <View style={{ flex: 1 }} />
+    );
     const Header = () => {
         return (
             <View style={styles.header}>
@@ -212,6 +212,7 @@ export function Account({ navigation }) {
     function GetReportsAmountByMonth() {
         const data = user.reports;
         const amountsByMonth = new Array(12).fill(0) as Array<number>;
+        if (!data) return amountsByMonth;
         /* const groups = data.reduce((groups, report) => {
             const date = new Date(report.createdAt);
             const month = date.getMonth()
@@ -265,6 +266,13 @@ export function Account({ navigation }) {
         }
     }, []);
 
+    const onRefresh = () => {
+        if (user.reports) {
+            LoadUserReports()
+            GetReportsAmountByMonth()
+        }
+    }
+
     // Ano = 0 | mês = 1 | dia = 2 (tem que dar o slice)
     const userCreatedAtSplit = user.createdAt.split("-")
     const userCreatedAt = userCreatedAtSplit[2].slice(0, 2) + "/" + userCreatedAtSplit[1] + "/" + userCreatedAtSplit[0]
@@ -280,7 +288,7 @@ export function Account({ navigation }) {
 
                 refreshControl={
                     <RefreshControl
-                        onRefresh={LoadUserReports}
+                        onRefresh={onRefresh}
                         refreshing={false}
                     />
                 }

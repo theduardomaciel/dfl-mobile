@@ -144,7 +144,7 @@ function AuthProvider({ children }: AuthProviderProps) {
             if (userStorage && tokenStorage) {
                 api.defaults.headers.common['Authorization'] = `Bearer ${tokenStorage}`;
                 setUser(parsedUser);
-                console.log("Usuário logado com sucesso!", userStorage)
+                console.log("Usuário logado com sucesso!", tokenStorage)
             }
 
             setIsSigningIn(false);
