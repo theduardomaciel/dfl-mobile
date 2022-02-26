@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import {
     Animated,
+    Image,
     ImageBackground,
     Text,
     View,
@@ -17,7 +18,7 @@ import { LEVELS_DATA } from '../../utils/levels';
 import { useAuth } from '../../hooks/useAuth';
 
 import AnimatedNumbers from 'react-native-animated-numbers';
-import Confetti from '../Confetti';
+import Confetti from "../Confetti/index"
 
 type Props = {
     // A ? faz com que o elemento não seja obrigatório
@@ -33,9 +34,9 @@ export function ConclusionScreen({ title, info, backButtonText, icon, gainedExpe
     const { user } = useAuth();
 
     // [0] = quanto xp o usuário ganhou | [1] = porcentagem da xp que o usuário ganhou | [2] = quanto xp ele precisa pra subir de nível
-    const [number0, setNumber0] = React.useState(0);
-    const [number1, setNumber1] = React.useState(0);
-    const [number2, setNumber2] = React.useState(0);
+    const [number0, setNumber0] = useState(0);
+    const [number1, setNumber1] = useState(0);
+    const [number2, setNumber2] = useState(0);
 
     const USER_EXP = user.profile.experience;
     const USER_LEVEL = user.profile.level
@@ -66,20 +67,9 @@ export function ConclusionScreen({ title, info, backButtonText, icon, gainedExpe
         }, 3000);
     }, [])
 
-    return (
-        <ImageBackground source={require("../../assets/background_placeholder.png")} style={styles.container}>
-            <Text style={styles.title}>
-                {title}
-            </Text>
-            <Text style={styles.info}>
-                {info}
-            </Text>
-            <View style={styles.checkMarkContainer}>
-                <View style={[styles.circle, { width: 175, height: 175, opacity: 0.65 }]} />
-                <View style={styles.circle} />
-                <Text style={{ fontSize: 64 }}>{icon ? icon : "✅"}</Text>
-            </View>
-            <View style={styles.levelBackground}>
+    const experienceUI = () => {
+        return (
+            <View>
                 <View style={styles.animatedTextView}>
                     <Text style={levelStyles.levelDescription}>
                         Você ganhou{` `}
@@ -124,12 +114,35 @@ export function ConclusionScreen({ title, info, backButtonText, icon, gainedExpe
                     </Text>
                 </View>
             </View>
+        )
+    }
+
+    return (
+        <ImageBackground source={require("../../assets/background_placeholder.png")} style={styles.container}>
+            <Text style={styles.title}>
+                {title}
+            </Text>
+            <Text style={styles.info}>
+                {info}
+            </Text>
+            <View style={styles.checkMarkContainer}>
+                <View style={[styles.circle, { width: 175, height: 175, opacity: 0.65 }]} />
+                <View style={styles.circle} />
+                <Text style={{ fontSize: 64 }}>{icon ? icon : "✅"}</Text>
+            </View>
+            {
+                gainedExperience ?
+                    <View style={styles.levelBackground}>
+                        {experienceUI}
+                    </View>
+                    : null
+            }
+            <Confetti colors={[theme.colors.primary1, theme.colors.secondary1, theme.colors.primary2, theme.colors.secondary2]} />
             <TextButton
                 title={backButtonText ? backButtonText : "Voltar para a tela inicial"}
                 buttonStyle={{ backgroundColor: theme.colors.secondary1, paddingHorizontal: 20, paddingVertical: 15, marginBottom: 50 }}
                 onPress={onPress}
             />
-            {/* <Confetti /> */}
         </ImageBackground>
     )
 }

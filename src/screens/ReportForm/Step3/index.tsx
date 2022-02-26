@@ -152,8 +152,10 @@ export function ReportScreen3({ route, navigation }: any) {
                                 title="O relato foi registrado com sucesso!"
                                 info="Os órgãos responsáveis de sua cidade serão notificados."
                                 onPress={() => {
-                                    navigation.navigate('Início')
                                     setModalOpen(false)
+                                    if (gainedExperience === null) {
+                                        navigation.navigate('NewLevel')
+                                    }
                                 }}
                             />
                         }

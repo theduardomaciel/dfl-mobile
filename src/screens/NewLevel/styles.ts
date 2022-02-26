@@ -10,9 +10,8 @@ export const styles = StyleSheet.create({
         paddingVertical: 15
     },
     title: {
-        marginTop: 100,
         color: theme.colors.secondary1,
-        fontSize: 36,
+        fontSize: 48,
         fontFamily: theme.fonts.title900,
         textAlign: 'center'
     },
@@ -21,27 +20,9 @@ export const styles = StyleSheet.create({
         fontSize: 16,
         marginBottom: 35,
         width: "75%",
+        lineHeight: 22,
         fontFamily: theme.fonts.subtitle400,
         textAlign: 'center'
-    },
-    checkMarkContainer: {
-        width: 250,
-        height: 250,
-        alignItems: "center",
-        justifyContent: "center",
-        marginBottom: 35
-    },
-    circle: {
-        height: 225,
-        width: 225,
-        opacity: 0.55,
-        backgroundColor: theme.colors.primary1,
-        borderRadius: 10 ** 10,
-        position: "absolute",
-
-        alignItems: 'center',
-        justifyContent: "center",
-        textAlign: "center"
     },
 
     levelBackground: {
@@ -49,7 +30,14 @@ export const styles = StyleSheet.create({
         borderRadius: 15,
         padding: 15,
         backgroundColor: theme.colors.primary3,
+        alignItems: "center",
         marginBottom: 35
+    },
+    levelTitle: {
+        color: theme.colors.text1,
+        fontSize: 42,
+        fontFamily: theme.fonts.title900,
+        textAlign: 'center'
     },
     animatedTextView: {
         flexDirection: "row",

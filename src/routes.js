@@ -5,6 +5,7 @@ import { Onboarding } from './screens/Onboarding';
 import { MainScreen } from './screens/MainScreen';
 
 import { Level } from "./screens/Level"
+import { NewLevel } from "./screens/NewLevel"
 import { Report } from "./screens/Report"
 
 import { PermissionsExplanation } from './screens/PermissionScreens/PermissionsExplanation';
@@ -28,12 +29,17 @@ export default function Routes() {
                     <Stack.Screen
                         name="Main"
                         component={MainScreen}
-                        options={{ headerShown: false, presentation: "modal" }}
+                        options={{ headerShown: false }}
                     />
                     <Stack.Screen
                         name="Level"
                         component={Level}
                         options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                        name="NewLevel"
+                        component={NewLevel}
+                        options={{ headerShown: false, presentation: 'modal' }}
                     />
                     <Stack.Screen
                         name="Report"
