@@ -19,10 +19,7 @@ import { User } from "../@types/application";
 
 const SCOPE = "read:user";
 const USER_STORAGE = "@dfl:user";
-
 const TOKEN_STORAGE = "@dfl:token";
-
-
 
 type AuthContextData = {
     user: User | null;
@@ -74,6 +71,7 @@ function AuthProvider({ children }: AuthProviderProps) {
                     }, 10 * 1000)
                     const authResponse = await api.post("/authenticate", { user_info: userInfoWithScopes, access_token: tokens.accessToken })
                     const { user, token } = authResponse.data as AuthResponse;
+
                     console.log("Dados obtidos com sucesso!")
                     api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
@@ -130,8 +128,8 @@ function AuthProvider({ children }: AuthProviderProps) {
             const readResponse = await api.post("/user", { user_id: user.id })
             updatedUser = readResponse.data as User;
         }
-        await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(updated_user));
-        setUser(updated_user);
+        await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(updatedUser));
+        setUser(updatedUser);
         console.log("Objeto do usuário atualizado com sucesso!")
     }
 

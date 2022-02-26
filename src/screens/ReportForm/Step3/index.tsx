@@ -57,6 +57,10 @@ export function ReportScreen3({ route, navigation }: any) {
         console.log("Iniciando processo de upload do relatório.")
         try {
             const { deletehash, link } = await UploadImage()
+            if (!link) {
+                console.log("Não foi possível realizar o upload da imagem do relatório. Uma possível causa é a ausência de token de autenticação. Retornando...")
+                return "error"
+            }
             const submitResponse = await api.post("/report/create", {
                 user_id: user.id,
                 coordinates: data.coordinates,
@@ -69,14 +73,17 @@ export function ReportScreen3({ route, navigation }: any) {
             })
             const response = submitResponse.data as ReportResponse
             const updatedUserProfile = response.user.profile
-            if (updatedUserProfile.level > updatedUserProfile.level) {
+            console.log(user.profile.level, updatedUserProfile.level)
+            if (updatedUserProfile.level > user.profile.level) {
+                console.log("O usuário subiu de nível.")
                 // Caso o usuário tenha subido de nível, indicamos que ele não ganhou nenhuma experiência, e realizamos a tratativa no modal
                 setGainedExperience(null)
             } else {
+                console.log("O usuário não subiu de nível.")
                 // Caso não, somente mostramos o quanto o usuário ganhou de exp
                 setGainedExperience(updatedUserProfile.experience - user.profile.experience)
             }
-            updateUser(response.user);
+            await updateUser(response.user);
         } catch (error) {
             console.log(error)
             return "error"
@@ -155,6 +162,8 @@ export function ReportScreen3({ route, navigation }: any) {
                                     setModalOpen(false)
                                     if (gainedExperience === null) {
                                         navigation.navigate('NewLevel')
+                                    } else {
+                                        navigation.navigate('Início')
                                     }
                                 }}
                             />

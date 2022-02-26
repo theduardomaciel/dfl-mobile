@@ -117,6 +117,8 @@ export function Home({ navigation }) {
                 fadingEdgeLength={50}
                 refreshControl={
                     <RefreshControl
+                        progressViewOffset={-10}
+                        colors={[theme.colors.primary1]}
                         refreshing={isRefreshing}
                         onRefresh={onRefresh}
                     />

@@ -40,8 +40,7 @@ export function ConclusionScreen({ title, info, backButtonText, icon, gainedExpe
 
     const USER_EXP = user.profile.experience;
     const USER_LEVEL = user.profile.level
-    const BAR_WIDTH = ((USER_EXP * 100) / LEVELS_DATA[USER_LEVEL].exp)
-    console.log("USER_EXP, USER_LEVEL, BAR_WIDTH: ", USER_EXP, USER_LEVEL, BAR_WIDTH)
+    const BAR_WIDTH = ((USER_EXP * 100) / LEVELS_DATA[USER_LEVEL + 1].exp)
 
     const barAnimation = useRef(new Animated.Value(0)).current;
     const barWidth = barAnimation.interpolate({
@@ -67,55 +66,51 @@ export function ConclusionScreen({ title, info, backButtonText, icon, gainedExpe
         }, 3000);
     }, [])
 
-    const experienceUI = () => {
-        return (
-            <View>
-                <View style={styles.animatedTextView}>
-                    <Text style={levelStyles.levelDescription}>
-                        Você ganhou{` `}
-                    </Text>
-                    <AnimatedNumbers
-                        animateToNumber={number0}
-                        fontStyle={levelStyles.levelDescription}
-                    />
-                    <Text style={levelStyles.levelDescription}>
-                        xp!
-                    </Text>
-                </View>
-                <View style={{ flexDirection: "row", marginBottom: 5, marginTop: 5, alignItems: "center", justifyContent: "center" }}>
-                    <View style={levelStyles.progressBar}>
-                        <Animated.View style={[levelStyles.progressBar, {
-                            backgroundColor: theme.colors.primary2,
-                            borderRadius: 25 / 2,
-                            width: barWidth
-                        }]} />
-                    </View>
-                    <View style={[styles.animatedTextView, { marginLeft: 5 }]}>
-                        <AnimatedNumbers
-                            animateToNumber={number1}
-                            fontStyle={levelStyles.levelDescription2}
-                        />
-                        <Text style={levelStyles.levelDescription2}>
-                            %
-                        </Text>
-                    </View>
-                </View>
-
-                <View style={styles.animatedTextView}>
-                    <Text style={levelStyles.levelDescription2}>
-                        Faltam mais{` `}
-                    </Text>
-                    <AnimatedNumbers
-                        animateToNumber={number2}
-                        fontStyle={levelStyles.levelDescription}
-                    />
-                    <Text style={levelStyles.levelDescription2}>
-                        xp para subir de nível!
-                    </Text>
-                </View>
+    const experienceUI = <View>
+        <View style={styles.animatedTextView}>
+            <Text style={levelStyles.levelDescription}>
+                Você ganhou{` `}
+            </Text>
+            <AnimatedNumbers
+                animateToNumber={number0}
+                fontStyle={levelStyles.levelDescription}
+            />
+            <Text style={levelStyles.levelDescription}>
+                xp!
+            </Text>
+        </View>
+        <View style={{ flexDirection: "row", marginBottom: 5, marginTop: 5, alignItems: "center", justifyContent: "center" }}>
+            <View style={levelStyles.progressBar}>
+                <Animated.View style={[levelStyles.progressBar, {
+                    backgroundColor: theme.colors.primary2,
+                    borderRadius: 25 / 2,
+                    width: barWidth
+                }]} />
             </View>
-        )
-    }
+            <View style={[styles.animatedTextView, { marginLeft: 5 }]}>
+                <AnimatedNumbers
+                    animateToNumber={number1}
+                    fontStyle={levelStyles.levelDescription2}
+                />
+                <Text style={levelStyles.levelDescription2}>
+                    %
+                </Text>
+            </View>
+        </View>
+
+        <View style={styles.animatedTextView}>
+            <Text style={levelStyles.levelDescription2}>
+                Faltam mais{` `}
+            </Text>
+            <AnimatedNumbers
+                animateToNumber={number2}
+                fontStyle={levelStyles.levelDescription}
+            />
+            <Text style={levelStyles.levelDescription2}>
+                xp para subir de nível!
+            </Text>
+        </View>
+    </View>
 
     return (
         <ImageBackground source={require("../../assets/background_placeholder.png")} style={styles.container}>
@@ -137,7 +132,7 @@ export function ConclusionScreen({ title, info, backButtonText, icon, gainedExpe
                     </View>
                     : null
             }
-            <Confetti colors={[theme.colors.primary1, theme.colors.secondary1, theme.colors.primary2, theme.colors.secondary2]} />
+            {/* <Confetti colors={[theme.colors.primary1, theme.colors.secondary1, theme.colors.primary2, theme.colors.secondary2]} /> */}
             <TextButton
                 title={backButtonText ? backButtonText : "Voltar para a tela inicial"}
                 buttonStyle={{ backgroundColor: theme.colors.secondary1, paddingHorizontal: 20, paddingVertical: 15, marginBottom: 50 }}

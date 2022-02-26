@@ -21,7 +21,6 @@ function CheckUserLevelAndExperience(userProfile: Profile) {
         let maxLevel = 0
         for (let index = 0; index < NODE_LEVELS_DATA.length; index++) {
             if (USER_EXPERIENCE >= NODE_LEVELS_DATA[index].exp) {
-                console.log(`A experiência do usuário supersede o nível ${index}, iremos verificar novamente, para saber se ainda supersede o de algum outro nível.`)
                 maxLevel = index
                 continue;
             }
@@ -35,7 +34,7 @@ function CheckUserLevelAndExperience(userProfile: Profile) {
     // Caso o usuário tenha subido de nível, atualizamos esse valor e resetamos a quantidade de experiência que ele tem
     if (LEVEL_OBTAINED_WITH_ACTUAL_XP > USER_LEVEL) {
         USER_LEVEL = LEVEL_OBTAINED_WITH_ACTUAL_XP
-        USER_EXPERIENCE = 0
+        USER_EXPERIENCE = USER_EXPERIENCE - NODE_LEVELS_DATA[LEVEL_OBTAINED_WITH_ACTUAL_XP].exp
         console.log(`O usuário agora pertence ao nível ${NODE_LEVELS_DATA[USER_LEVEL].title} (${LEVEL_OBTAINED_WITH_ACTUAL_XP})!`)
     }
 

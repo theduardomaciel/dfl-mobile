@@ -56,17 +56,14 @@ export function Level({ route, navigation }) {
     const { user } = useAuth();
 
     const [currentIndex, setCurrentIndex] = useState(0)
-    const scrollX = useRef(new Animated.Value(0)).current;
     const flatListRef = useRef<FlatList<any>>(null);
 
-    const viewabilityConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
-
-    const scrollTo = (index: number) => {
+    /* const scrollTo = (index: number) => {
         if (flatListRef.current !== null) {
             LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
             flatListRef.current.scrollToIndex({ index: index })
         }
-    };
+    }; */
 
     // Utilizamos o "callback" para que o valor do "state" seja atualizado apenas quando o usuário clicar no botão
     const onViewableItemsChanged = useCallback(({ viewableItems }: PropTypes) => {
@@ -75,6 +72,7 @@ export function Level({ route, navigation }) {
         }
     }, []);
 
+    const viewabilityConfig = useRef({ viewAreaCoveragePercentThreshold: 100 }).current;
     const viewabilityConfigCallbackPairs = useRef([{ viewabilityConfig, onViewableItemsChanged }])
 
     const handleOnPrev = () => {
@@ -110,7 +108,7 @@ export function Level({ route, navigation }) {
 
     const USER_LEVEL = user.profile.level
     const USER_EXP = user.profile.experience;
-    const BAR_WIDTH = ((USER_EXP * 100) / LEVELS_DATA[currentIndex].exp)
+    const BAR_WIDTH = ((USER_EXP * 100) / LEVELS_DATA[currentIndex + 1].exp)
 
     if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
         UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -160,7 +158,7 @@ export function Level({ route, navigation }) {
                 <View style={levelStyles.levelOverview}>
                     <View>
                         <Text style={levelStyles.levelDescription} >
-                            Nível {LEVELS_DATA[currentIndex + 1].id}
+                            {currentIndex + 1 === USER_LEVEL ? "Nível Atual:" : `Nível ${LEVELS_DATA[currentIndex + 1].id}`}
                         </Text>
                         <Text style={[levelStyles.levelTitle, { fontSize: 32 }]} ellipsizeMode={"middle"} numberOfLines={1}>
                             {LEVELS_DATA[currentIndex + 1].title}
@@ -171,13 +169,12 @@ export function Level({ route, navigation }) {
                         horizontal
                         showsHorizontalScrollIndicator={false}
                         pagingEnabled
-                        bounces={false}
                         renderToHardwareTextureAndroid
                         initialScrollIndex={USER_LEVEL}
                         keyExtractor={item => item.id}
                         renderItem={({ item, index }) => {
                             return (
-                                <View style={{ opacity: 1, width: ITEM_LENGTH, marginHorizontal: SPACING * 1.5, justifyContent: "space-between" }}>
+                                <View key={index} style={{ width: ITEM_LENGTH, marginHorizontal: SPACING * 1.5, justifyContent: "space-between" }}>
                                     <Image source={item.icon} style={levelStyles.itemImage} />
                                     <Text style={[levelStyles.levelDescription2, { marginBottom: 20 }]}>
                                         {USER_LEVEL < item.id ? `faltam ${item.exp - USER_EXP}xp para esse nível` : `Você já passou por esse nível!`}
@@ -185,10 +182,6 @@ export function Level({ route, navigation }) {
                                 </View>
                             )
                         }}
-                        onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }],
-                            { useNativeDriver: false }
-                        )}
-                        scrollEventThrottle={32}
                         viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
                         viewabilityConfig={viewabilityConfig}
                         ref={flatListRef}
@@ -206,7 +199,7 @@ export function Level({ route, navigation }) {
                                     }]} />
                                 </View>
                                 <Text style={[levelStyles.levelDescription2, { marginLeft: 3 }]}>
-                                    {`${BAR_WIDTH}%`}
+                                    {`${Math.round(BAR_WIDTH)}%`}
                                 </Text>
                             </View>
                             : null

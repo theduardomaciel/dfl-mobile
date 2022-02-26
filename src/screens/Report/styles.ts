@@ -72,6 +72,19 @@ export const styles = StyleSheet.create({
         fontFamily: theme.fonts.subtitle400
     },
 
+    deletePrompt: {
+        flexDirection: "row",
+        borderRadius: 15,
+        backgroundColor: theme.colors.modalBackground,
+        justifyContent: "space-around",
+        alignItems: "center"
+    },
+    deletePromptText: {
+        color: theme.colors.red,
+        fontSize: 16,
+        fontFamily: theme.fonts.subtitle400
+    },
+
     tagsContainer: {
         flex: 1,
     },

@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { View, Text, ScrollView, Image, FlatList, SectionList, TouchableOpacity, RefreshControl, ActivityIndicator } from "react-native";
+import { View, Text, ScrollView, Image, SectionList, TouchableOpacity, RefreshControl, ActivityIndicator, SafeAreaView } from "react-native";
 
 import { ProfileIcon } from "../../components/ProfileIcon";
 import { SectionTitle } from "../../components/SectionTitle";
@@ -124,7 +124,7 @@ const months = ["Jan.", "Fev.", "Mar.", "Abr.", "Jun.", "Jul.", "Ago.", "Set.", 
     return max;
 } */
 
-export function Account({ navigation }) {
+export function Account({ route, navigation }) {
     const { user } = useAuth();
     if (user === null) return (
         <View style={{ flex: 1 }} />
@@ -145,6 +145,10 @@ export function Account({ navigation }) {
         )
     }
 
+    const goBackFunction = () => {
+        FetchData()
+    }
+
     const SectionItem = ({ item }: any) => {
         /* const report = user.reports.find(report => {
             return report.id === item.id
@@ -154,7 +158,7 @@ export function Account({ navigation }) {
                 key={item.id}
                 activeOpacity={0.9}
                 style={styles.report_container}
-                onPress={() => { navigation.navigate("Report", { item }) }}
+                onPress={() => { navigation.navigate("Report", { item, goBackFunction }) }}
             >
                 <View style={styles.report_info_container}>
                     <SectionTitle
@@ -233,7 +237,6 @@ export function Account({ navigation }) {
 
     const [reportsAmountBars, setReportsAmountBars] = useState([])
     function GetReportsAmountBars() {
-
         const reportsAmountByMonth = GetReportsAmountByMonth()
         const max = Math.max(...reportsAmountByMonth);
 
@@ -242,7 +245,7 @@ export function Account({ navigation }) {
             const monthAmount = reportsAmountByMonth[index];
             const height = monthAmount ? `${((100 * monthAmount) / max) - 25}%` : "10%"
             bars.push(
-                <View style={{ alignItems: "center" }}>
+                <View key={index} style={{ alignItems: "center" }}>
                     <Text style={{ fontSize: 7, color: theme.colors.primary3, fontFamily: theme.fonts.subtitle400 }}>
                         {monthAmount ? monthAmount : 0}
                     </Text>
@@ -256,7 +259,8 @@ export function Account({ navigation }) {
         setReportsAmountBars(bars)
     }
 
-    useEffect(() => {
+    async function FetchData() {
+        console.log("Atualizando dados da tela de relatórios.")
         if (user.reports) {
             LoadUserReports()
             GetReportsAmountBars()
@@ -264,12 +268,20 @@ export function Account({ navigation }) {
             setReportsData([])
             setReportsAmountBars([<EmptyItem fontSize={12} color={"white"} />])
         }
+    }
+
+    useEffect(() => {
+        FetchData()
     }, []);
 
+    const [isLoading, setIsLoading] = useState(false)
     const onRefresh = () => {
         if (user.reports) {
+            setIsLoading(true)
+            console.log("Atualizando informações dos relatórios do usuário.")
             LoadUserReports()
             GetReportsAmountByMonth()
+            setIsLoading(false)
         }
     }
 
@@ -278,18 +290,19 @@ export function Account({ navigation }) {
     const userCreatedAt = userCreatedAtSplit[2].slice(0, 2) + "/" + userCreatedAtSplit[1] + "/" + userCreatedAtSplit[0]
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <Header />
             <ScrollView
                 style={{ width: "100%" }}
                 contentContainerStyle={styles.scrollContainer}
                 showsVerticalScrollIndicator={false}
                 nestedScrollEnabled={true}
-
                 refreshControl={
                     <RefreshControl
+                        progressViewOffset={-10}
+                        colors={[theme.colors.primary1]}
                         onRefresh={onRefresh}
-                        refreshing={false}
+                        refreshing={isLoading}
                     />
                 }
             >
@@ -303,8 +316,8 @@ export function Account({ navigation }) {
                         :
                         <SectionList
                             nestedScrollEnabled={true}
+                            showsVerticalScrollIndicator={false}
                             style={[elements.subContainerWhite, { height: 375, marginBottom: 25 }]}
-                            contentContainerStyle={styles.container}
                             // Configurações dos elementos do Relatório
                             //sections={[...EXAMPLE_REPORTS, ...EXAMPLE_REPORTS2]}
                             sections={reportsData}
@@ -354,6 +367,6 @@ export function Account({ navigation }) {
 
                 <View style={{ height: 25 }} />
             </ScrollView>
-        </View>
+        </SafeAreaView>
     );
 }
