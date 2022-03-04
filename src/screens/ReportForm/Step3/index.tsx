@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, Modal, KeyboardAvoidingView, ScrollView } from "react-native";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 
@@ -18,6 +18,7 @@ import { api } from "../../../services/api";
 import { useAuth } from "../../../hooks/useAuth";
 
 import { Report, User } from "../../../@types/application";
+import { LoadingScreen } from "../../../components/LoadingScreen";
 
 type ImageUploadResponse = {
     deletehash: string;
@@ -46,19 +47,29 @@ export function ReportScreen3({ route, navigation }: any) {
         try {
             const imageResponse = await api.post("/upload", { image_base64: data.image_base64, user_id: user.id });
             const { deletehash, link } = imageResponse.data as ImageUploadResponse;
+            console.log(deletehash, link)
             return { deletehash, link }
         } catch (error) {
             console.log(error)
+            return {
+                deletehash: "",
+                link: ""
+            }
         }
     }
+
+    const [isLoading, setIsLoading] = useState(false)
 
     const [gainedExperience, setGainedExperience] = useState(25 || null)
     async function SubmitReport(data: Report) {
         console.log("Iniciando processo de upload do relatório.")
         try {
+            setIsLoading(true)
             const { deletehash, link } = await UploadImage()
+            console.log(deletehash, link)
             if (!link) {
                 console.log("Não foi possível realizar o upload da imagem do relatório. Uma possível causa é a ausência de token de autenticação. Retornando...")
+                navigation.navigate("Início", { errorMessage: "Não foi possível realizar o upload da imagem do relatório. Por favor, tente novamente." })
                 return "error"
             }
             const submitResponse = await api.post("/report/create", {
@@ -84,11 +95,24 @@ export function ReportScreen3({ route, navigation }: any) {
                 setGainedExperience(updatedUserProfile.experience - user.profile.experience)
             }
             await updateUser(response.user);
+            setIsLoading(false)
         } catch (error) {
             console.log(error)
+            navigation.navigate("Início", { errorMessage: "Não foi possível cadastrar seu relatório. Tente novamente mais tarde :(" })
             return "error"
         }
     }
+
+    useEffect(() => {
+        navigation.addListener('beforeRemove', (event) => {
+            if (isLoading) {
+                // Prevent default behavior of leaving the screen
+                event.preventDefault();
+            } else {
+                return;
+            }
+        })
+    }, [navigation, isLoading])
 
     return (
         <KeyboardAvoidingView style={defaultStyles.container}>
@@ -171,6 +195,9 @@ export function ReportScreen3({ route, navigation }: any) {
                     </Modal>
                 }
             </ScrollView>
+            {
+                isLoading ? <LoadingScreen /> : null
+            }
         </KeyboardAvoidingView>
     );
 }

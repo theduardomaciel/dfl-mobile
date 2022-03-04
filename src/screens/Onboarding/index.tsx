@@ -13,6 +13,7 @@ import { Paginator } from "../../components/Paginator";
 
 import { useAuth } from "../../hooks/useAuth"
 import { ModalBase } from "../../components/ModalBase";
+import { LoadingScreen } from "../../components/LoadingScreen";
 
 type PropTypes = {
     viewableItems: Array<ViewToken>;
@@ -67,7 +68,7 @@ export function Onboarding() {
             <ModalBase
                 title="Não foi possível autenticar."
                 description={`Nossos servidores devem estar passando por problemas no momento :( \n Tente novamente mais tarde.`}
-                button
+                backButton
                 isVisible={isModalVisible}
                 onBackdropPress={() => setModalVisible(false)}
                 toggleModal={() => { setModalVisible(false) }}
@@ -88,6 +89,9 @@ export function Onboarding() {
                     disabled={isSigningIn}
                 />
             </View>
+            {
+                isSigningIn ? <LoadingScreen /> : null
+            }
         </View>
     );
 }

@@ -13,6 +13,7 @@ import { styles } from "./styles";
 
 import { useAuth } from "../../hooks/useAuth";
 import { ListMarkersOnMap } from "../../utils/ListMarkersOnMap";
+import { ModalBase } from "../../components/ModalBase";
 
 function GetGreeting() {
     const hour = new Date().getHours();
@@ -39,7 +40,11 @@ const initialRegion = {
     longitudeDelta: 35
 }
 
-export function Home({ navigation }) {
+export function Home({ route, navigation }) {
+    const errorMessage = route.params?.errorMessage;
+    const [errorModalVisible, setErrorModalVisible] = useState(typeof errorMessage === "string" ? true : false);
+    console.log(errorModalVisible)
+
     const { user, creatingAccount, updateUser } = useAuth();
     if (user === null) return (
         <View style={{ flex: 1 }} />
@@ -217,6 +222,14 @@ export function Home({ navigation }) {
                         </MapView>
                     </View>
                 </View>
+                <ModalBase
+                    title="Opa! Parece que algo deu errado..."
+                    description={errorMessage}
+                    isVisible={errorModalVisible}
+                    backButton={true}
+                    toggleModal={() => setErrorModalVisible(false)}
+                    onBackdropPress={() => setErrorModalVisible(false)}
+                />
                 <View style={{ height: 25 }} />
             </ScrollView>
         </View>

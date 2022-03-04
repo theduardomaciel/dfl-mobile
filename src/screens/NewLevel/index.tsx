@@ -23,11 +23,7 @@ import { useAuth } from '../../hooks/useAuth';
 import AnimatedNumbers from 'react-native-animated-numbers';
 import Confetti from "../../components/Confetti/index"
 
-type Props = {
-    closeModal: () => void;
-}
-
-export function NewLevel({ closeModal }: Props) {
+export function NewLevel({ route, navigation }) {
     const { user } = useAuth();
 
     const USER_LEVEL = user.profile.level
@@ -164,7 +160,10 @@ export function NewLevel({ closeModal }: Props) {
                 isLoading={!isExpandedView}
                 title={"Voltar para a tela inicial"}
                 buttonStyle={{ backgroundColor: theme.colors.secondary1, paddingHorizontal: 20, paddingVertical: 15, marginBottom: 50 }}
-                onPress={closeModal}
+                onPress={() => {
+                    console.log("Foi")
+                    navigation.navigate("Início")
+                }}
             />
         </ImageBackground>
     )

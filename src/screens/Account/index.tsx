@@ -158,7 +158,7 @@ export function Account({ route, navigation }) {
                 key={item.id}
                 activeOpacity={0.9}
                 style={styles.report_container}
-                onPress={() => { navigation.navigate("Report", { item, goBackFunction }) }}
+                onPress={() => { navigation.navigate("Report", { item }) }}
             >
                 <View style={styles.report_info_container}>
                     <SectionTitle

@@ -32,7 +32,12 @@ export function ProfileIcon({ uri, openConfig }: Props) {
     const { user, signOut } = useAuth();
 
     const ProfileComponents = <View style={{ flex: 1, width: "100%" }}>
-        <TextForm title='Nome de Usuário' style={{ height: 55 }} titleStyle={{ color: theme.colors.secondary1, fontFamily: theme.fonts.section400, fontSize: 14 }} textInputProps={{ placeholder: user.first_name }} />
+        <TextForm
+            title='Nome de Usuário'
+            customStyle={{ height: 55 }}
+            titleStyle={{ color: theme.colors.secondary1, fontFamily: theme.fonts.section400, fontSize: 14 }}
+            textInputProps={{ placeholder: user.profile ? `@${user.profile.username}` : user.first_name + user.last_name }}
+        />
         <TextButton title='Alterar nome de usuário' buttonStyle={{ backgroundColor: theme.colors.primary1, height: 35, marginTop: 10, width: "100%" }} />
     </View>
 

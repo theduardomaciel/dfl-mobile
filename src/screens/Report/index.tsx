@@ -86,14 +86,17 @@ export function Report({ route, navigation }) {
         }
     }
 
+    const animationPreset = LayoutAnimation.create(150, "easeInEaseOut", "opacity");
+
     const [isMenuVisible, setMenuVisible] = useState(false)
     const toggleMenu = () => {
-        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        LayoutAnimation.configureNext(animationPreset);
         setMenuVisible(!isMenuVisible)
     }
 
     const [isDeleteModalVisible, setDeleteModalVisible] = useState(false)
     const [isLoadingDelete, setIsLoadingDelete] = useState(false)
+
 
     const deleteReport = async () => {
         setIsLoadingDelete(true)
@@ -109,7 +112,7 @@ export function Report({ route, navigation }) {
         }
 
         setIsLoadingDelete(false)
-        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        LayoutAnimation.configureNext(animationPreset);
         navigation.goBack();
     }
 
@@ -127,7 +130,7 @@ export function Report({ route, navigation }) {
                             title="CANCELAR"
                             buttonStyle={{ backgroundColor: theme.colors.red_light, paddingVertical: 10, paddingHorizontal: 15, marginRight: 10 }}
                             onPress={() => {
-                                LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+                                LayoutAnimation.configureNext(animationPreset);
                                 setDeleteModalVisible(false)
                                 setMenuVisible(false)
                             }}
@@ -218,15 +221,23 @@ export function Report({ route, navigation }) {
                     toggleModal={() => { setTagsModalVisible(!isTagsModalVisible) }}
                     style={{ height: 500, paddingVertical: 15 }}
                     descriptionStyle={{ textAlign: "left", fontSize: 14 }}
-                    button
+                    backButton
                 />
             }
 
-            <ScrollView contentContainerStyle={{ alignItems: "center", justifyContent: "center" }} showsVerticalScrollIndicator={false} style={[elements.subContainerWhite, styles.tagsContainer]}>
-                <View style={styles.gridContainer}>
-                    {tags}
-                    <View style={{ width: "100%", height: 20 }} />
-                </View>
+            <ScrollView showsVerticalScrollIndicator={false} style={[elements.subContainerWhite, styles.tagsContainer]}>
+                {tags.length > 0 ?
+                    <View style={styles.gridContainer}>
+                        {tags}
+                        <View style={{ width: "100%", height: 20 }} />
+                    </View> :
+                    <View>
+                        <Text style={{ textAlign: "center", textAlignVertical: "center", fontFamily: theme.fonts.title600, justifyContent: "center", fontSize: 14, color: theme.colors.secondary1 }}>
+                            Nenhuma tag foi selecionada para esse relatório!
+                        </Text>
+                    </View>
+                }
+
             </ScrollView>
             <LinearGradient
                 colors={report.resolved ? [theme.colors.secondary1, theme.colors.primary1] : [theme.colors.red_dark, theme.colors.red]}

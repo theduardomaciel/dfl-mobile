@@ -72,7 +72,8 @@ export function Level({ route, navigation }) {
         }
     }, []);
 
-    const viewabilityConfig = useRef({ viewAreaCoveragePercentThreshold: 100 }).current;
+    const scrollX = useRef(new Animated.Value(0)).current;
+    const viewabilityConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
     const viewabilityConfigCallbackPairs = useRef([{ viewabilityConfig, onViewableItemsChanged }])
 
     const handleOnPrev = () => {
@@ -182,6 +183,10 @@ export function Level({ route, navigation }) {
                                 </View>
                             )
                         }}
+                        onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }],
+                            { useNativeDriver: false }
+                        )}
+                        scrollEventThrottle={50}
                         viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
                         viewabilityConfig={viewabilityConfig}
                         ref={flatListRef}
