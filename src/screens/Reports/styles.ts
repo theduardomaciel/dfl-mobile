@@ -1,24 +1,20 @@
-import { StyleSheet } from "react-native";
+import { Dimensions, Platform, StyleSheet } from "react-native";
 import { theme } from "../../global/styles/theme";
 
-import { TAB_BAR_HEIGHT } from "../../components/TabBar";
+import { TAB_BAR_HEIGHT_LONG } from "../../components/TabBar";
 
 export const styles = StyleSheet.create({
     container: {
-        backgroundColor: theme.colors.red,
-        alignItems: "center",
-        flex: 1,
-        justifyContent: "flex-end",
     },
     searchBar: {
         position: "absolute",
+        height: 40,
         width: "90%",
         fontSize: 12,
-        top: 15 + 35
+        alignSelf: "center",
+        top: 15 + 35,
     },
     flatList: {
-        flex: 1,
-        backgroundColor: "purple"
     },
 
     title: {
@@ -32,11 +28,7 @@ export const styles = StyleSheet.create({
         fontSize: 12,
     },
     infoContainer: {
-        position: "absolute",
-        bottom: TAB_BAR_HEIGHT / 3,
-        left: 25,
-        backgroundColor: "blue",
-        zIndex: 3,
+        //backgroundColor: "blue",
     },
 
     tabBar: {
@@ -44,10 +36,33 @@ export const styles = StyleSheet.create({
         borderTopLeftRadius: 15,
         borderTopRightRadius: 15,
         width: "100%",
-        height: TAB_BAR_HEIGHT + 110,
+        height: TAB_BAR_HEIGHT_LONG + 110,
         position: "absolute",
         bottom: -175,
-        zIndex: 0
+        zIndex: 0,
+        paddingHorizontal: 20,
+        paddingVertical: 10
+    },
+
+    actionButtonsHolder: {
+        position: "absolute",
+        right: 30,
+        bottom: "17%", // Controla a distancia do bottom	
+        alignItems: "center",
+        justifyContent: "center"
+    },
+    actionButton: {
+        alignItems: "center",
+        justifyContent: "center",
+        marginBottom: 50 // Controla o espaçamento entre botões
+    },
+    buttonCircle: {
+        position: "absolute",
+        width: 65,
+        height: 65,
+        borderRadius: 65 / 2,
+        opacity: 0.5,
+        backgroundColor: theme.colors.secondary1
     }
     /* info: {
         fontFamily: theme.fonts.subtitle900,

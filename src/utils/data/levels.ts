@@ -1,5 +1,5 @@
 const level_placeholders = [
-    require("../assets/level_placeholder.png")
+    require("../../assets/level_placeholder.png")
 ]
 
 export const LEVELS_DATA = [

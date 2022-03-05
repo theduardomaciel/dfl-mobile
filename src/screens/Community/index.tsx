@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, Image, StatusBar, Pressable } from "react-native";
+import { View, Text, ScrollView, Image, StatusBar, Pressable, ImageBackground, Linking } from "react-native";
 
 import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
 
@@ -18,7 +18,8 @@ import { styles } from "./styles";
 import { Entypo } from '@expo/vector-icons';
 
 import { useAuth } from "../../hooks/useAuth";
-import { ListMarkersOnMap } from "../../utils/ListMarkersOnMap";
+import { ListMarkersOnMap } from "../../utils/functions/ListMarkersOnMap";
+import { CITIES_DATA } from "../../utils/data/cities";
 
 const Marcadores = [
     {
@@ -77,9 +78,10 @@ export function Community() {
     };
 
     const [defaultCity, setDefaultCity] = "Cidade não selecionada"
+    const CITY_DATA = CITIES_DATA[user.profile.defaultCity]
 
     return (
-        <View style={styles.container}>
+        <ImageBackground source={require("../../assets/background_placeholder.png")} style={styles.container}>
             <ProfileModal
                 isVisible={isFirstModalVisible}
                 toggleModal={firstToggleModal}
@@ -169,12 +171,35 @@ export function Community() {
                     }
                 />
 
-                <SectionTitle title="Enquetes" info="termina em 12h31m" />
-                <View style={elements.subContainerWhite}>
+                <SectionTitle title="Enquetes" info="disponível em breve" hasLine viewStyle={{ marginTop: 25 }} />
+                <View style={[elements.subContainerWhite, { height: 25 }]}>
 
                 </View>
-                <View style={{ height: 100 }} />
+                <SectionTitle title="Contato" hasLine viewStyle={{ marginTop: 25 }} />
+                <SectionTitle title={`Órgão Responsável (${CITY_DATA.name})`} fontStyle={{ fontSize: 18 }} viewStyle={{ marginBottom: 5 }} />
+                <View style={[elements.subContainerWhite, { flexDirection: "row", padding: 0 }]}>
+                    <View style={{ width: "65%", paddingLeft: 12, paddingVertical: 12 }}>
+                        <Pressable onPress={() => { Linking.openURL(CITY_DATA.contact.url) }}>
+                            <Text style={[styles.contactInfo, { textDecorationLine: "underline" }]}>
+                                • {CITY_DATA.contact.name}{"\n"}
+                                <Text style={{ fontFamily: theme.fonts.subtitle700 }}>
+                                    {`(${CITY_DATA.contact.acronym})`}
+                                </Text>
+                            </Text>
+                        </Pressable>
+                        <Pressable onPress={() => { Linking.openURL(`tel:${CITY_DATA.contact.number}`) }}>
+                            <Text style={styles.contactInfo}>
+                                • Disque Limpeza:{'\n'}
+                                <Text style={{ fontFamily: theme.fonts.subtitle700, textDecorationLine: "underline" }}>
+                                    {CITY_DATA.contact.number}
+                                </Text>
+                            </Text>
+                        </Pressable>
+                    </View>
+                    <Image style={{ width: "35%", borderTopRightRadius: 15, borderBottomRightRadius: 15, height: "100%" }} source={{ uri: CITY_DATA.contact.image }} />
+                </View>
+                <View style={{ height: 50 }} />
             </ScrollView>
-        </View>
+        </ImageBackground>
     );
 }

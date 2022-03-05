@@ -27,7 +27,8 @@ const BottomTab = ({ title, index }) => {
     )
 }
 
-export const TAB_BAR_HEIGHT = 200;
+export const TAB_BAR_HEIGHT_LONG = 200
+export const TAB_BAR_HEIGHT = 65
 
 export function TabBar({ state, descriptors, navigation }) {
     // Adicionamos um listener no estado do TabBar para saber quando a animação de abrir o menu está acabando
@@ -42,7 +43,7 @@ export function TabBar({ state, descriptors, navigation }) {
     return (
         <View>
             <Animated.View style={[styles.bottomBar, {
-                width: "100%", height: TAB_BAR_HEIGHT, position: "absolute", bottom: -175, zIndex: 0,
+                width: "100%", height: TAB_BAR_HEIGHT_LONG, position: "absolute", bottom: -175, zIndex: 0,
                 opacity: backgroundOpacityDriver.interpolate({
                     inputRange: [0, 1],
                     outputRange: [1, 0]

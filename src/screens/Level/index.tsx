@@ -26,7 +26,7 @@ import { SectionTitle } from "../../components/SectionTitle";
 import { TextButton } from "../../components/TextButton";
 
 import { useAuth } from "../../hooks/useAuth";
-import { LEVELS_DATA } from "../../utils/levels";
+import { LEVELS_DATA } from "../../utils/data/levels";
 
 const onShare = async () => {
     try {

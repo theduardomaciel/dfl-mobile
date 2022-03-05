@@ -1,6 +1,6 @@
 import { Profile, User } from "../@types/application";
 import prismaClient from "../prisma"
-import { NODE_LEVELS_DATA } from "../utils/friendlyForNodeLevels";
+import { NODE_LEVELS_DATA } from "../utils/data/levels_node";
 import { ReadUserService } from "./ReadUserService";
 
 function CheckUserLevelAndExperience(userProfile: Profile) {

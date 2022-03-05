@@ -3,7 +3,6 @@ import { theme } from "./theme";
 
 export const elements = StyleSheet.create({
     subContainerGreen: {
-        height: 80,
         width: "90%",
         borderRadius: 15,
 
@@ -19,12 +18,10 @@ export const elements = StyleSheet.create({
         overflow: 'hidden'
     },
     subContainerWhite: {
-        height: 200,
         width: "90%",
         borderRadius: 15,
 
-        paddingHorizontal: 12,
-        paddingVertical: 12,
+        padding: 12,
 
         // ShadowPropertiesLow, infelizmente por enquanto atualizar à mão igualando ao que está no arquivo "theme.ts"
         shadowColor: "#000",

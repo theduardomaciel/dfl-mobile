@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, Image, RefreshControl, Platform, Pressable } from "react-native";
+import { View, Text, ScrollView, Image, RefreshControl, Platform, Pressable, ImageBackground } from "react-native";
 import { MapScopePicker } from "../../components/MapScopePicker";
 
 import MapView, { PROVIDER_GOOGLE, Marker, Region } from "react-native-maps";
@@ -12,7 +12,7 @@ import { theme } from "../../global/styles/theme";
 import { styles } from "./styles";
 
 import { useAuth } from "../../hooks/useAuth";
-import { ListMarkersOnMap } from "../../utils/ListMarkersOnMap";
+import { ListMarkersOnMap } from "../../utils/functions/ListMarkersOnMap";
 import { ModalBase } from "../../components/ModalBase";
 
 function GetGreeting() {
@@ -42,7 +42,7 @@ const initialRegion = {
 
 export function Home({ route, navigation }) {
     const errorMessage = route.params?.errorMessage;
-    const [errorModalVisible, setErrorModalVisible] = useState(typeof errorMessage === "string" ? true : false);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
     console.log(errorModalVisible)
 
     const { user, creatingAccount, updateUser } = useAuth();
@@ -55,6 +55,7 @@ export function Home({ route, navigation }) {
 
     const [markers, setMarkers] = useState([]);
     useEffect(() => {
+        setErrorModalVisible(typeof errorMessage === "string" ? true : false)
         setMarkers(ListMarkersOnMap(user, "district"))
         async function HasPermission() {
             let permissionToCheck;
@@ -104,7 +105,7 @@ export function Home({ route, navigation }) {
     }
 
     return (
-        <View style={styles.container}>
+        <ImageBackground source={require("../../assets/background_placeholder.png")} style={styles.container}>
             <View style={styles.header}>
                 <View style={styles.greetingsView}>
                     <Text style={styles.greetingsText}>
@@ -232,6 +233,6 @@ export function Home({ route, navigation }) {
                 />
                 <View style={{ height: 25 }} />
             </ScrollView>
-        </View>
+        </ImageBackground>
     );
 }

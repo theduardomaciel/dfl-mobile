@@ -106,19 +106,19 @@ export function TagsSelector({ onSelectTags, style }: TagsSelectorTypes) {
     }
     return (
         <View style={style ? [styles.container, style] : styles.container}>
-            <SectionTitle title='Tempo de Permanência' marginBottom={1} fontStyle={{ fontSize: 18, color: theme.colors.secondary1, fontFamily: theme.fonts.section400 }} />
+            <SectionTitle title='Tempo de Permanência' viewStyle={{ marginBottom: 5 }} fontStyle={{ fontSize: 18, color: theme.colors.secondary1, fontFamily: theme.fonts.section400 }} />
             <TagSection section="time" tags={['Até 5 dias', '1 semana', '2 semanas', 'Mais de 1 mês']} onSelectTags={handleTags} />
 
-            <SectionTitle title='Vegetação' marginBottom={1} fontStyle={{ fontSize: 18, color: theme.colors.secondary1, fontFamily: theme.fonts.section400 }} />
+            <SectionTitle title='Vegetação' viewStyle={{ marginBottom: 5 }} fontStyle={{ fontSize: 18, color: theme.colors.secondary1, fontFamily: theme.fonts.section400 }} />
             <TagSection section="vegetation" tags={['Rasteira', 'Alta', 'Inexistente']} onSelectTags={handleTags} />
 
-            <SectionTitle title='Animais' marginBottom={1} fontStyle={{ fontSize: 18, color: theme.colors.secondary1, fontFamily: theme.fonts.section400 }} />
+            <SectionTitle title='Animais' viewStyle={{ marginBottom: 5 }} fontStyle={{ fontSize: 18, color: theme.colors.secondary1, fontFamily: theme.fonts.section400 }} />
             <TagSection section="animals" tags={['Moscas', 'Porcos', 'Cavalos', 'Escorpiões', 'Cobras', 'Sapos', 'Outros']} onSelectTags={handleTags} />
 
-            <SectionTitle title='Terreno' marginBottom={1} fontStyle={{ fontSize: 18, color: theme.colors.secondary1, fontFamily: theme.fonts.section400 }} />
+            <SectionTitle title='Terreno' viewStyle={{ marginBottom: 5 }} fontStyle={{ fontSize: 18, color: theme.colors.secondary1, fontFamily: theme.fonts.section400 }} />
             <TagSection section="terrain" tags={['Baldio', 'Abandonado', 'Íngrime', 'Inacessível']} onSelectTags={handleTags} />
 
-            <SectionTitle title='Contato' marginBottom={1} fontStyle={{ fontSize: 18, color: theme.colors.secondary1, fontFamily: theme.fonts.section400 }} />
+            <SectionTitle title='Contato' viewStyle={{ marginBottom: 5 }} fontStyle={{ fontSize: 18, color: theme.colors.secondary1, fontFamily: theme.fonts.section400 }} />
             <TagSection section="contact" tags={['Desconhecido', 'Sem resposta']} onSelectTags={handleTags} />
         </View>
     );

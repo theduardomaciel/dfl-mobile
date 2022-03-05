@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { View, Text, ScrollView, Image, SectionList, TouchableOpacity, RefreshControl, ActivityIndicator, SafeAreaView } from "react-native";
+import { View, Text, ScrollView, Image, SectionList, TouchableOpacity, RefreshControl, ActivityIndicator, SafeAreaView, ImageBackground } from "react-native";
 
 import { ProfileIcon } from "../../components/ProfileIcon";
 import { SectionTitle } from "../../components/SectionTitle";
@@ -67,6 +67,7 @@ const SectionHeader = ({ section }: any) => (
         title={section.title}
         color={theme.colors.primary1}
         hasLine
+        viewStyle={{ width: "100%" }}
         fontStyle={{
             fontFamily: theme.fonts.subtitle900,
             color: theme.colors.primary1,
@@ -113,17 +114,6 @@ const EmptyItem = ({ item, color, fontSize }: any) => {
 
 const months = ["Jan.", "Fev.", "Mar.", "Abr.", "Jun.", "Jul.", "Ago.", "Set.", "Out.", "Nov.", "Dez."]
 
-/* function maxValue(arr) {
-    let max = arr[0];
-
-    for (let val of arr) {
-    if (val > max) {
-        max = val;
-    }
-    }
-    return max;
-} */
-
 export function Account({ route, navigation }) {
     const { user } = useAuth();
     if (user === null) return (
@@ -145,10 +135,6 @@ export function Account({ route, navigation }) {
         )
     }
 
-    const goBackFunction = () => {
-        FetchData()
-    }
-
     const SectionItem = ({ item }: any) => {
         /* const report = user.reports.find(report => {
             return report.id === item.id
@@ -162,10 +148,10 @@ export function Account({ route, navigation }) {
             >
                 <View style={styles.report_info_container}>
                     <SectionTitle
-                        marginBottom={1}
                         title={item.address}
                         color={theme.colors.primary1}
                         hasLine
+                        viewStyle={{ width: "100%", marginBottom: 0 }}
                         fontStyle={{
                             fontFamily: theme.fonts.subtitle500,
                             color: theme.colors.primary1,
@@ -243,7 +229,7 @@ export function Account({ route, navigation }) {
         let bars = []
         for (let index = 0; index < 11; index++) {
             const monthAmount = reportsAmountByMonth[index];
-            const height = monthAmount ? `${((100 * monthAmount) / max) - 25}%` : "10%"
+            const height = monthAmount ? `${Math.abs(((100 * monthAmount) / max) - 25)}%` : "10%"
             bars.push(
                 <View key={index} style={{ alignItems: "center" }}>
                     <Text style={{ fontSize: 7, color: theme.colors.primary3, fontFamily: theme.fonts.subtitle400 }}>
@@ -272,7 +258,7 @@ export function Account({ route, navigation }) {
 
     useEffect(() => {
         FetchData()
-    }, []);
+    }, [user]);
 
     const [isLoading, setIsLoading] = useState(false)
     const onRefresh = () => {
@@ -290,7 +276,7 @@ export function Account({ route, navigation }) {
     const userCreatedAt = userCreatedAtSplit[2].slice(0, 2) + "/" + userCreatedAtSplit[1] + "/" + userCreatedAtSplit[0]
 
     return (
-        <SafeAreaView style={styles.container}>
+        <ImageBackground source={require("../../assets/background_placeholder.png")} style={styles.container}>
             <Header />
             <ScrollView
                 style={{ width: "100%" }}
@@ -317,6 +303,7 @@ export function Account({ route, navigation }) {
                         <SectionList
                             nestedScrollEnabled={true}
                             showsVerticalScrollIndicator={false}
+                            contentContainerStyle={{ flex: 1, justifyContent: reportsData === null ? "center" : "flex-start" }}
                             style={[elements.subContainerWhite, { height: 375, marginBottom: 25 }]}
                             // Configurações dos elementos do Relatório
                             //sections={[...EXAMPLE_REPORTS, ...EXAMPLE_REPORTS2]}
@@ -337,7 +324,7 @@ export function Account({ route, navigation }) {
                 { /* Estatísticas */}
                 <SectionTitle title="Estatísticas" hasLine />
                 <View style={[elements.subContainerGreen, { height: 175, marginBottom: 15 }]}>
-                    <SectionTitle title="Atividade de Contribuições" marginBottom={5} fontStyle={styles.statisticsTitle} />
+                    <SectionTitle title="Atividade de Contribuições" viewStyle={{ marginBottom: 5 }} fontStyle={styles.statisticsTitle} />
                     <View style={styles.userActivityView}>
                         {reportsAmountBars}
                     </View>
@@ -365,8 +352,8 @@ export function Account({ route, navigation }) {
                     </View>
                 </View>
 
-                <View style={{ height: 25 }} />
+                <View style={{ height: 50 }} />
             </ScrollView>
-        </SafeAreaView>
+        </ImageBackground>
     );
 }

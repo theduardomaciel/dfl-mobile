@@ -48,5 +48,30 @@ export const styles = StyleSheet.create({
         overflow: "hidden",
         borderTopLeftRadius: 10,
         borderTopRightRadius: 10
+    },
+
+    contactView: {
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 1,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 8,
+        borderRadius: 15,
+
+        paddingHorizontal: 12,
+        paddingVertical: 12,
+
+        width: "90%",
+        flexDirection: "row",
+
+        backgroundColor: theme.colors.modalBackground,
+    },
+    contactInfo: {
+        fontFamily: theme.fonts.subtitle400,
+        color: theme.colors.primary1,
+        fontSize: 14
     }
 });

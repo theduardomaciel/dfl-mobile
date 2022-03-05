@@ -5,6 +5,7 @@ import {
     Text,
     TextStyle,
     View,
+    ViewStyle,
 } from 'react-native';
 
 import { styles } from './styles';
@@ -16,12 +17,12 @@ type Props = {
     fontStyle?: StyleProp<TextStyle>;
     color?: string;
     hasLine?: boolean;
-    marginBottom?: number;
+    viewStyle?: ViewStyle;
 }
 
-export function SectionTitle({ title, info, fontStyle, color, hasLine, marginBottom }: Props) {
+export function SectionTitle({ title, info, fontStyle, color, hasLine, viewStyle }: Props) {
     return (
-        <View style={marginBottom ? [styles.container, { marginBottom: marginBottom }] : styles.container}>
+        <View style={viewStyle ? [styles.container, viewStyle] : styles.container}>
             <View style={styles.textContainer}>
                 <Text
                     style={

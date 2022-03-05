@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, StatusBar, Text, Image, useWindowDimensions, ScrollView, Pressable, Platform, UIManager, LayoutAnimation } from "react-native";
+import { View, StatusBar, Text, Image, useWindowDimensions, ScrollView, Pressable, Platform, UIManager, LayoutAnimation, Alert } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
 import MapView, { PROVIDER_GOOGLE, Marker, Region } from "react-native-maps";
@@ -53,7 +53,6 @@ export function Report({ route, navigation }) {
 
     const suggestion = report.suggestion ? report.suggestion : "[nenhuma sugestão foi informada]"
 
-
     let groups = [];
     const tagGroups = JSON.parse(report.tags);
     const [tags, setTags] = useState(Array)
@@ -97,7 +96,6 @@ export function Report({ route, navigation }) {
     const [isDeleteModalVisible, setDeleteModalVisible] = useState(false)
     const [isLoadingDelete, setIsLoadingDelete] = useState(false)
 
-
     const deleteReport = async () => {
         setIsLoadingDelete(true)
         setDeleteModalVisible(false)
@@ -108,6 +106,10 @@ export function Report({ route, navigation }) {
             const updatedUser = deleteResponse.data.user as User
             await updateUser(updatedUser)
         } catch (error) {
+            Alert.alert(
+                'Opa! Algo deu errado.',
+                'Ocorreu um erro ao deletar o relatório. Tente novamente mais tarde.',
+            );
             console.log(error, "Não foi possível deletar o relatório selecionado")
         }
 
@@ -183,7 +185,7 @@ export function Report({ route, navigation }) {
                     </Text>
                 </LinearGradient>
             </View>
-            <SectionTitle title="Localização:" fontStyle={{ fontSize: 18 }} marginBottom={5} />
+            <SectionTitle title="Localização:" fontStyle={{ fontSize: 18 }} viewStyle={{ marginBottom: 5 }} />
             <View style={{ width: "90%", height: 135 }}>
                 <View style={[elements.mapView, { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }]}>
                     <MapView
@@ -206,7 +208,7 @@ export function Report({ route, navigation }) {
             </View>
             <BottomBar info={report.address} viewStyle={{ marginBottom: 15, width: "90%" }} />
             <View style={{ flexDirection: "row", width: "90%", justifyContent: "space-between" }}>
-                <SectionTitle title="Detalhes:" fontStyle={{ fontSize: 18 }} marginBottom={5} />
+                <SectionTitle title="Detalhes:" fontStyle={{ fontSize: 18 }} viewStyle={{ marginBottom: 5 }} />
                 <TextButton title="+" onPress={() => { setTagsModalVisible(true) }} buttonStyle={{ paddingHorizontal: 8, paddingVertical: 1, borderRadius: 8, }} />
             </View>
 

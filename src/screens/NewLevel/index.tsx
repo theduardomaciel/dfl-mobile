@@ -17,7 +17,7 @@ import { theme } from '../../global/styles/theme';
 import { styles } from './styles'
 import { levelStyles } from "../Level/styles"
 
-import { LEVELS_DATA } from '../../utils/levels';
+import { LEVELS_DATA } from '../../utils/data/levels';
 import { useAuth } from '../../hooks/useAuth';
 
 import AnimatedNumbers from 'react-native-animated-numbers';

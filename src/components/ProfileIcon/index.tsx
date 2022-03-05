@@ -104,6 +104,7 @@ export function ProfileIcon({ uri, openConfig }: Props) {
         >
             <View style={styles.logo}>
                 <Image
+                    progressiveRenderingEnabled
                     style={{ flex: 1 }}
                     source={{
                         uri: uri,
