@@ -57,13 +57,13 @@ export function ConclusionScreen({ title, info, backButtonText, icon, gainedExpe
         }).start();
         setTimeout(() => {
             setNumber0(gainedExperience)
-        }, 150);
+        }, 0);
         setTimeout(() => {
             setNumber1(BAR_WIDTH)
-        }, 1500);
+        }, 2000);
         setTimeout(() => {
             setNumber2(LEVELS_DATA[USER_LEVEL + 1].exp - USER_EXP)
-        }, 3000);
+        }, 3500);
     }, [])
 
     const experienceUI = <View>

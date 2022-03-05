@@ -3,6 +3,9 @@ import { theme } from "../../global/styles/theme";
 
 import { TAB_BAR_HEIGHT_LONG } from "../../components/TabBar";
 
+const dimensions = Dimensions.get("window")
+export const SELECTOR_WIDTH = (dimensions.width / 100) * 55
+
 export const styles = StyleSheet.create({
     container: {
     },
@@ -13,8 +16,6 @@ export const styles = StyleSheet.create({
         fontSize: 12,
         alignSelf: "center",
         top: 15 + 35,
-    },
-    flatList: {
     },
 
     title: {
@@ -27,10 +28,6 @@ export const styles = StyleSheet.create({
         color: theme.colors.text1,
         fontSize: 12,
     },
-    infoContainer: {
-        //backgroundColor: "blue",
-    },
-
     tabBar: {
         backgroundColor: theme.colors.primary1,
         borderTopLeftRadius: 15,
@@ -46,27 +43,54 @@ export const styles = StyleSheet.create({
 
     actionButtonsHolder: {
         position: "absolute",
-        right: 30,
+        right: 15,
         bottom: "17%", // Controla a distancia do bottom	
         alignItems: "center",
-        justifyContent: "center"
+        justifyContent: "center",
+        width: 65,
+        //backgroundColor: "red",
     },
     actionButton: {
         alignItems: "center",
         justifyContent: "center",
-        marginBottom: 50 // Controla o espaçamento entre botões
+        marginBottom: 15, // Controla o espaçamento entre botões
+        //backgroundColor: "green",
+        width: 65,
+        height: 65,
     },
     buttonCircle: {
         position: "absolute",
-        width: 65,
-        height: 65,
         borderRadius: 65 / 2,
         opacity: 0.5,
         backgroundColor: theme.colors.secondary1
-    }
-    /* info: {
-        fontFamily: theme.fonts.subtitle900,
+    },
+    ratingSelector: {
+        position: "absolute",
+        top: 15 / 2,
+        right: "110%",
+        borderRadius: 15,
+        width: SELECTOR_WIDTH,
+        height: 50,
+        backgroundColor: theme.colors.secondary1,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        paddingHorizontal: 15
+    },
+    ratingPlaceholder: {
+        fontFamily: theme.fonts.title700,
         color: theme.colors.text1,
         fontSize: 24,
-    } */
+    },
+    ratingRound: {
+        position: "absolute",
+        right: -10,
+        alignItems: "center",
+        justifyContent: "center",
+        height: 65,
+        width: 65,
+        backgroundColor: theme.colors.primary1,
+        opacity: 0.35,
+        borderRadius: 65 / 2,
+    }
 });
