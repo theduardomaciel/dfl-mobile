@@ -78,33 +78,42 @@ export function Reports({ route, navigation }) {
 
     const DATA = user.reports;
 
-    const offset = useSharedValue(0);
-    const customSpringStyles = useAnimatedStyle(() => {
+    const offset = useSharedValue(62);
+    const ratingSelectorAnimatedStyle = useAnimatedStyle(() => {
         return {
             transform: [
                 {
-                    translateX: withSpring(offset.value, {
-                        damping: 20,
-                        stiffness: 90,
-                    }),
+                    translateX: offset.value,
                 },
             ],
         };
     });
 
-    const onRatingButtonPressIn = () => {
+    const ratingPosition = useSharedValue(0)
+    const ratingContainerAnimatedStyles = useAnimatedStyle(() => {
+        return {
+            transform: [
+                {
+                    translateX: ratingPosition.value,
+                },
+            ],
+        };
+    });
+
+    const onGestureBegin = () => {
         console.log("Pressionando o botão")
+        offset.value = 62
+        ratingPosition.value = withSpring(0)
     }
 
-    const onRatingButtonPressOut = () => {
-        console.log("Botão deixou de ser pressionado.")
-        offset.value = 0
+    const onGestureEnded = () => {
+        console.log("O gesto acabou.")
+        offset.value = 62
+        ratingPosition.value = withSpring(350)
     }
 
     const INITIAL_OFFSET = 15
     const POSITION_OFFSET = SELECTOR_WIDTH / 5
-
-    // Da esquerda para direita --> [0] = 5 | [1] = 4 | [2] = 3
     const POSITIONS = [
         INITIAL_OFFSET,
         INITIAL_OFFSET + POSITION_OFFSET,
@@ -116,24 +125,28 @@ export function Reports({ route, navigation }) {
     const _onPanGestureEvent = (event) => {
         //O único problema do uso do translationX é que caso o usuário queria trocar seu rating, a animação terá que começar do início
         const nativeEvent = event.nativeEvent;
-        const positionFromCenter = nativeEvent.translationX // Quanta distância foi percorrida desde o início da animação
+        const POSITION_X = nativeEvent.translationX // Quanta distância foi percorrida desde o início da animação
         const DISTANCE = (-POSITION_OFFSET / 2) - 15
-        console.log(positionFromCenter)
-        if (positionFromCenter < DISTANCE && positionFromCenter > DISTANCE * 2) {
-            console.log("Dedo está no 2")
-            offset.value = -POSITIONS[1] / 2 - 15
-        } else if (positionFromCenter < DISTANCE * 2 && positionFromCenter > DISTANCE * 3) {
-            console.log("Dedo está no 3")
-            offset.value = -POSITIONS[2] + 15
-        } else if (positionFromCenter < DISTANCE * 3 && positionFromCenter > DISTANCE * 4) {
-            console.log("Dedo está no 4")
-            offset.value = -POSITIONS[3] + 15
-        } else if (positionFromCenter < DISTANCE * 4) {
-            console.log("Dedo está no 5")
-            offset.value = -POSITIONS[4] + 15
+
+        const ANIMATION_CONFIG = {
+            damping: 20,
+            stiffness: 90,
+        }
+        if (POSITION_X < DISTANCE && POSITION_X > DISTANCE * 2) {
+            //console.log("Dedo está no 2")
+            offset.value = withSpring(-POSITIONS[1] / 2 - 15, ANIMATION_CONFIG)
+        } else if (POSITION_X < DISTANCE * 2 && POSITION_X > DISTANCE * 3) {
+            //console.log("Dedo está no 3")
+            offset.value = withSpring(-POSITIONS[2] + 15, ANIMATION_CONFIG)
+        } else if (POSITION_X < DISTANCE * 3 && POSITION_X > DISTANCE * 4) {
+            //console.log("Dedo está no 4")
+            offset.value = withSpring(-POSITIONS[3] + 15, ANIMATION_CONFIG)
+        } else if (POSITION_X < DISTANCE * 4) {
+            //console.log("Dedo está no 5")
+            offset.value = withSpring(-POSITIONS[4] + 15, ANIMATION_CONFIG)
         } else {
-            console.log("Dedo está no 1")
-            offset.value = 0
+            //console.log("Dedo está no 1")
+            offset.value = withSpring(0, ANIMATION_CONFIG)
         }
     }
 
@@ -162,27 +175,11 @@ export function Reports({ route, navigation }) {
             />
 
             <View style={styles.actionButtonsHolder}>
-                <View style={styles.ratingSelector}>
-                    <Text style={[styles.ratingPlaceholder, { position: "absolute", left: POSITIONS[0] }]}>5</Text>
-                    <Text style={[styles.ratingPlaceholder, { position: "absolute", left: POSITIONS[1] }]}>4</Text>
-                    <Text style={[styles.ratingPlaceholder, { position: "absolute", left: POSITIONS[2] }]}>3</Text>
-                    <Text style={[styles.ratingPlaceholder, { position: "absolute", left: POSITIONS[3] }]}>2</Text>
-                    <Text style={[styles.ratingPlaceholder, { position: "absolute", left: POSITIONS[4] }]}>1</Text>
-                    <PanGestureHandler onGestureEvent={_onPanGestureEvent}>
-                        <Animated.View style={[styles.ratingRound, customSpringStyles]}>
-                            <View style={[styles.buttonCircle, { backgroundColor: theme.colors.primary1, width: 50, height: 50, opacity: 1 }]} />
-                        </Animated.View>
-                    </PanGestureHandler>
-                </View>
-                <Pressable
-                    style={styles.actionButton}
-                    onLongPress={onRatingButtonPressIn}
-                    onPressOut={onRatingButtonPressOut}
-                >
+                <View style={styles.actionButton}>
                     <View style={[styles.buttonCircle, { width: 65, height: 65 }]} />
                     <View style={[styles.buttonCircle, { width: 50, height: 50, opacity: 1 }]} />
                     <TrashBinSVG height={28} width={28} />
-                </Pressable>
+                </View>
                 <Pressable style={styles.actionButton}>
                     <View style={[styles.buttonCircle, { width: 65, height: 65 }]} />
                     <View style={[styles.buttonCircle, { width: 50, height: 50, opacity: 1 }]} />
@@ -193,6 +190,20 @@ export function Reports({ route, navigation }) {
                     <View style={[styles.buttonCircle, { width: 50, height: 50, opacity: 1 }]} />
                     <MaterialIcons name="share" size={28} color={theme.colors.text1} />
                 </Pressable>
+                <View style={styles.ratingSelector}>
+                    <Animated.View style={[ratingContainerAnimatedStyles, styles.ratingContainer]}>
+                        <Text style={styles.ratingPlaceholder}>5</Text>
+                        <Text style={styles.ratingPlaceholder}>4</Text>
+                        <Text style={styles.ratingPlaceholder}>3</Text>
+                        <Text style={styles.ratingPlaceholder}>2</Text>
+                        <Text style={styles.ratingPlaceholder}>1</Text>
+                    </Animated.View>
+                    <PanGestureHandler onBegan={onGestureBegin} onEnded={onGestureEnded} onGestureEvent={_onPanGestureEvent}>
+                        <Animated.View style={[styles.ratingRound, ratingSelectorAnimatedStyle]}>
+                            <View style={[styles.buttonCircle, { backgroundColor: theme.colors.primary1, width: 50, height: 50, opacity: 1 }]} />
+                        </Animated.View>
+                    </PanGestureHandler>
+                </View>
             </View>
             {
                 isTabBarVisible &&

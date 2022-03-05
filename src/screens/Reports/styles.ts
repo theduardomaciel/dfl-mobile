@@ -68,13 +68,19 @@ export const styles = StyleSheet.create({
         position: "absolute",
         top: 15 / 2,
         right: "110%",
-        borderRadius: 15,
         width: SELECTOR_WIDTH,
         height: 50,
-        backgroundColor: theme.colors.secondary1,
         flexDirection: "row",
-        justifyContent: "space-between",
         alignItems: "center",
+    },
+    ratingContainer: {
+        borderRadius: 15,
+        backgroundColor: theme.colors.secondary1,
+        width: "100%",
+        height: "100%",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
         paddingHorizontal: 15
     },
     ratingPlaceholder: {
