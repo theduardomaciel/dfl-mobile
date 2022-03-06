@@ -15,10 +15,10 @@ import Animated, {
     withSpring,
     useAnimatedStyle,
     useSharedValue,
+    withTiming,
+    Easing,
 } from 'react-native-reanimated';
 import { PanGestureHandler } from "react-native-gesture-handler";
-
-const textTransparency = new Animated.Value(0);
 
 type PropTypes = {
     viewableItems: Array<ViewToken>;
@@ -32,30 +32,40 @@ export function Reports({ route, navigation }) {
     );
 
     const [isTabBarVisible, setTabBarVisible] = useState(false)
-    /* useEffect(() => {
+    const textOpacity = useSharedValue(0)
+    useEffect(() => {
         buttonDrivers[5].addListener((value) => {
             if (value.value === 1) {
                 // Caso a animação de movimento tenha terminado, o background animado deve ser ocultado
                 setTabBarVisible(true)
-                Animated.timing(textTransparency, {
-                    toValue: 1,
-                    duration: 350,
-                    useNativeDriver: true
-                }).start()
+                textOpacity.value = 1
+                console.log("Exibindo texto", textOpacity.value)
             }
         })
         const unsubscribe = navigation.addListener('focus', () => {
             console.log("Des-exibindo o texto de abertura.", isTabBarVisible)
             setTabBarVisible(false)
-            textTransparency.setValue(0)
+            textOpacity.value = 0
         });
         return unsubscribe;
-    }, [navigation]) */
+    }, [navigation])
+
+    const infoStyle = useAnimatedStyle(() => {
+        return {
+            opacity: withTiming(textOpacity.value, {
+                duration: 500,
+                easing: Easing.out(Easing.exp),
+            })
+        };
+    });
+
+    const [rating, setRating] = useState(1)
 
     const [currentIndex, setCurrentIndex] = useState(0)
     const flatListRef = useRef<FlatList<any>>(null);
     const onViewableItemsChanged = useCallback(({ viewableItems }: PropTypes) => {
         if (viewableItems[0]) {
+            setRating(1)
             return setCurrentIndex(viewableItems[0].index)
         }
     }, []);
@@ -94,7 +104,10 @@ export function Reports({ route, navigation }) {
         return {
             transform: [
                 {
-                    translateX: ratingPosition.value,
+                    translateX: withTiming(ratingPosition.value, {
+                        duration: 500,
+                        easing: Easing.out(Easing.exp),
+                    }),
                 },
             ],
         };
@@ -103,13 +116,13 @@ export function Reports({ route, navigation }) {
     const onGestureBegin = () => {
         console.log("Pressionando o botão")
         offset.value = 62
-        ratingPosition.value = withSpring(0)
+        ratingPosition.value = 0
     }
 
     const onGestureEnded = () => {
         console.log("O gesto acabou.")
         offset.value = 62
-        ratingPosition.value = withSpring(350)
+        ratingPosition.value = 350
     }
 
     const INITIAL_OFFSET = 15
@@ -129,24 +142,30 @@ export function Reports({ route, navigation }) {
         const DISTANCE = (-POSITION_OFFSET / 2) - 15
 
         const ANIMATION_CONFIG = {
-            damping: 20,
-            stiffness: 90,
+            damping: 7,
+            stiffness: 85,
+            mass: 0.25,
         }
         if (POSITION_X < DISTANCE && POSITION_X > DISTANCE * 2) {
             //console.log("Dedo está no 2")
             offset.value = withSpring(-POSITIONS[1] / 2 - 15, ANIMATION_CONFIG)
+            setRating(2)
         } else if (POSITION_X < DISTANCE * 2 && POSITION_X > DISTANCE * 3) {
             //console.log("Dedo está no 3")
             offset.value = withSpring(-POSITIONS[2] + 15, ANIMATION_CONFIG)
+            setRating(3)
         } else if (POSITION_X < DISTANCE * 3 && POSITION_X > DISTANCE * 4) {
             //console.log("Dedo está no 4")
             offset.value = withSpring(-POSITIONS[3] + 15, ANIMATION_CONFIG)
+            setRating(4)
         } else if (POSITION_X < DISTANCE * 4) {
             //console.log("Dedo está no 5")
             offset.value = withSpring(-POSITIONS[4] + 15, ANIMATION_CONFIG)
+            setRating(5)
         } else {
             //console.log("Dedo está no 1")
             offset.value = withSpring(0, ANIMATION_CONFIG)
+            setRating(1)
         }
     }
 
@@ -179,6 +198,7 @@ export function Reports({ route, navigation }) {
                     <View style={[styles.buttonCircle, { width: 65, height: 65 }]} />
                     <View style={[styles.buttonCircle, { width: 50, height: 50, opacity: 1 }]} />
                     <TrashBinSVG height={28} width={28} />
+                    <Text style={[styles.ratingViewerText]}>{rating}</Text>
                 </View>
                 <Pressable style={styles.actionButton}>
                     <View style={[styles.buttonCircle, { width: 65, height: 65 }]} />
@@ -208,12 +228,7 @@ export function Reports({ route, navigation }) {
             {
                 isTabBarVisible &&
                 <View style={styles.tabBar}>
-                    <Animated.View style={[{
-                        opacity: textTransparency.interpolate({
-                            inputRange: [0, 1],
-                            outputRange: [0, 1]
-                        }),
-                    }]}>
+                    <Animated.View style={[infoStyle]}>
                         <Text style={[styles.title, { marginBottom: 5 }]}>
                             @{user.profile.username}
                         </Text>

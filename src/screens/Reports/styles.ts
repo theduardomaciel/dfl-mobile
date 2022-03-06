@@ -98,5 +98,11 @@ export const styles = StyleSheet.create({
         backgroundColor: theme.colors.primary1,
         opacity: 0.35,
         borderRadius: 65 / 2,
+    },
+    ratingViewerText: {
+        fontSize: 12,
+        fontFamily: theme.fonts.subtitle700,
+        color: theme.colors.text1,
+        textAlign: "center",
     }
 });
