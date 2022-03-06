@@ -54,7 +54,8 @@ export function Community() {
     const [markers, setMarkers] = useState([])
     useEffect(() => {
         function CheckIfProfileIsCreated() {
-            if (user.profile === undefined) {
+            console.log(user.profile.defaultCity, user.profile.username)
+            if (user.profile.defaultCity || user.profile.username === null) {
                 console.log("Usuário não possui perfil. Exibindo modal para criação.")
                 setFirstModalVisible(true)
             }
@@ -175,30 +176,36 @@ export function Community() {
                 <View style={[elements.subContainerWhite, { height: 25 }]}>
 
                 </View>
-                <SectionTitle title="Contato" hasLine viewStyle={{ marginTop: 25 }} />
-                <SectionTitle title={`Órgão Responsável (${CITY_DATA.name})`} fontStyle={{ fontSize: 18 }} viewStyle={{ marginBottom: 5 }} />
-                <View style={[elements.subContainerWhite, { flexDirection: "row", padding: 0 }]}>
-                    <View style={{ width: "65%", paddingLeft: 12, paddingVertical: 12 }}>
-                        <Pressable onPress={() => { Linking.openURL(CITY_DATA.contact.url) }}>
-                            <Text style={[styles.contactInfo, { textDecorationLine: "underline" }]}>
-                                • {CITY_DATA.contact.name}{"\n"}
-                                <Text style={{ fontFamily: theme.fonts.subtitle700 }}>
-                                    {`(${CITY_DATA.contact.acronym})`}
-                                </Text>
-                            </Text>
-                        </Pressable>
-                        <Pressable onPress={() => { Linking.openURL(`tel:${CITY_DATA.contact.number}`) }}>
-                            <Text style={styles.contactInfo}>
-                                • Disque Limpeza:{'\n'}
-                                <Text style={{ fontFamily: theme.fonts.subtitle700, textDecorationLine: "underline" }}>
-                                    {CITY_DATA.contact.number}
-                                </Text>
-                            </Text>
-                        </Pressable>
-                    </View>
-                    <Image style={{ width: "35%", borderTopRightRadius: 15, borderBottomRightRadius: 15, height: "100%" }} source={{ uri: CITY_DATA.contact.image }} />
-                </View>
-                <View style={{ height: 50 }} />
+                {
+                    user.profile.defaultCity ?
+                        <>
+                            <SectionTitle title="Contato" hasLine viewStyle={{ marginTop: 25 }} />
+                            <SectionTitle title={`Órgão Responsável (${CITY_DATA.name})`} fontStyle={{ fontSize: 18 }} viewStyle={{ marginBottom: 5 }} />
+                            <View style={[elements.subContainerWhite, { flexDirection: "row", padding: 0 }]}>
+                                <View style={{ width: "65%", paddingLeft: 12, paddingVertical: 12 }}>
+                                    <Pressable onPress={() => { Linking.openURL(CITY_DATA.contact.url) }}>
+                                        <Text style={[styles.contactInfo, { textDecorationLine: "underline" }]}>
+                                            • {CITY_DATA.contact.name}{"\n"}
+                                            <Text style={{ fontFamily: theme.fonts.subtitle700 }}>
+                                                {`(${CITY_DATA.contact.acronym})`}
+                                            </Text>
+                                        </Text>
+                                    </Pressable>
+                                    <Pressable onPress={() => { Linking.openURL(`tel:${CITY_DATA.contact.number}`) }}>
+                                        <Text style={styles.contactInfo}>
+                                            • Disque Limpeza:{'\n'}
+                                            <Text style={{ fontFamily: theme.fonts.subtitle700, textDecorationLine: "underline" }}>
+                                                {CITY_DATA.contact.number}
+                                            </Text>
+                                        </Text>
+                                    </Pressable>
+                                </View>
+                                <Image style={{ width: "35%", borderTopRightRadius: 15, borderBottomRightRadius: 15, height: "100%" }} source={{ uri: CITY_DATA.contact.image }} />
+                            </View>
+                            <View style={{ height: 50 }} />
+                        </>
+                        : null
+                }
             </ScrollView>
         </ImageBackground>
     );

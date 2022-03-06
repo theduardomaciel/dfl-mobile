@@ -115,7 +115,7 @@ export function Home({ route, navigation }) {
                         {user.first_name + "!"}
                     </Text>
                 </View>
-                <ProfileIcon uri={user.image_url} />
+                <ProfileIcon uri={user.profile.image_url} />
             </View>
             <ScrollView
                 contentContainerStyle={styles.scrollContainer}

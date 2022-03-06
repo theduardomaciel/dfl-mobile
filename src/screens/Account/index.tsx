@@ -116,9 +116,9 @@ const months = ["Jan.", "Fev.", "Mar.", "Abr.", "Jun.", "Jul.", "Ago.", "Set.", 
 
 export function Account({ route, navigation }) {
     const { user } = useAuth();
-    if (user === null) return (
-        <View style={{ flex: 1 }} />
-    );
+    /*     if (user === null) return (
+            <View style={{ flex: 1 }} />
+        ); */
     const Header = () => {
         return (
             <View style={styles.header}>
@@ -130,7 +130,7 @@ export function Account({ route, navigation }) {
                         {user.profile ? user.profile.username : ""}
                     </Text>
                 </View>
-                <ProfileIcon uri={user.image_url} openConfig />
+                <ProfileIcon uri={user.profile.image_url} openConfig />
             </View>
         )
     }
@@ -257,7 +257,9 @@ export function Account({ route, navigation }) {
     }
 
     useEffect(() => {
-        FetchData()
+        if (user.reports) {
+            FetchData()
+        }
     }, [user]);
 
     const [isLoading, setIsLoading] = useState(false)

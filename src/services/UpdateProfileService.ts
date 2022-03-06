@@ -1,13 +1,14 @@
 import prismaClient from "../prisma"
 
-class CreateProfileService {
+class UpdateProfileService {
     async execute(user_id: number, username: string, defaultCity: string) {
         try {
-            const response = await prismaClient.profile.create({
+            const response = await prismaClient.profile.update({
+                where: {
+                    user_id: user_id
+                },
                 data: {
-                    user: {
-                        connect: { id: user_id },
-                    },
+
                     username: username,
                     defaultCity: defaultCity,
                 },
@@ -30,4 +31,4 @@ class CreateProfileService {
     }
 }
 
-export { CreateProfileService }
+export { UpdateProfileService }

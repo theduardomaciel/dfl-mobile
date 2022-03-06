@@ -1,15 +1,15 @@
 import { Request, Response } from "express";
-import { CreateProfileService } from "../services/CreateProfileService"
+import { UpdateProfileService } from "../services/UpdateProfileService"
 
-class CreateProfileController {
+class UpdateProfileController {
     async handle(request: Request, response: Response) {
         const { user_id, username, defaultCity } = request.body;
 
-        const service = new CreateProfileService();
+        const service = new UpdateProfileService();
         const result = await service.execute(user_id, username, defaultCity)
 
         return response.json(result)
     }
 }
 
-export { CreateProfileController }
+export { UpdateProfileController }

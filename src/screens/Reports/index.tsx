@@ -19,6 +19,7 @@ import Animated, {
     Easing,
 } from 'react-native-reanimated';
 import { PanGestureHandler } from "react-native-gesture-handler";
+import { CommentsModal } from "./Comments";
 
 type PropTypes = {
     viewableItems: Array<ViewToken>;
@@ -27,6 +28,7 @@ type PropTypes = {
 export function Reports({ route, navigation }) {
     const { user } = useAuth();
 
+    const DATA = user.reports;
     if (user.reports === undefined) return (
         <View style={{ flex: 1 }} />
     );
@@ -86,8 +88,6 @@ export function Reports({ route, navigation }) {
         )
     }
 
-    const DATA = user.reports;
-
     const offset = useSharedValue(62);
     const ratingSelectorAnimatedStyle = useAnimatedStyle(() => {
         return {
@@ -99,7 +99,7 @@ export function Reports({ route, navigation }) {
         };
     });
 
-    const ratingPosition = useSharedValue(0)
+    const ratingPosition = useSharedValue(350)
     const ratingContainerAnimatedStyles = useAnimatedStyle(() => {
         return {
             transform: [
@@ -169,6 +169,8 @@ export function Reports({ route, navigation }) {
         }
     }
 
+    const [isCommentsModalVisible, setCommentsModalVisible] = useState(false)
+
     return (
         <View style={styles.container}>
             <StatusBar barStyle="light-content" backgroundColor={"black"} />
@@ -181,9 +183,7 @@ export function Reports({ route, navigation }) {
                 viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
                 viewabilityConfig={viewabilityConfig}
                 ref={flatListRef}
-            >
-
-            </FlatList>
+            />
             <TextForm
                 customStyle={styles.searchBar}
                 textInputProps={{
@@ -200,7 +200,7 @@ export function Reports({ route, navigation }) {
                     <TrashBinSVG height={28} width={28} />
                     <Text style={[styles.ratingViewerText]}>{rating}</Text>
                 </View>
-                <Pressable style={styles.actionButton}>
+                <Pressable style={styles.actionButton} onPress={() => setCommentsModalVisible(true)}>
                     <View style={[styles.buttonCircle, { width: 65, height: 65 }]} />
                     <View style={[styles.buttonCircle, { width: 50, height: 50, opacity: 1 }]} />
                     <MaterialIcons name="comment" size={28} color={theme.colors.text1} />
@@ -241,6 +241,13 @@ export function Reports({ route, navigation }) {
                     </Animated.View>
                 </View>
             }
+            <CommentsModal
+                isVisible={isCommentsModalVisible}
+                closeFunction={() => { setCommentsModalVisible(false) }}
+                user={user}
+                report={user.reports[currentIndex]}
+                reportComments={[]}
+            />
         </View>
     );
 }

@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import { AuthenticateUserController } from "./controllers/AuthenticateUserController";
-import { CreateProfileController } from "./controllers/CreateProfileController";
+import { UpdateProfileController } from "./controllers/UpdateProfileController";
 
 import { CreateReportController } from "./controllers/CreateReportController";
 import { DeleteReportController } from "./controllers/DeleteReportController";
@@ -22,7 +22,7 @@ router.post("/authenticate", new AuthenticateUserController().handle);
 router.post("/report/create", ensureAuthenticated, new CreateReportController().handle)
 router.post("/report/delete", ensureAuthenticated, new DeleteReportController().handle)
 
-router.post("/profile/create", new CreateProfileController().handle);
+router.post("/profile/update", new UpdateProfileController().handle);
 router.post("/profile/update/experience", new UpdateUserExperienceController().handle);
 
 router.post("/user", new ReadUserController().handle);

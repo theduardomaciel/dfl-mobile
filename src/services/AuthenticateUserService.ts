@@ -72,7 +72,14 @@ class AuthenticateUserService {
                     first_name: givenName,
                     last_name: familyName,
                     email: email,
-                    image_url: photo,
+                    profile: {
+                        create: {
+                            image_url: photo,
+                        }
+                    }
+                },
+                include: {
+                    profile: true
                 }
             })
         }

@@ -4,7 +4,6 @@ export type User = {
     first_name: string;
     last_name: string;
     email: string;
-    image_url: string;
     profile: Profile;
     reports: Array<Report>;
     createdAt: string;
@@ -12,6 +11,7 @@ export type User = {
 
 export type Profile = {
     username: string;
+    image_url: string;
     defaultCity: string;
     level: number;
     experience: number;

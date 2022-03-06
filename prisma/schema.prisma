@@ -2,67 +2,72 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider          = "postgresql"
-  url               = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+    provider          = "postgresql"
+    url               = env("DATABASE_URL")
+    shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model User {
-  id         Int      @id @unique @default(autoincrement())
-  google_id  String
-  first_name String
-  last_name  String
-  email      String   @unique
-  image_url  String
-  profile    Profile?
-  createdAt  DateTime @default(now())
-  reports    Report[]
+    id         Int      @id @unique @default(autoincrement())
+    google_id  String
+    first_name String
+    last_name  String
+    email      String   @unique
+    profile    Profile?
+    createdAt  DateTime @default(now())
+    reports    Report[]
 
-  @@map("users")
+    @@map("users")
 }
 
 model Profile {
-  id          Int       @id @default(autoincrement())
-  username    String    @unique
-  defaultCity String
-  level       Int       @default(0)
-  experience  Float     @default(0)
-  comments    Comment[]
-  user        User      @relation(fields: [user_id], references: [id], onDelete: SetDefault)
-  user_id     Int       
+    id          Int       @id @default(autoincrement())
+    username    String?   @unique
+    image_url   String
+    defaultCity String?
+    level       Int       @default(0)
+    experience  Float     @default(0)
+    comments    Comment[]
+    user        User      @relation(fields: [user_id], references: [id], onDelete: SetDefault)
+    user_id     Int       @unique
 }
 
 model Report {
-  id               Int       @id @default(autoincrement())
-  createdAt        DateTime  @default(now())
-  address          String
-  coordinates      Decimal[]
-  image_url        String
-  image_deleteHash String
-  tags             Json
-  suggestion       String
-  hasTrashBins     Boolean   @default(true)
+    id               Int       @id @default(autoincrement())
+    createdAt        DateTime  @default(now())
+    address          String
+    coordinates      Decimal[]
+    image_url        String
+    image_deleteHash String
+    tags             Json
+    suggestion       String
+    hasTrashBins     Boolean   @default(true)
 
-  ratings  Float[]
-  resolved Boolean @default(false)
+    ratings  Float[]
+    resolved Boolean @default(false)
 
-  user    User @relation(fields: [user_id], references: [id], onDelete: SetNull)
-  user_id Int
+    user    User @relation(fields: [user_id], references: [id], onDelete: SetNull)
+    user_id Int
 
-  comments Comment[]
-  @@map("reports")
+    comments Comment[]
+    @@map("reports")
 }
 
 model Comment {
-  id              Int     @id @default(autoincrement())
-  content         String
-  profile         Profile @relation(fields: [profileUsername], references: [username])
-  profileUsername String
+    id          Int       @id @default(autoincrement())
+    content     String
+    createdAt   DateTime  @default(now())
+    subComments Comment[] @relation("CommentToComment")
 
-  Report   Report @relation(fields: [reportId], references: [id])
-  reportId Int
+    profile         Profile @relation(fields: [profileUsername], references: [username])
+    profileUsername String
+
+    Report    Report   @relation(fields: [reportId], references: [id])
+    reportId  Int
+    Comment   Comment? @relation("CommentToComment", fields: [commentId], references: [id])
+    commentId Int?
 }
