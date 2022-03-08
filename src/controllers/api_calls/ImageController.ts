@@ -4,11 +4,11 @@ import { UploadImageService, DeleteImageService } from "../../services/api_calls
 
 class UploadImageController {
     async handle(request: Request, response: Response) {
-        const { image_base64, user_id } = request.body;
+        const { image_base64, profile_id } = request.body;
 
         const service = new UploadImageService();
         try {
-            const result = await service.execute(image_base64, user_id)
+            const result = await service.execute(image_base64, profile_id)
             return response.json(result);
         } catch (err) {
             return response.json({ error: err.message });

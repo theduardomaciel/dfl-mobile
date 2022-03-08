@@ -17,7 +17,7 @@ import { TagsSelector } from "../../components/TagsSelector";
 import { RectButton } from "react-native-gesture-handler";
 import { LoadingScreen } from "../../components/LoadingScreen";
 import { api } from "../../utils/api";
-import { User } from "../../@types/application";
+import { Profile, User } from "../../@types/application";
 import { useAuth } from "../../hooks/useAuth";
 
 type Report = {
@@ -103,8 +103,13 @@ export function Report({ route, navigation }) {
 
         try {
             const deleteResponse = await api.post("/report/delete", { report_id: report.id, image_deleteHash: report.image_deleteHash })
-            const updatedUser = deleteResponse.data.user as User
-            await updateUser(updatedUser)
+            const updatedProfile = deleteResponse.data as Profile
+            await updateUser(updatedProfile, "profile")
+            Alert.alert(
+                'Eba! Deu tudo certo!',
+                'O relatório selecionado foi excluído com sucesso :)',
+            );
+            console.log("O relatório selecionado foi excluído com sucesso.")
         } catch (error) {
             Alert.alert(
                 'Opa! Algo deu errado.',

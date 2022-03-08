@@ -11,6 +11,7 @@ export type User = {
 }
 
 export type Profile = {
+    id: number;
     username: string;
     image_url: string;
     defaultCity: string;

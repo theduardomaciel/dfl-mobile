@@ -5,7 +5,7 @@ import { CheckUserLevelAndExperience } from "./UpdateUserExperienceService";
 
 class CreateReportService {
     async execute(
-        user_id: number,
+        profile_id: number,
         address: string,
         coordinates: Array<number>,
         image_url: string,
@@ -17,7 +17,7 @@ class CreateReportService {
         try {
             const profile = await prismaClient.profile.findUnique({
                 where: {
-                    id: user_id,
+                    id: profile_id,
                 },
             })
             // Adicionando XP ao perfil do usuário, e o subindo de nível caso haja experiência suficiente

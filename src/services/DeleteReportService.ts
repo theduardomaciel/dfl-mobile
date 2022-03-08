@@ -7,21 +7,23 @@ class DeleteReportService {
         image_deleteHash: string,
     ) {
         try {
-            await prismaClient.report.delete({
+            const result = await prismaClient.report.delete({
                 where: {
                     id: report_id
                 },
+                include: {
+                    profile: true
+                }
             })
-            const service = new DeleteImageService();
             console.log("Relatório removido do banco de dados com sucesso!")
+            const service = new DeleteImageService();
             try {
-                const result = await service.execute(image_deleteHash)
-                console.log("Imagem do relatório removida do Imgur com sucesso!")
-                return "success"
+                await service.execute(image_deleteHash)
+                console.log("Imagem do relatório removida do imgur com sucesso!")
             } catch (error) {
                 console.log(error)
-                return "error"
             }
+            return result;
         } catch (error) {
             console.log(error)
             return "error"

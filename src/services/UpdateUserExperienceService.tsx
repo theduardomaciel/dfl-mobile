@@ -14,7 +14,7 @@ function CheckUserLevelAndExperience(userProfile: Profile) {
     } else {
         USER_EXPERIENCE += 175
     }
-    console.log(`O usuário agora possui ${USER_EXPERIENCE}xp!`)
+    console.log(`O usuário tinha ${userProfile.experience}. Agora ele possui ${USER_EXPERIENCE}xp!`)
 
     let USER_LEVEL = userProfile.level;
     function GetLevelObtainedWithActualXp() {
@@ -31,21 +31,21 @@ function CheckUserLevelAndExperience(userProfile: Profile) {
 
     const LEVEL_OBTAINED_WITH_ACTUAL_XP = GetLevelObtainedWithActualXp()
 
-    // Caso o usuário tenha subido de nível, atualizamos esse valor e resetamos a quantidade de experiência que ele tem
+    // Caso o usuário tenha subido de nível, atualizamos esse valor e reiniciamos a quantidade de experiência que ele tem
     if (LEVEL_OBTAINED_WITH_ACTUAL_XP > USER_LEVEL) {
         USER_LEVEL = LEVEL_OBTAINED_WITH_ACTUAL_XP
         USER_EXPERIENCE = USER_EXPERIENCE - NODE_LEVELS_DATA[LEVEL_OBTAINED_WITH_ACTUAL_XP].exp
-        console.log(`O usuário agora pertence ao nível ${NODE_LEVELS_DATA[USER_LEVEL].title} (${LEVEL_OBTAINED_WITH_ACTUAL_XP})!`)
+        console.log(`O usuário subiu de nível! Ele agora é um ${NODE_LEVELS_DATA[USER_LEVEL].title} (Nível ${LEVEL_OBTAINED_WITH_ACTUAL_XP})!`)
     }
 
     return { USER_LEVEL, USER_EXPERIENCE }
 }
 
 class UpdateUserExperienceService {
-    async execute(user_id: number) {
+    async execute(profile_id: number) {
         try {
             const service = new ReadProfileService();
-            const profile = await service.execute(user_id)
+            const profile = await service.execute(profile_id)
             const { USER_LEVEL, USER_EXPERIENCE } = CheckUserLevelAndExperience(profile as any);
             await prismaClient.profile.update({
                 where: {

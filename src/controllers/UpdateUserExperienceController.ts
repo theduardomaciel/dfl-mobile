@@ -3,11 +3,11 @@ import { UpdateUserExperienceService } from "../services/UpdateUserExperienceSer
 
 class UpdateUserExperienceController {
     async handle(request: Request, response: Response) {
-        const { user_id } = request.body;
+        const { profile_id } = request.body;
 
         const service = new UpdateUserExperienceService();
         try {
-            const result = await service.execute(user_id)
+            const result = await service.execute(profile_id)
             return response.json(result);
         } catch (err) {
             return response.json({ error: err.message });

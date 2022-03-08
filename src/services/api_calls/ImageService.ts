@@ -6,12 +6,12 @@ const client = new ImgurClient({ clientId: process.env.IMGUR_CLIENT_ID });
 // hash da primeira imagem de teste para deletar: 7r5TlGBX1FQZXx1
 
 class UploadImageService {
-    async execute(image_base64: string, user_id: number) {
+    async execute(image_base64: string, profile_id: number) {
         const date = new Date();
         try {
             const response = await client.upload({
                 image: image_base64,
-                title: `report_${date.getDay()}-${date.getMonth()}_${user_id}`,
+                title: `report_${date.getDay()}-${date.getMonth()}_${profile_id}`,
                 type: "base64",
             });
             //console.log(response.data);

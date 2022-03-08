@@ -45,7 +45,7 @@ export function ReportScreen3({ route, navigation }: any) {
 
     async function UploadImage() {
         try {
-            const imageResponse = await api.post("/upload", { image_base64: data.image_base64, user_id: user.id });
+            const imageResponse = await api.post("/upload", { image_base64: data.image_base64, profile_id: user.profile.id });
             const { deletehash, link } = imageResponse.data as ImageUploadResponse;
             console.log(deletehash, link)
             return { deletehash, link }
@@ -73,18 +73,17 @@ export function ReportScreen3({ route, navigation }: any) {
                 return "error"
             }
             const submitResponse = await api.post("/report/create", {
-                user_id: user.id,
+                profile_id: user.profile.id,
                 coordinates: data.coordinates,
                 address: data.address,
                 image_url: link,
                 image_deleteHash: deletehash,
                 tags: data.tags,
                 suggestion: data.suggestion,
-                hasTrashbin: data.hasTrashBins
+                hasTrashBins: data.hasTrashBins
             })
             const response = submitResponse.data as ReportResponse
             const updatedProfile = response.profile
-            console.log(user.profile.level, updatedProfile.level)
             if (updatedProfile.level > user.profile.level) {
                 console.log("O usuário subiu de nível.")
                 // Caso o usuário tenha subido de nível, indicamos que ele não ganhou nenhuma experiência, e realizamos a tratativa no modal
@@ -94,7 +93,7 @@ export function ReportScreen3({ route, navigation }: any) {
                 // Caso não, somente mostramos o quanto o usuário ganhou de exp
                 setGainedExperience(updatedProfile.experience - user.profile.experience)
             }
-            await updateUser();
+            await updateUser(updatedProfile, "profile");
             setIsLoading(false)
         } catch (error) {
             console.log(error)

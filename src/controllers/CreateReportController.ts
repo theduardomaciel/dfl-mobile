@@ -4,7 +4,7 @@ import { CreateReportService } from "../services/CreateReportService"
 class CreateReportController {
     async handle(request: Request, response: Response) {
         const {
-            user_id,
+            profile_id,
             address,
             coordinates,
             image_url,
@@ -17,7 +17,7 @@ class CreateReportController {
 
         const service = new CreateReportService();
         const result = await service.execute(
-            user_id,
+            profile_id,
             address,
             coordinates,
             image_url,
