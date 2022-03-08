@@ -16,7 +16,7 @@ import { ModalBase } from "../../components/ModalBase";
 import { TagsSelector } from "../../components/TagsSelector";
 import { RectButton } from "react-native-gesture-handler";
 import { LoadingScreen } from "../../components/LoadingScreen";
-import { api } from "../../services/api";
+import { api } from "../../utils/api";
 import { User } from "../../@types/application";
 import { useAuth } from "../../hooks/useAuth";
 

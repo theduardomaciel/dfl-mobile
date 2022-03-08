@@ -14,10 +14,10 @@ import { TextInput } from "react-native-gesture-handler";
 import { ConclusionScreen } from "../../../components/ConclusionScreen";
 
 import axios from "axios";
-import { api } from "../../../services/api";
+import { api } from "../../../utils/api";
 import { useAuth } from "../../../hooks/useAuth";
 
-import { Report, User } from "../../../@types/application";
+import { Profile, Report } from "../../../@types/application";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 
 type ImageUploadResponse = {
@@ -26,7 +26,7 @@ type ImageUploadResponse = {
 }
 
 type ReportResponse = {
-    user: User;
+    profile: Profile;
     updatedReport: Report;
 }
 
@@ -83,18 +83,18 @@ export function ReportScreen3({ route, navigation }: any) {
                 hasTrashbin: data.hasTrashBins
             })
             const response = submitResponse.data as ReportResponse
-            const updatedUserProfile = response.user.profile
-            console.log(user.profile.level, updatedUserProfile.level)
-            if (updatedUserProfile.level > user.profile.level) {
+            const updatedProfile = response.profile
+            console.log(user.profile.level, updatedProfile.level)
+            if (updatedProfile.level > user.profile.level) {
                 console.log("O usuário subiu de nível.")
                 // Caso o usuário tenha subido de nível, indicamos que ele não ganhou nenhuma experiência, e realizamos a tratativa no modal
                 setGainedExperience(null)
             } else {
                 console.log("O usuário não subiu de nível.")
                 // Caso não, somente mostramos o quanto o usuário ganhou de exp
-                setGainedExperience(updatedUserProfile.experience - user.profile.experience)
+                setGainedExperience(updatedProfile.experience - user.profile.experience)
             }
-            await updateUser(response.user);
+            await updateUser();
             setIsLoading(false)
         } catch (error) {
             console.log(error)
@@ -166,9 +166,9 @@ export function ReportScreen3({ route, navigation }: any) {
                         data.hasTrashBins = hasTrashbin
                         data.suggestion = suggestion
                         const response = await SubmitReport(data);
-                        if (response !== "error") {
+                        /* if (response !== "error") {
                             setModalOpen(true)
-                        }
+                        } */
                     }}
                 />
                 {

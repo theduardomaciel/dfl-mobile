@@ -1,17 +1,14 @@
 import prismaClient from "../prisma";
 
-require('dotenv').config()
-
-class ReadUserService {
+class ReadProfileService {
     async execute(user_id) {
         console.log(user_id)
         try {
-            const user = await prismaClient.user.findUnique({
+            const user = await prismaClient.profile.findUnique({
                 where: {
                     id: user_id,
                 },
                 include: {
-                    profile: true,
                     reports: true
                 }
             })
@@ -22,4 +19,4 @@ class ReadUserService {
     }
 }
 
-export { ReadUserService }
+export { ReadProfileService }

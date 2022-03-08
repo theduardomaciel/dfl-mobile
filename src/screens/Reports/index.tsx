@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { View, StatusBar, Text, FlatList, Dimensions, Image, ViewToken, Pressable } from "react-native";
+import { View, StatusBar, Text, FlatList, Dimensions, Image, ViewToken, Pressable, ActivityIndicator } from "react-native";
 import { TextForm } from "../../components/TextForm";
 
 import { theme } from "../../global/styles/theme";
@@ -8,7 +8,9 @@ import { SELECTOR_WIDTH, styles } from "./styles";
 import TrashBinSVG from "../../assets/trashbin_white.svg"
 
 import { MaterialIcons } from "@expo/vector-icons"
-import { buttonDrivers, TAB_BAR_HEIGHT, TAB_BAR_HEIGHT_LONG } from "../../components/TabBar";
+import { backgroundDrivers, buttonDrivers, TAB_BAR_HEIGHT, TAB_BAR_HEIGHT_LONG } from "../../components/TabBar";
+
+import { api } from "../../utils/api";
 import { useAuth } from "../../hooks/useAuth";
 
 import Animated, {
@@ -19,7 +21,9 @@ import Animated, {
     Easing,
 } from 'react-native-reanimated';
 import { PanGestureHandler } from "react-native-gesture-handler";
+
 import { CommentsModal } from "./Comments";
+import { Report } from "../../@types/application";
 
 type PropTypes = {
     viewableItems: Array<ViewToken>;
@@ -28,41 +32,59 @@ type PropTypes = {
 export function Reports({ route, navigation }) {
     const { user } = useAuth();
 
-    const DATA = user.reports;
-    if (user.reports === undefined) return (
-        <View style={{ flex: 1 }} />
-    );
+    const [data, setData] = useState<Array<Report>>([])
+    const [isLoadingNewData, setIsLoadingNewData] = useState(false)
+
+    async function loadMoreReports() {
+        setIsLoadingNewData(true)
+        try {
+            const moreReportsResponse = await api.post("/report/location", { location: user.profile.defaultCity ? user.profile.defaultCity.split(",")[0] : "Brasil" })
+            const moreReports = moreReportsResponse.data as Array<Report>;
+            if (data.length > 0) {
+                setData(data.concat(moreReports))
+            } else {
+                setData(moreReports)
+            }
+        } catch (error) {
+            console.log("Não foi possível conectar-se ao servidor.")
+        }
+        setIsLoadingNewData(false)
+    }
+
+    const renderFooter = () => {
+        return (
+            isLoadingNewData ?
+                <View style={{ marginTop: 20 }}>
+                    <ActivityIndicator size={"large"} color={theme.colors.text1} />
+                </View>
+                : null
+        )
+    }
 
     const [isTabBarVisible, setTabBarVisible] = useState(false)
-    const textOpacity = useSharedValue(0)
     useEffect(() => {
-        buttonDrivers[5].addListener((value) => {
+
+        backgroundDrivers[0].addListener((value) => {
             if (value.value === 1) {
-                // Caso a animação de movimento tenha terminado, o background animado deve ser ocultado
                 setTabBarVisible(true)
-                textOpacity.value = 1
-                console.log("Exibindo texto", textOpacity.value)
+            } else {
+                setTabBarVisible(false)
             }
         })
+
+        // Obtendo dados de relatórios da cidade do usuário
+        loadMoreReports()
+        // Animando a barra inferior
+
+
         const unsubscribe = navigation.addListener('focus', () => {
-            console.log("Des-exibindo o texto de abertura.", isTabBarVisible)
             setTabBarVisible(false)
-            textOpacity.value = 0
         });
+
         return unsubscribe;
     }, [navigation])
 
-    const infoStyle = useAnimatedStyle(() => {
-        return {
-            opacity: withTiming(textOpacity.value, {
-                duration: 500,
-                easing: Easing.out(Easing.exp),
-            })
-        };
-    });
-
     const [rating, setRating] = useState(1)
-
     const [currentIndex, setCurrentIndex] = useState(0)
     const flatListRef = useRef<FlatList<any>>(null);
     const onViewableItemsChanged = useCallback(({ viewableItems }: PropTypes) => {
@@ -169,20 +191,24 @@ export function Reports({ route, navigation }) {
         }
     }
 
-    const [isCommentsModalVisible, setCommentsModalVisible] = useState(false)
+    console.log(data, data.length)
 
+    const [isCommentsModalVisible, setCommentsModalVisible] = useState(false)
     return (
         <View style={styles.container}>
             <StatusBar barStyle="light-content" backgroundColor={"black"} />
             <FlatList
                 pagingEnabled
-                data={DATA}
+                data={data}
                 renderItem={renderItem}
                 keyExtractor={item => item.id}
                 scrollEventThrottle={50}
                 viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
                 viewabilityConfig={viewabilityConfig}
                 ref={flatListRef}
+                onEndReached={loadMoreReports}
+                onEndReachedThreshold={0}
+                ListFooterComponent={renderFooter}
             />
             <TextForm
                 customStyle={styles.searchBar}
@@ -193,61 +219,76 @@ export function Reports({ route, navigation }) {
                 icon={<MaterialIcons name="search" size={24} color={theme.colors.secondary1} />}
             />
 
-            <View style={styles.actionButtonsHolder}>
-                <View style={styles.actionButton}>
-                    <View style={[styles.buttonCircle, { width: 65, height: 65 }]} />
-                    <View style={[styles.buttonCircle, { width: 50, height: 50, opacity: 1 }]} />
-                    <TrashBinSVG height={28} width={28} />
-                    <Text style={[styles.ratingViewerText]}>{rating}</Text>
-                </View>
-                <Pressable style={styles.actionButton} onPress={() => setCommentsModalVisible(true)}>
-                    <View style={[styles.buttonCircle, { width: 65, height: 65 }]} />
-                    <View style={[styles.buttonCircle, { width: 50, height: 50, opacity: 1 }]} />
-                    <MaterialIcons name="comment" size={28} color={theme.colors.text1} />
-                </Pressable>
-                <Pressable style={styles.actionButton}>
-                    <View style={[styles.buttonCircle, { width: 65, height: 65 }]} />
-                    <View style={[styles.buttonCircle, { width: 50, height: 50, opacity: 1 }]} />
-                    <MaterialIcons name="share" size={28} color={theme.colors.text1} />
-                </Pressable>
-                <View style={styles.ratingSelector}>
-                    <Animated.View style={[ratingContainerAnimatedStyles, styles.ratingContainer]}>
-                        <Text style={styles.ratingPlaceholder}>5</Text>
-                        <Text style={styles.ratingPlaceholder}>4</Text>
-                        <Text style={styles.ratingPlaceholder}>3</Text>
-                        <Text style={styles.ratingPlaceholder}>2</Text>
-                        <Text style={styles.ratingPlaceholder}>1</Text>
-                    </Animated.View>
-                    <PanGestureHandler onBegan={onGestureBegin} onEnded={onGestureEnded} onGestureEvent={_onPanGestureEvent}>
-                        <Animated.View style={[styles.ratingRound, ratingSelectorAnimatedStyle]}>
-                            <View style={[styles.buttonCircle, { backgroundColor: theme.colors.primary1, width: 50, height: 50, opacity: 1 }]} />
-                        </Animated.View>
-                    </PanGestureHandler>
-                </View>
-            </View>
+            {
+                data.length === 0 ?
+                    <View style={{ height: "100%", alignItems: "center", justifyContent: "center" }}>
+                        <ActivityIndicator size={"large"} color={theme.colors.secondary1} />
+                        <Text style={[styles.title, { width: "50%", color: theme.colors.secondary1, textAlign: "center" }]}>
+                            Obtendo relatórios próximos a você
+                        </Text>
+                    </View>
+                    : null
+            }
+
+            {
+                data.length > 0 ?
+                    <View style={styles.actionButtonsHolder}>
+                        <View style={styles.actionButton}>
+                            <View style={[styles.buttonCircle, { width: 65, height: 65 }]} />
+                            <View style={[styles.buttonCircle, { width: 50, height: 50, opacity: 1 }]} />
+                            <TrashBinSVG height={28} width={28} />
+                            <Text style={[styles.ratingViewerText]}>{rating}</Text>
+                        </View>
+                        <Pressable style={styles.actionButton} onPress={() => setCommentsModalVisible(true)}>
+                            <View style={[styles.buttonCircle, { width: 65, height: 65 }]} />
+                            <View style={[styles.buttonCircle, { width: 50, height: 50, opacity: 1 }]} />
+                            <MaterialIcons name="comment" size={28} color={theme.colors.text1} />
+                        </Pressable>
+                        <Pressable style={styles.actionButton}>
+                            <View style={[styles.buttonCircle, { width: 65, height: 65 }]} />
+                            <View style={[styles.buttonCircle, { width: 50, height: 50, opacity: 1 }]} />
+                            <MaterialIcons name="share" size={28} color={theme.colors.text1} />
+                        </Pressable>
+                        <View style={styles.ratingSelector}>
+                            <Animated.View style={[ratingContainerAnimatedStyles, styles.ratingContainer]}>
+                                <Text style={styles.ratingPlaceholder}>5</Text>
+                                <Text style={styles.ratingPlaceholder}>4</Text>
+                                <Text style={styles.ratingPlaceholder}>3</Text>
+                                <Text style={styles.ratingPlaceholder}>2</Text>
+                                <Text style={styles.ratingPlaceholder}>1</Text>
+                            </Animated.View>
+                            <PanGestureHandler onBegan={onGestureBegin} onEnded={onGestureEnded} onGestureEvent={_onPanGestureEvent}>
+                                <Animated.View style={[styles.ratingRound, ratingSelectorAnimatedStyle]}>
+                                    <View style={[styles.buttonCircle, { backgroundColor: theme.colors.primary1, width: 50, height: 50, opacity: 1 }]} />
+                                </Animated.View>
+                            </PanGestureHandler>
+                        </View>
+                    </View>
+                    : null
+            }
+
             {
                 isTabBarVisible &&
                 <View style={styles.tabBar}>
-                    <Animated.View style={[infoStyle]}>
-                        <Text style={[styles.title, { marginBottom: 5 }]}>
-                            @{user.profile.username}
+                    <Text style={[styles.title, { marginBottom: 5 }]}>
+                        @{data.length > 0 ? data[currentIndex].profile.username : "teste"}
+                    </Text>
+                    <View style={{ flexDirection: "row" }}>
+                        <MaterialIcons name="place" size={18} color={theme.colors.text1} style={{ marginRight: 5 }} />
+                        <Text style={styles.description}>
+                            {data.length > 0 ? data[currentIndex].address : "testando"}
                         </Text>
-                        <View style={{ flexDirection: "row" }}>
-                            <MaterialIcons name="place" size={18} color={theme.colors.text1} style={{ marginRight: 5 }} />
-                            <Text style={styles.description}>
-                                {user.reports[currentIndex].address}
-                            </Text>
-                        </View>
-                    </Animated.View>
+                    </View>
                 </View>
             }
-            <CommentsModal
-                isVisible={isCommentsModalVisible}
-                closeFunction={() => { setCommentsModalVisible(false) }}
-                user={user}
-                report={user.reports[currentIndex]}
-                reportComments={[]}
-            />
+            {
+                data.length > 0 &&
+                <CommentsModal
+                    isVisible={isCommentsModalVisible}
+                    closeFunction={() => { setCommentsModalVisible(false) }}
+                    reportComments={data[currentIndex].comments}
+                />
+            }
         </View>
     );
 }

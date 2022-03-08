@@ -22,13 +22,16 @@ type Props = TouchableOpacityProps & {
     icon?: any;
     buttonStyle?: ViewStyle;
     textStyle?: TextStyle;
+    iconStyle?: ViewStyle;
     shadow?: boolean;
+    shadowType?: ViewStyle;
     isLoading?: boolean;
 }
 
-export function TextButton({ title, colors, icon, buttonStyle, textStyle, shadow, isLoading, ...rest }: Props) {
+export function TextButton({ title, colors, icon, iconStyle, buttonStyle, textStyle, shadow, shadowType, isLoading, ...rest }: Props) {
     icon ? buttonStyle = { ...buttonStyle, justifyContent: "space-around" } : buttonStyle = buttonStyle;
-    const shadowOptions = theme.shadowProperties
+    const shadowOptions = shadowType ? shadowType : theme.shadowProperties
+    const hasShadow = shadow || shadowType
     shadow ?
         buttonStyle = {
             ...buttonStyle,
@@ -41,16 +44,16 @@ export function TextButton({ title, colors, icon, buttonStyle, textStyle, shadow
             activeOpacity={0.8}
             // Verificamos se o botão possui gradiente, se possuir, inserimos o estilo de gradiente, caso não, inserimos o estilo padrão
             // Também verificamos se a propriedade de sombra foi inserida, para também adicionarmos o efeito ao botão
-            style={colors ? (shadow ? [styles.button, shadowOptions] : styles.button) : [styles.gradient, buttonStyle]}
+            style={colors ? (hasShadow ? [styles.button, shadowOptions] : styles.button) : [styles.gradient, buttonStyle, hasShadow ? shadowOptions : null]}
             /** Colocamos a propriedade "...rest" para passar ao botão todas as propriedades restantes que pertencem a ele */
             {...rest}
         >
             {
                 isLoading ?
-                    <ActivityIndicator size={"small"} color="#FFFFFF" animating={isLoading} />
+                    <ActivityIndicator size={"small"} color={textStyle.color} animating={isLoading} />
                     :
                     <>
-                        <View>
+                        <View style={iconStyle}>
                             {icon}
                         </View>
                         <Text style={textStyle ? [styles.title, textStyle] : styles.title}>

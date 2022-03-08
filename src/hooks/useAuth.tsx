@@ -13,7 +13,7 @@ GoogleSignin.configure({
 });
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { api } from "../services/api";
+import { api } from "../utils/api";
 
 import { User } from "../@types/application";
 
@@ -64,7 +64,7 @@ function AuthProvider({ children }: AuthProviderProps) {
                 const tokens = await GoogleSignin.getTokens();
                 // Chamar o backend com o usuário e o access_token
                 try {
-                    console.log("Requerindo dados ao servidor...")
+                    console.log("Checando dados no servidor...")
                     setTimeout(() => {
                         // Caso o servidor demore muito para responder a requisição, iremos supor que a internet do usuário caiu, ou o servidor está indisponível
                         return "error"
@@ -82,6 +82,7 @@ function AuthProvider({ children }: AuthProviderProps) {
                     console.log(`Usuário ${token} com sucesso!`, user);
                 } catch (error) {
                     setIsSigningIn(false)
+                    console.log(error)
                     return error
                 }
             } else {
@@ -91,7 +92,8 @@ function AuthProvider({ children }: AuthProviderProps) {
         } catch (error) {
             if (error.code === statusCodes.SIGN_IN_CANCELLED) {
                 console.log("Usuário cancelou o processo de login.");
-                return setIsSigningIn(false)
+                setIsSigningIn(false)
+                return "cancelled"
             } else if (error.code === statusCodes.IN_PROGRESS) {
                 return console.log("Um processo de login já está em execução.");
             } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {

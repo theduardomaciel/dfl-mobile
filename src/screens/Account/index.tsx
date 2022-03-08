@@ -13,7 +13,7 @@ import TrashbinSvg from "../../assets/trashbin_2.svg"
 import TrashbinSvgWhite from "../../assets/trashbin_white.svg"
 
 import { useAuth } from "../../hooks/useAuth";
-import { api } from "../../services/api";
+import { api } from "../../utils/api";
 import { response } from "express";
 
 // Os dados em uma SectionList devem ser sempre organizados em: "Title" e "Data". 
@@ -116,9 +116,9 @@ const months = ["Jan.", "Fev.", "Mar.", "Abr.", "Jun.", "Jul.", "Ago.", "Set.", 
 
 export function Account({ route, navigation }) {
     const { user } = useAuth();
-    /*     if (user === null) return (
-            <View style={{ flex: 1 }} />
-        ); */
+    if (user === null) return (
+        <View style={{ flex: 1 }} />
+    );
     const Header = () => {
         return (
             <View style={styles.header}>
@@ -136,7 +136,7 @@ export function Account({ route, navigation }) {
     }
 
     const SectionItem = ({ item }: any) => {
-        /* const report = user.reports.find(report => {
+        /* const report = user.profile.reports.find(report => {
             return report.id === item.id
         }) */
         return (
@@ -179,7 +179,7 @@ export function Account({ route, navigation }) {
     // Código original: https://stackoverflow.com/questions/46802448/how-do-i-group-items-in-an-array-by-date
     const [reportsData, setReportsData] = useState(null)
     async function LoadUserReports() {
-        const data = user.reports;
+        const data = user.profile.reports;
         const groups = data.reduce((groups, report) => {
             const date = report.createdAt.split('T')[0];
             const dateSplit = date.split('-')
@@ -200,18 +200,9 @@ export function Account({ route, navigation }) {
     }
 
     function GetReportsAmountByMonth() {
-        const data = user.reports;
+        const data = user.profile.reports;
         const amountsByMonth = new Array(12).fill(0) as Array<number>;
         if (!data) return amountsByMonth;
-        /* const groups = data.reduce((groups, report) => {
-            const date = new Date(report.createdAt);
-            const month = date.getMonth()
-            if (!groups[month]) {
-                groups[month] = 0;
-            }
-            groups[month] += 1;
-            return groups;
-        }, [] as Array<number>); */
         for (let index = 0; index < data.length; index++) {
             const report = data[index];
             const date = new Date(report.createdAt);
@@ -247,7 +238,7 @@ export function Account({ route, navigation }) {
 
     async function FetchData() {
         console.log("Atualizando dados da tela de relatórios.")
-        if (user.reports) {
+        if (user.profile.reports) {
             LoadUserReports()
             GetReportsAmountBars()
         } else {
@@ -257,14 +248,14 @@ export function Account({ route, navigation }) {
     }
 
     useEffect(() => {
-        if (user.reports) {
+        if (user.profile.reports) {
             FetchData()
         }
     }, [user]);
 
     const [isLoading, setIsLoading] = useState(false)
     const onRefresh = () => {
-        if (user.reports) {
+        if (user.profile.reports) {
             setIsLoading(true)
             console.log("Atualizando informações dos relatórios do usuário.")
             LoadUserReports()
@@ -334,7 +325,7 @@ export function Account({ route, navigation }) {
 
                 <View style={[elements.subContainerGreen, { height: 85, marginBottom: 15, alignItems: "center" }]}>
                     <Text style={styles.statisticsTitle}>
-                        {user.reports ? user.reports.length + " focos reportados no total" : "0 focos reportados no total"}
+                        {user.profile.reports ? user.profile.reports.length + " focos reportados no total" : "0 focos reportados no total"}
                     </Text>
                     <View style={{ width: "80%", height: 1, backgroundColor: theme.colors.primary2 }} />
                     <Text style={styles.statisticsTitle}>

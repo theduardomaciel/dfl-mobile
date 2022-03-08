@@ -15,21 +15,18 @@ class CreateReportService {
         hasTrashBins: boolean
     ) {
         try {
-            const user = await prismaClient.user.findUnique({
+            const profile = await prismaClient.profile.findUnique({
                 where: {
                     id: user_id,
                 },
-                include: {
-                    profile: true,
-                }
             })
             // Adicionando XP ao perfil do usuário, e o subindo de nível caso haja experiência suficiente
-            if (user.profile) {
-                const { USER_LEVEL, USER_EXPERIENCE } = CheckUserLevelAndExperience(user.profile)
+            if (profile) {
+                const { USER_LEVEL, USER_EXPERIENCE } = CheckUserLevelAndExperience(profile)
                 console.log("USER LEVEL AND EXPERIENCE: ", USER_LEVEL, USER_EXPERIENCE)
                 await prismaClient.profile.update({
                     where: {
-                        user_id: user.id
+                        id: profile.id
                     },
                     data: {
                         level: USER_LEVEL,
@@ -39,8 +36,8 @@ class CreateReportService {
             }
             const report = await prismaClient.report.create({
                 data: {
-                    user: {
-                        connect: { id: user.id },
+                    profile: {
+                        connect: { id: profile.id },
                     },
                     address: address,
                     coordinates: coordinates,
@@ -51,12 +48,7 @@ class CreateReportService {
                     hasTrashBins: hasTrashBins,
                 },
                 include: {
-                    user: {
-                        include: {
-                            reports: true,
-                            profile: user.profile ? true : false
-                        }
-                    }
+                    profile: true
                 }
             });
             return report;

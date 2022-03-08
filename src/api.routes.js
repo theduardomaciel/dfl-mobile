@@ -8,8 +8,8 @@ import { DeleteReportController } from "./controllers/DeleteReportController";
 
 import { UpdateUserExperienceController } from "./controllers/UpdateUserExperienceController";
 
-import { ReadUserController } from "./controllers/ReadUserController";
-import { ReadUserReportsController } from "./controllers/GetUserReportsController";
+import { ReadProfileController } from "./controllers/ReadProfileController";
+import { ReadReportsInLocationController } from "./controllers/ReadReportsInLocationController";
 
 import { UploadImageController, DeleteImageController } from "./controllers/api_calls/ImageController"
 
@@ -21,12 +21,12 @@ router.post("/authenticate", new AuthenticateUserController().handle);
 
 router.post("/report/create", ensureAuthenticated, new CreateReportController().handle)
 router.post("/report/delete", ensureAuthenticated, new DeleteReportController().handle)
+router.post("/report/location", ensureAuthenticated, new ReadReportsInLocationController().handle)
 
 router.post("/profile/update", new UpdateProfileController().handle);
 router.post("/profile/update/experience", new UpdateUserExperienceController().handle);
 
-router.post("/user", new ReadUserController().handle);
-router.post("/user/reports", new ReadUserReportsController().handle)
+router.post("/user", new ReadProfileController().handle);
 
 router.post("/upload", ensureAuthenticated, new UploadImageController().handle);
 router.post("/delete", ensureAuthenticated, new DeleteImageController().handle);

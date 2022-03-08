@@ -14,43 +14,10 @@ type Props = {
     isVisible: any;
     closeFunction: () => void;
     reportComments: Array<{}>;
-    user: any;
-    report: any;
 }
 
-export function CommentsModal({ isVisible, closeFunction, reportComments, user, report }: Props) {
+export function CommentsModal({ isVisible, closeFunction, reportComments }: Props) {
     const commentsAmount = reportComments.length;
-
-    const FAKE_DATA = [
-        {
-            id: 0,
-            content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec mollis dictum suscipit. Mauris ac mollis urna. Vestibulum leo nunc, volutpat vel dignissim vel, varius eu ipsum. Vivamus vitae lorem in turpis feugiat rhoncus.",
-            profile: user.profile,
-            report: report,
-            createdAt: "December 17, 1995 03:24:00"
-        },
-        {
-            id: 1,
-            content: "sdaodsijaodajsiadoaisj aspdk apokd spa dka opask pdpaok dsa ad",
-            profile: user.profile,
-            report: report,
-            createdAt: "January 22, 2022 03:24:00"
-        },
-        {
-            id: 2,
-            content: "que legal!",
-            profile: user.profile,
-            report: report,
-            createdAt: "March 05, 2022 16:24:00"
-        },
-        {
-            id: 3,
-            content: "que legal!",
-            profile: user.profile,
-            report: report,
-            createdAt: "March 05, 2022 16:24:00"
-        }
-    ]
 
     const actualDate = new Date();
     const renderComment = ({ item, index }) => {
@@ -137,7 +104,7 @@ export function CommentsModal({ isVisible, closeFunction, reportComments, user, 
                 }} />
                 <Text style={styles.title}>{`${commentsAmount} comentários`}</Text>
                 <FlatList
-                    data={FAKE_DATA}
+                    data={reportComments}
                     renderItem={renderComment}
                     keyExtractor={item => item.id}
                     ListEmptyComponent={EmptyItem}

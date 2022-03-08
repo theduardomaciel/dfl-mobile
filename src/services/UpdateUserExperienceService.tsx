@@ -1,7 +1,7 @@
-import { Profile, User } from "../@types/application";
+import { Profile, Report, User } from "../@types/application";
 import prismaClient from "../prisma"
 import { NODE_LEVELS_DATA } from "../utils/data/levels_node";
-import { ReadUserService } from "./ReadUserService";
+import { ReadProfileService } from "./ReadProfileService";
 
 function CheckUserLevelAndExperience(userProfile: Profile) {
     console.log(userProfile)
@@ -44,12 +44,12 @@ function CheckUserLevelAndExperience(userProfile: Profile) {
 class UpdateUserExperienceService {
     async execute(user_id: number) {
         try {
-            const service = new ReadUserService();
-            const user = await service.execute(user_id)
-            const { USER_LEVEL, USER_EXPERIENCE } = CheckUserLevelAndExperience(user.profile);
+            const service = new ReadProfileService();
+            const profile = await service.execute(user_id)
+            const { USER_LEVEL, USER_EXPERIENCE } = CheckUserLevelAndExperience(profile as any);
             await prismaClient.profile.update({
                 where: {
-                    id: user.id,
+                    id: profile.id,
                 },
                 data: {
                     level: USER_LEVEL,

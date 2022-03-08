@@ -5,18 +5,20 @@ class UpdateProfileService {
         try {
             const response = await prismaClient.profile.update({
                 where: {
-                    user_id: user_id
+                    id: user_id
                 },
                 data: {
-
                     username: username,
                     defaultCity: defaultCity,
                 },
                 include: {
                     user: {
                         include: {
-                            reports: true,
-                            profile: true
+                            profile: {
+                                include: {
+                                    reports: true
+                                }
+                            }
                         }
                     }
                 }
@@ -24,6 +26,8 @@ class UpdateProfileService {
             if (response) {
                 console.log(`Perfil do usuário ${response.user.first_name} de id: ${response.user.id} foi criado!`);
                 return response;
+            } else {
+                console.log("Ocorreu algo de errado ao atualizar o perfil.")
             }
         } catch (error) {
             console.log(error);

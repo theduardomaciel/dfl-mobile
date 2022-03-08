@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Animated, Pressable } from 'react-native'
+import { View, Animated, Pressable, Easing } from 'react-native'
 
 import { MenuButton } from '../MenuButton';
 import { styles } from './styles'
@@ -15,9 +15,10 @@ const reportsButtonDriver = new Animated.Value(0)
 const homeButtonDriver = new Animated.Value(1)
 const accountButtonDriver = new Animated.Value(0)
 
-const backgroundDriver = new Animated.Value(0)
+const backgroundPositionDriver = new Animated.Value(0)
 const backgroundOpacityDriver = new Animated.Value(0)
-export const buttonDrivers = [communityButtonDriver, reportsButtonDriver, null, homeButtonDriver, accountButtonDriver, backgroundDriver]
+export const buttonDrivers = [communityButtonDriver, reportsButtonDriver, null, homeButtonDriver, accountButtonDriver]
+export const backgroundDrivers = [backgroundPositionDriver, backgroundOpacityDriver]
 
 const BottomTab = ({ title, index }) => {
     const icon = index == 0 ? 'home' : 'heart';
@@ -27,29 +28,34 @@ const BottomTab = ({ title, index }) => {
     )
 }
 
-export const TAB_BAR_HEIGHT_LONG = 200
+export const TAB_BAR_HEIGHT_LONG = 150
 export const TAB_BAR_HEIGHT = 65
 
 export function TabBar({ state, descriptors, navigation }) {
     // Adicionamos um listener no estado do TabBar para saber quando a animação de abrir o menu está acabando
-    buttonDrivers[5].addListener((value) => {
+    backgroundPositionDriver.addListener((value) => {
         if (value.value === 1) {
             // Caso a animação de movimento tenha terminado, o background animado deve ser ocultado
-            backgroundOpacityDriver.setValue(1)
+            Animated.timing(backgroundOpacityDriver, {
+                toValue: 0,
+                duration: 500,
+                easing: Easing.linear,
+                useNativeDriver: true
+            }).start()
         } else {
-            backgroundOpacityDriver.setValue(0)
+            backgroundOpacityDriver.setValue(1)
         }
     })
     return (
-        <View>
+        <>
             <Animated.View style={[styles.bottomBar, {
-                width: "100%", height: TAB_BAR_HEIGHT_LONG, position: "absolute", bottom: -175, zIndex: 0,
+                width: "100%", height: TAB_BAR_HEIGHT_LONG, position: "absolute", bottom: -135, zIndex: 0,
                 opacity: backgroundOpacityDriver.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [1, 0]
+                    outputRange: [0, 1]
                 }),
                 transform: [{
-                    translateY: buttonDrivers[5].interpolate({
+                    translateY: backgroundPositionDriver.interpolate({
                         inputRange: [0, 1],
                         outputRange: [0, -175]
                     })
@@ -58,11 +64,11 @@ export function TabBar({ state, descriptors, navigation }) {
             <Animated.View style={[styles.bottomBar, {
                 borderTopLeftRadius: backgroundOpacityDriver.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [15, 0]
+                    outputRange: [0, 15]
                 }),
                 borderTopRightRadius: backgroundOpacityDriver.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [15, 0]
+                    outputRange: [0, 15]
                 }),
             }]}>
                 {state.routes.map((route, index) => {
@@ -114,6 +120,6 @@ export function TabBar({ state, descriptors, navigation }) {
                     )
                 })}
             </Animated.View>
-        </View>
+        </>
     )
 }

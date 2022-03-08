@@ -10,7 +10,7 @@ import { menuAnimations } from '../global/animations/menuAnimations';
 import { FadeInView } from '../global/animations/fadeInView'
 
 import { theme } from '../global/styles/theme'
-import { buttonDrivers, TabBar } from '../components/TabBar'
+import { backgroundDrivers, buttonDrivers, TabBar } from '../components/TabBar'
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 const Tab = createBottomTabNavigator();
@@ -47,7 +47,7 @@ const FadeAccountScreen = (props) => (
                         downTrashbin(buttonDrivers[lastIndex]);
 
                         if (lastIndex === 1) {
-                            downTrashbin(buttonDrivers[5]);
+                            downTrashbin(backgroundDrivers[0]);
                         }
                         lastIndex = 4;
                     }
@@ -69,13 +69,8 @@ export function MainScreen() {
             screenOptions={{
                 headerShown: false,
                 headerTransparent: true,
-                tabBarStyle: {
-                    backgroundColor: theme.colors.primary1,
-                    borderTopColor: theme.colors.primary1,
-                    borderTopLeftRadius: 15,
-                    borderTopRightRadius: 15,
-                    height: 55,
-                },
+                tabBarHideOnKeyboard: true,
+                tabBarStyle: { backgroundColor: "green" }
             }}
         >
             <Tab.Screen
@@ -89,7 +84,7 @@ export function MainScreen() {
                             downTrashbin(buttonDrivers[lastIndex]);
 
                             if (lastIndex === 1) {
-                                downTrashbin(buttonDrivers[5]);
+                                downTrashbin(backgroundDrivers[0]);
                             }
                             lastIndex = 0;
                         }
@@ -107,7 +102,7 @@ export function MainScreen() {
                             downTrashbin(buttonDrivers[lastIndex]);
 
                             // Subimos a barra inferior para cima na tela de relatórios
-                            riseTrashbin(buttonDrivers[5]);
+                            riseTrashbin(backgroundDrivers[0]);
                             lastIndex = 1;
                         }
                     }
@@ -134,7 +129,7 @@ export function MainScreen() {
                             downTrashbin(buttonDrivers[lastIndex]);
 
                             if (lastIndex === 1) {
-                                downTrashbin(buttonDrivers[5]);
+                                downTrashbin(backgroundDrivers[0]);
                             }
                             lastIndex = 3;
                         }

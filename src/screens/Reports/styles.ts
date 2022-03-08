@@ -33,9 +33,9 @@ export const styles = StyleSheet.create({
         borderTopLeftRadius: 15,
         borderTopRightRadius: 15,
         width: "100%",
-        height: TAB_BAR_HEIGHT_LONG + 110,
+        height: TAB_BAR_HEIGHT_LONG,
         position: "absolute",
-        bottom: -175,
+        bottom: -135 + 175,
         zIndex: 0,
         paddingHorizontal: 20,
         paddingVertical: 10

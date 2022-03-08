@@ -76,8 +76,9 @@ export function Home({ route, navigation }) {
         HasPermission();
     }, []);
 
-    const userReportsAmount = user.reports ? user.reports.length : 0
-    const userReportsSolvedAmount = user.reports ? [...user.reports].filter(report => report.resolved === true).length : 0
+    const userReports = user.profile.reports
+    const userReportsAmount = userReports.length
+    const userReportsSolvedAmount = [...userReports].filter(report => report.resolved === true).length
 
     const [isRefreshing, setIsRefreshing] = useState(false)
     const onRefresh = async () => {
@@ -208,18 +209,7 @@ export function Home({ route, navigation }) {
                                 }
                             }}
                         >
-                            {
-                                markers ?
-                                    markers.map((marker, index) => (
-                                        <Marker
-                                            key={index}
-                                            coordinate={marker.coordinates}
-                                            title={marker.title}
-                                            description={marker.description}
-                                        />
-                                    ))
-                                    : null
-                            }
+
                         </MapView>
                     </View>
                 </View>

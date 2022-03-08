@@ -12,7 +12,7 @@ import { TextButton } from '../TextButton'
 import { styles } from './styles'
 import { theme } from "../../global/styles/theme";
 
-import { api } from "../../services/api";
+import { api } from "../../utils/api";
 import { useAuth } from '../../hooks/useAuth'
 import { Profile, User } from '../../@types/application'
 
@@ -46,7 +46,7 @@ export function ProfileModal({ toggleModal, isSecond, secondToggleModal, ...rest
         console.log("Nome de Usuário: ", username)
         console.log("Cidade: ", defaultCity)
         try {
-            const profileResponse = await api.post("/profile/create", { user_id: user.id, username: username, defaultCity: defaultCity })
+            const profileResponse = await api.post("/profile/update", { user_id: user.id, username: username, defaultCity: defaultCity })
             setTimeout(() => {
                 // O servidor não conseguiu responder a tempo/está desconectado | usuário está sem internet
                 return "error"

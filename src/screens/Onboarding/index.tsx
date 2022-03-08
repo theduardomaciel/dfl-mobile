@@ -14,10 +14,13 @@ import { Paginator } from "../../components/Paginator";
 import { useAuth } from "../../hooks/useAuth"
 import { ModalBase } from "../../components/ModalBase";
 import { LoadingScreen } from "../../components/LoadingScreen";
+import { TextButton } from "../../components/TextButton";
 
 type PropTypes = {
     viewableItems: Array<ViewToken>;
 }
+
+import Google_G_Logo from "../../assets/Google__G__Logo.svg"
 
 export function Onboarding() {
     const { signIn, isSigningIn } = useAuth();
@@ -76,8 +79,22 @@ export function Onboarding() {
 
             <View style={styles.footer}>
                 <Paginator data={onboarding_screens} scrollX={scrollX} scrollTo={scrollTo} />
-                <GoogleSigninButton
-                    style={{ height: 60 }}
+                <TextButton
+                    title="Continuar com Google"
+                    icon={<Google_G_Logo width={24} height={24} />}
+                    iconStyle={{ marginRight: 24, }}
+                    textStyle={{ color: "#444", fontSize: 16 }}
+                    buttonStyle={{ paddingLeft: 16, paddingRight: 16, height: 50, backgroundColor: "#FFFFFF" }}
+                    shadowType={theme.shadowPropertiesVeryLow}
+                    onPress={async () => {
+                        const errorMessage = await signIn()
+                        if (errorMessage !== "cancelled" as any) {
+                            setModalVisible(true)
+                        }
+                    }}
+                    isLoading={isSigningIn}
+                />
+                {/* <GoogleSigninButton
                     size={GoogleSigninButton.Size.Wide}
                     color={GoogleSigninButton.Color.Light}
                     onPress={async () => {
@@ -87,11 +104,11 @@ export function Onboarding() {
                         }
                     }}
                     disabled={isSigningIn}
-                />
+                /> */}
             </View>
-            {
+            {/* {
                 isSigningIn ? <LoadingScreen /> : null
-            }
+            } */}
         </View>
     );
 }

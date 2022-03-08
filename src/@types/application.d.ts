@@ -1,11 +1,12 @@
 export type User = {
-    id: number;
+    id: string;
     google_id: string;
+    birthday: string;
+    gender: string;
     first_name: string;
     last_name: string;
     email: string;
     profile: Profile;
-    reports: Array<Report>;
     createdAt: string;
 }
 
@@ -15,9 +16,11 @@ export type Profile = {
     defaultCity: string;
     level: number;
     experience: number;
+    reports?: Array<Report>;
 }
 
 export type Report = {
+    profile: Profile,
     id: number,
     createdAt: string,
     address: string,
@@ -30,7 +33,7 @@ export type Report = {
 
     ratings: Array<number>,
     resolved: boolean,
-    comments: Comment
+    comments: Array<Comment>,
 }
 
 export type Comment = {

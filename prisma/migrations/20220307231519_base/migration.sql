@@ -1,10 +1,12 @@
 -- CreateTable
 CREATE TABLE "users" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "google_id" TEXT NOT NULL,
     "first_name" TEXT NOT NULL,
     "last_name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
+    "birthday" TIMESTAMP(3),
+    "gender" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
@@ -13,12 +15,12 @@ CREATE TABLE "users" (
 -- CreateTable
 CREATE TABLE "Profile" (
     "id" SERIAL NOT NULL,
-    "username" TEXT NOT NULL,
+    "username" TEXT,
     "image_url" TEXT NOT NULL,
-    "defaultCity" TEXT NOT NULL,
+    "defaultCity" TEXT,
     "level" INTEGER NOT NULL DEFAULT 0,
     "experience" DOUBLE PRECISION NOT NULL DEFAULT 0,
-    "user_id" INTEGER NOT NULL,
+    "user_id" TEXT NOT NULL,
 
     CONSTRAINT "Profile_pkey" PRIMARY KEY ("id")
 );
@@ -36,7 +38,7 @@ CREATE TABLE "reports" (
     "hasTrashBins" BOOLEAN NOT NULL DEFAULT true,
     "ratings" DOUBLE PRECISION[],
     "resolved" BOOLEAN NOT NULL DEFAULT false,
-    "user_id" INTEGER NOT NULL,
+    "profile_id" INTEGER NOT NULL,
 
     CONSTRAINT "reports_pkey" PRIMARY KEY ("id")
 );
@@ -66,10 +68,10 @@ CREATE UNIQUE INDEX "Profile_username_key" ON "Profile"("username");
 CREATE UNIQUE INDEX "Profile_user_id_key" ON "Profile"("user_id");
 
 -- AddForeignKey
-ALTER TABLE "Profile" ADD CONSTRAINT "Profile_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE SET DEFAULT ON UPDATE CASCADE;
+ALTER TABLE "Profile" ADD CONSTRAINT "Profile_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "reports" ADD CONSTRAINT "reports_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "reports" ADD CONSTRAINT "reports_profile_id_fkey" FOREIGN KEY ("profile_id") REFERENCES "Profile"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Comment" ADD CONSTRAINT "Comment_profileUsername_fkey" FOREIGN KEY ("profileUsername") REFERENCES "Profile"("username") ON DELETE RESTRICT ON UPDATE CASCADE;

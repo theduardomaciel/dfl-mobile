@@ -12,14 +12,15 @@ datasource db {
 }
 
 model User {
-    id         Int      @id @unique @default(autoincrement())
+    id         String    @id @unique @default(uuid())
     google_id  String
     first_name String
     last_name  String
-    email      String   @unique
+    email      String    @unique
+    birthday   DateTime?
+    gender     String?
     profile    Profile?
-    createdAt  DateTime @default(now())
-    reports    Report[]
+    createdAt  DateTime  @default(now())
 
     @@map("users")
 }
@@ -32,8 +33,11 @@ model Profile {
     level       Int       @default(0)
     experience  Float     @default(0)
     comments    Comment[]
-    user        User      @relation(fields: [user_id], references: [id], onDelete: SetDefault)
-    user_id     Int       @unique
+
+    reports Report[]
+
+    user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+    user_id String @unique
 }
 
 model Report {
@@ -50,8 +54,8 @@ model Report {
     ratings  Float[]
     resolved Boolean @default(false)
 
-    user    User @relation(fields: [user_id], references: [id], onDelete: SetNull)
-    user_id Int
+    profile    Profile? @relation(fields: [profile_id], references: [id], onDelete: SetNull)
+    profile_id Int?
 
     comments Comment[]
     @@map("reports")
@@ -63,11 +67,12 @@ model Comment {
     createdAt   DateTime  @default(now())
     subComments Comment[] @relation("CommentToComment")
 
-    profile         Profile @relation(fields: [profileUsername], references: [username])
+    profile         Profile @relation(fields: [profileUsername], references: [username], onDelete: Cascade)
     profileUsername String
 
-    Report    Report   @relation(fields: [reportId], references: [id])
-    reportId  Int
-    Comment   Comment? @relation("CommentToComment", fields: [commentId], references: [id])
+    Report   Report @relation(fields: [reportId], references: [id], onDelete: Cascade)
+    reportId Int
+
+    Comment   Comment? @relation("CommentToComment", fields: [commentId], references: [id], onDelete: Cascade)
     commentId Int?
 }

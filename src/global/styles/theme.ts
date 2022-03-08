@@ -60,4 +60,14 @@ export const theme = {
         shadowRadius: 4,
         elevation: 8,
     },
+    shadowPropertiesVeryLow: {
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 1,
+            height: 1,
+        },
+        shadowOpacity: 0.05,
+        shadowRadius: 2.5,
+        elevation: 2.5,
+    },
 };

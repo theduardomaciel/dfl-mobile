@@ -60,8 +60,11 @@ class AuthenticateUserService {
                 email: email
             },
             include: {
-                profile: true,
-                reports: true
+                profile: {
+                    include: {
+                        reports: true
+                    }
+                },
             }
         })
 
@@ -75,6 +78,9 @@ class AuthenticateUserService {
                     profile: {
                         create: {
                             image_url: photo,
+                            reports: {
+                                create: []
+                            }
                         }
                     }
                 },
@@ -91,6 +97,7 @@ class AuthenticateUserService {
             },
         }, process.env.JWT_SECRET, { subject: user.google_id, expiresIn: "1d", audience: "mobile-app" });
 
+        console.log(user, "🙋 Usuário logado ou criado com sucesso!")
         return { token, user };
     }
 }
