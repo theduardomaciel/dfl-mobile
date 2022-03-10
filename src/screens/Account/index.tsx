@@ -345,7 +345,7 @@ export function Account({ route, navigation }) {
                     </View>
                 </View>
 
-                <View style={{ height: 50 }} />
+                <View style={{ height: 100 }} />
             </ScrollView>
         </ImageBackground>
     );

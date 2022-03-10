@@ -3,7 +3,7 @@ import prismaClient from "../prisma"
 class UpdateProfileService {
     async execute(profile_id: number, username: string, defaultCity: string) {
         try {
-            const response = await prismaClient.profile.update({
+            const profile = await prismaClient.profile.update({
                 where: {
                     id: profile_id
                 },
@@ -15,9 +15,9 @@ class UpdateProfileService {
                     reports: true
                 }
             });
-            if (response) {
+            if (profile) {
                 console.log(`🙋 Perfil do usuário atualizado com sucesso!`);
-                return response;
+                return profile;
             } else {
                 console.log("❌ Ocorreu um erro ao tentar ao atualizar o perfil.")
             }

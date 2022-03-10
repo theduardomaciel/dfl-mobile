@@ -60,17 +60,17 @@ export function ReportScreen3({ route, navigation }: any) {
 
     const [isLoading, setIsLoading] = useState(false)
 
+    const errorMessage = `Infelizmente não foi cadastrar seu relatório :(\nPor favor, tente novamente mais tarde.`
+
     const [gainedExperience, setGainedExperience] = useState(25 || null)
     async function SubmitReport(data: Report) {
         console.log("Iniciando processo de upload do relatório.")
         try {
             setIsLoading(true)
             const { deletehash, link } = await UploadImage()
-            console.log(deletehash, link)
             if (!link) {
-                console.log("Não foi possível realizar o upload da imagem do relatório. Uma possível causa é a ausência de token de autenticação. Retornando...")
-                navigation.navigate("Início", { errorMessage: "Não foi possível realizar o upload da imagem do relatório. Por favor, tente novamente." })
-                return "error"
+                console.log(errorMessage)
+                return navigation.navigate("Início", { errorMessage: errorMessage })
             }
             const submitResponse = await api.post("/report/create", {
                 profile_id: user.profile.id,
@@ -95,10 +95,10 @@ export function ReportScreen3({ route, navigation }: any) {
             }
             await updateUser(updatedProfile, "profile");
             setIsLoading(false)
+            return "correct"
         } catch (error) {
             console.log(error)
-            navigation.navigate("Início", { errorMessage: "Não foi possível cadastrar seu relatório. Tente novamente mais tarde :(" })
-            return "error"
+            return navigation.navigate("Início", { errorMessage: errorMessage })
         }
     }
 
@@ -165,9 +165,9 @@ export function ReportScreen3({ route, navigation }: any) {
                         data.hasTrashBins = hasTrashbin
                         data.suggestion = suggestion
                         const response = await SubmitReport(data);
-                        /* if (response !== "error") {
+                        if (response === "correct") {
                             setModalOpen(true)
-                        } */
+                        }
                     }}
                 />
                 {

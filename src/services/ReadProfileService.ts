@@ -1,18 +1,17 @@
 import prismaClient from "../prisma";
 
 class ReadProfileService {
-    async execute(user_id) {
-        console.log(user_id)
+    async execute(profile_id) {
         try {
-            const user = await prismaClient.profile.findUnique({
+            const profile = await prismaClient.profile.findUnique({
                 where: {
-                    id: user_id,
+                    id: profile_id,
                 },
                 include: {
                     reports: true
                 }
             })
-            return user;
+            return profile;
         } catch (error) {
             console.log(error)
         }

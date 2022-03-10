@@ -54,8 +54,7 @@ export function Community() {
     const [markers, setMarkers] = useState([])
     useEffect(() => {
         function CheckIfProfileIsCreated() {
-            console.log(user.profile.defaultCity, user.profile.username)
-            if (user.profile.defaultCity || user.profile.username === null) {
+            if (user.profile.defaultCity === null) {
                 console.log("Usuário não possui perfil. Exibindo modal para criação.")
                 setFirstModalVisible(true)
             }
@@ -117,7 +116,7 @@ export function Community() {
                     Comunidade
                 </Text>
             </View>
-            <ScrollView style={{ width: "100%" }} contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false} >
+            <ScrollView style={{ width: "100%", flex: 1 }} contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false} >
                 <SectionTitle title="Sua Cidade" info="212 usuários" />
                 <View style={styles.mapView}>
                     <MapView
@@ -202,7 +201,7 @@ export function Community() {
                                 </View>
                                 <Image style={{ width: "35%", borderTopRightRadius: 15, borderBottomRightRadius: 15, height: "100%" }} source={{ uri: CITY_DATA.contact.image }} />
                             </View>
-                            <View style={{ height: 50 }} />
+                            <View style={{ height: 100 }} />
                         </>
                         : null
                 }

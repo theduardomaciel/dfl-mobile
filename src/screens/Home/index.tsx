@@ -14,6 +14,7 @@ import { styles } from "./styles";
 import { useAuth } from "../../hooks/useAuth";
 import { ListMarkersOnMap } from "../../utils/functions/ListMarkersOnMap";
 import { ModalBase } from "../../components/ModalBase";
+import { LEVELS_DATA } from "../../utils/data/levels";
 
 function GetGreeting() {
     const hour = new Date().getHours();
@@ -41,11 +42,16 @@ const initialRegion = {
 }
 
 export function Home({ route, navigation }) {
+
     const errorMessage = route.params?.errorMessage;
     const [errorModalVisible, setErrorModalVisible] = useState(false);
-    console.log(errorModalVisible)
+
+    useEffect(() => {
+        setErrorModalVisible(typeof errorMessage === "string" ? true : false)
+    }, [errorMessage])
 
     const { user, creatingAccount, updateUser } = useAuth();
+
     if (user === null) return (
         <View style={{ flex: 1 }} />
     );
@@ -55,7 +61,6 @@ export function Home({ route, navigation }) {
 
     const [markers, setMarkers] = useState([]);
     useEffect(() => {
-        setErrorModalVisible(typeof errorMessage === "string" ? true : false)
         setMarkers(ListMarkersOnMap(user, "district"))
         async function HasPermission() {
             let permissionToCheck;
@@ -141,10 +146,10 @@ export function Home({ route, navigation }) {
                             Nível Atual:
                         </Text>
                         <Text style={styles.info}>
-                            Relator Experiente
+                            {LEVELS_DATA[user.profile.level].title}
                         </Text>
                     </View>
-                    <Image source={require("../../assets/level_placeholder.png")} />
+                    <Image source={LEVELS_DATA[user.profile.level].icon} />
                 </Pressable>
 
                 {/* Seu engajamento */}
@@ -209,7 +214,6 @@ export function Home({ route, navigation }) {
                                 }
                             }}
                         >
-
                         </MapView>
                     </View>
                 </View>
@@ -218,10 +222,10 @@ export function Home({ route, navigation }) {
                     description={errorMessage}
                     isVisible={errorModalVisible}
                     backButton={true}
-                    toggleModal={() => setErrorModalVisible(false)}
+                    toggleModal={() => setErrorModalVisible(!errorModalVisible)}
                     onBackdropPress={() => setErrorModalVisible(false)}
                 />
-                <View style={{ height: 25 }} />
+                <View style={{ height: 100 }} />
             </ScrollView>
         </ImageBackground>
     );

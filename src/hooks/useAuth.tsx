@@ -123,13 +123,18 @@ function AuthProvider({ children }: AuthProviderProps) {
             console.log("Objeto do usuário atualizado não definido, atualizando via rede...")
             const readResponse = await api.post("/user", { user_id: user.id })
             updatedUser = readResponse.data as User;
+        } else if (user && updatedElementKey) {
+            let userCopy = Object.assign(user)
+            userCopy[updatedElementKey] = updatedObject
+            updatedUser = userCopy
         }
-        if (user && updatedElementKey) {
-            updatedUser = user[updatedElementKey] = updatedObject
+        if (updateUser !== null) {
+            await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(updatedUser));
+            setUser(updatedUser);
+            console.log("Objeto do usuário atualizado com sucesso!")
+        } else {
+            console.log("Erro ao atualizar objeto do usuário.")
         }
-        await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(updatedUser));
-        setUser(updatedUser);
-        console.log("Objeto do usuário atualizado com sucesso!")
     }
 
     useEffect(() => {

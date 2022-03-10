@@ -51,10 +51,10 @@ export function Reports({ route, navigation }) {
         setIsLoadingNewData(false)
     }
 
-    const renderFooter = () => {
+    const renderFooter = ({ item, index }) => {
         return (
             isLoadingNewData ?
-                <View style={{ marginTop: 20 }}>
+                <View key={index} style={{ marginTop: 20 }}>
                     <ActivityIndicator size={"large"} color={theme.colors.text1} />
                 </View>
                 : null
@@ -63,26 +63,21 @@ export function Reports({ route, navigation }) {
 
     const [isTabBarVisible, setTabBarVisible] = useState(false)
     useEffect(() => {
-
-        backgroundDrivers[0].addListener((value) => {
-            if (value.value === 1) {
-                setTabBarVisible(true)
-            } else {
-                setTabBarVisible(false)
-            }
-        })
-
-        // Obtendo dados de relatórios da cidade do usuário
-        loadMoreReports()
-        // Animando a barra inferior
-
-
         const unsubscribe = navigation.addListener('focus', () => {
+            backgroundDrivers[0].addListener((value) => {
+                if (value.value === 1) {
+                    setTabBarVisible(true)
+                } else {
+                    setTabBarVisible(false)
+                }
+            })
+            // Obtendo dados de relatórios da cidade do usuário
+            loadMoreReports()
+            // Animando a barra inferior
             setTabBarVisible(false)
         });
-
         return unsubscribe;
-    }, [navigation])
+    }, [])
 
     const [rating, setRating] = useState(1)
     const [currentIndex, setCurrentIndex] = useState(0)
@@ -99,8 +94,10 @@ export function Reports({ route, navigation }) {
 
     const renderItem = ({ item, index }) => {
         const dimensions = Dimensions.get("window")
+        console.log(index)
         return (
             <Image
+                key={index}
                 source={{ uri: item.image_url }}
                 style={{
                     flex: 1,
@@ -191,7 +188,7 @@ export function Reports({ route, navigation }) {
         }
     }
 
-    console.log(data, data.length)
+    let lastId = 0
 
     const [isCommentsModalVisible, setCommentsModalVisible] = useState(false)
     return (
@@ -201,8 +198,15 @@ export function Reports({ route, navigation }) {
                 pagingEnabled
                 data={data}
                 renderItem={renderItem}
-                keyExtractor={item => item.id}
                 scrollEventThrottle={50}
+                keyExtractor={item => {
+                    if (item.id !== lastId) {
+                        lastId = item.id
+                        return item.id
+                    } else {
+                        return lastId + 1
+                    }
+                }}
                 viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
                 viewabilityConfig={viewabilityConfig}
                 ref={flatListRef}
