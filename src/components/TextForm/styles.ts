@@ -18,7 +18,7 @@ export const styles = StyleSheet.create({
     icon: {
         zIndex: 5,
         position: "absolute",
-        bottom: 6,
+        top: "25%",
         left: 5,
         elevation: 10 ** 10,
     },

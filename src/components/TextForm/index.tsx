@@ -48,7 +48,7 @@ export function TextForm({ title, icon, titleStyle, customStyle, textInputProps,
                             {icon}
                         </TouchableOpacity>
                         :
-                        <View style={styles.icon}>
+                        <View style={[styles.icon, onIconPress ? { right: 25 } : { left: 5 }]}>
                             {icon}
                         </View>
                 }

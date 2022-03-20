@@ -111,7 +111,7 @@ export function CommentsModal({ isVisible, closeFunction, reportComments }: Prop
                     showsVerticalScrollIndicator={false}
                 />
                 <TextForm
-                    customStyle={{ height: 30, width: "90%", marginTop: 15, marginBottom: 25 }}
+                    customStyle={{ height: 35, width: "90%", marginTop: 15, marginBottom: 25 }}
                     textInputProps={{
                         placeholder: "Deixe um comentário",
                         maxLength: 150

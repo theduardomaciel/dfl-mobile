@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { View, StatusBar, Text, FlatList, Dimensions, Image, ViewToken, Pressable, ActivityIndicator } from "react-native";
+import { View, StatusBar, Text, FlatList, Dimensions, Image, ViewToken, Pressable, ActivityIndicator, ToastAndroid } from "react-native";
 import { TextForm } from "../../components/TextForm";
 
 import { theme } from "../../global/styles/theme";
@@ -110,7 +110,8 @@ export function Reports({ route, navigation }) {
 
     const renderItem = ({ item, index }) => {
         return (
-            <View style={{ backgroundColor: index % 2 == 0 ? "blue" : "green", height: IMAGE_HEIGHT }}>
+            <View style={{ height: IMAGE_HEIGHT }}>
+                {/* backgroundColor: index % 2 == 0 ? "blue" : "green", */}
                 <Image style={{ flex: 1, resizeMode: "cover" }} source={{ uri: item.image_url }} />
             </View>
         )
@@ -197,6 +198,10 @@ export function Reports({ route, navigation }) {
         }
     }
 
+    const showToast = () => {
+        ToastAndroid.show("Não há mais relatórios para carregar!", ToastAndroid.SHORT);
+    };
+
     const [isCommentsModalVisible, setCommentsModalVisible] = useState(false)
     return (
         <View style={styles.container}>
@@ -215,9 +220,8 @@ export function Reports({ route, navigation }) {
                     viewabilityConfig={viewabilityConfig}
                     ref={flatListRef}
                     ListFooterComponent={renderFooter}
-                /* onEndReached={loadMoreReports}
-                onEndReachedThreshold={0}
-                 */
+                    onEndReached={() => { showToast() }}
+                    onEndReachedThreshold={0}
                 />
             </View>
 
