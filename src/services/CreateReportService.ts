@@ -15,29 +15,10 @@ class CreateReportService {
         hasTrashBins: boolean
     ) {
         try {
-            const profile = await prismaClient.profile.findUnique({
-                where: {
-                    id: profile_id,
-                },
-            })
-            // Adicionando XP ao perfil do usuário, e o subindo de nível caso haja experiência suficiente
-            if (profile) {
-                const { USER_LEVEL, USER_EXPERIENCE } = CheckUserLevelAndExperience(profile)
-                console.log("USER LEVEL AND EXPERIENCE: ", USER_LEVEL, USER_EXPERIENCE)
-                await prismaClient.profile.update({
-                    where: {
-                        id: profile.id
-                    },
-                    data: {
-                        level: USER_LEVEL,
-                        experience: USER_EXPERIENCE
-                    }
-                })
-            }
             const report = await prismaClient.report.create({
                 data: {
                     profile: {
-                        connect: { id: profile.id },
+                        connect: { id: profile_id },
                     },
                     address: address,
                     coordinates: coordinates,
@@ -47,11 +28,29 @@ class CreateReportService {
                     suggestion: suggestion,
                     hasTrashBins: hasTrashBins,
                 },
-                include: {
-                    profile: true
-                }
             });
-            return report;
+            const profile = await prismaClient.profile.findUnique({
+                where: {
+                    id: profile_id,
+                },
+            })
+            // Adicionando XP ao perfil do usuário, e o subindo de nível caso haja experiência suficiente
+            const { USER_LEVEL, USER_EXPERIENCE } = CheckUserLevelAndExperience(profile)
+            console.log("NEW LEVEL:", USER_LEVEL, "NEW EXPERIENCE: ", USER_EXPERIENCE)
+            const updatedProfile = await prismaClient.profile.update({
+                where: {
+                    id: profile_id
+                },
+                data: {
+                    level: USER_LEVEL,
+                    experience: USER_EXPERIENCE
+                },
+                include: {
+                    reports: true
+                }
+            })
+            console.log(updatedProfile)
+            return updatedProfile;
         } catch (error) {
             console.log(error)
         }

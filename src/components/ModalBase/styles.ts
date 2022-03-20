@@ -3,7 +3,7 @@ import { theme } from '../../global/styles/theme';
 
 export const styles = StyleSheet.create({
     modal: {
-        justifyContent: "space-evenly",
+        justifyContent: "space-around",
         alignItems: "center",
         height: 250,
         width: 350,
@@ -31,6 +31,7 @@ export const styles = StyleSheet.create({
         color: theme.colors.secondary1,
         fontFamily: theme.fonts.subtitle900,
         textAlign: 'center',
+        width: "90%"
     },
     description: {
         fontSize: 16,
@@ -38,6 +39,7 @@ export const styles = StyleSheet.create({
         color: theme.colors.secondary1,
         textAlign: 'center',
         marginBottom: 10,
-        paddingHorizontal: 10
+        width: "85%",
+
     }
 });

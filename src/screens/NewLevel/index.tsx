@@ -31,7 +31,7 @@ export function NewLevel({ route, navigation }) {
 
     // [0] = animando número para o nível do usuário | 
     // [1] = animando a porcentagem da barra de progresso
-    // [2] = descrescendo a quantidade de xp que o usuário precisa pra subir de nível
+    // [2] = decrescendo a quantidade de xp que o usuário precisa pra subir de nível
 
     const [number0, setNumber0] = useState(USER_LEVEL - 1);
     const [number1, setNumber1] = useState(0)

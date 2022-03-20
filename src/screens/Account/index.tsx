@@ -119,6 +119,7 @@ export function Account({ route, navigation }) {
     if (user === null) return (
         <View style={{ flex: 1 }} />
     );
+
     const Header = () => {
         return (
             <View style={styles.header}>

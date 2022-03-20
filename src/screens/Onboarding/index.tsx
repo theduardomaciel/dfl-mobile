@@ -1,6 +1,5 @@
 import React, { useRef, useState, useCallback } from "react";
 import { View, FlatList, Animated, ViewToken, Pressable } from "react-native";
-import { GoogleSignin, GoogleSigninButton } from "@react-native-google-signin/google-signin";
 
 import { onboarding_screens } from "../../utils/onboarding";
 import Logo from "../../assets/Logo.svg"
@@ -12,9 +11,11 @@ import { OnboardingItem } from "../../components/OnboardingItem";
 import { Paginator } from "../../components/Paginator";
 
 import { useAuth } from "../../hooks/useAuth"
+
 import { ModalBase } from "../../components/ModalBase";
-import { LoadingScreen } from "../../components/LoadingScreen";
 import { TextButton } from "../../components/TextButton";
+
+import * as Location from 'expo-location';
 
 type PropTypes = {
     viewableItems: Array<ViewToken>;
@@ -44,7 +45,23 @@ export function Onboarding() {
 
     const viewabilityConfigCallbackPairs = useRef([{ viewabilityConfig, onViewableItemsChanged }])
 
-    const [isModalVisible, setModalVisible] = useState(false);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    //const [errorModalInfo, setErrorModalInfo] = useState([])
+    const errorModalInfo = [
+        `Não foi possível autenticar.`,
+        `Nossos servidores devem estar passando por problemas no momento :( \n Tente novamente mais tarde.`
+    ]
+
+    const loginProcess = async () => {
+        const errorMessage = await signIn()
+        if (errorMessage !== "cancelled" as any) {
+            setErrorModalVisible(true)
+            /* setErrorModalInfo([
+                `Não foi possível autenticar.`,
+                `Nossos servidores devem estar passando por problemas no momento :( \n Tente novamente mais tarde.`
+            ]) */
+        }
+    }
 
     return (
         <View style={styles.container}>
@@ -69,12 +86,12 @@ export function Onboarding() {
             </View>
 
             <ModalBase
-                title="Não foi possível autenticar."
-                description={`Nossos servidores devem estar passando por problemas no momento :( \n Tente novamente mais tarde.`}
+                title={errorModalInfo[0]}
+                description={errorModalInfo[1]}
                 backButton
-                isVisible={isModalVisible}
-                onBackdropPress={() => setModalVisible(false)}
-                toggleModal={() => { setModalVisible(false) }}
+                isVisible={errorModalVisible}
+                onBackdropPress={() => setErrorModalVisible(false)}
+                toggleModal={() => { setErrorModalVisible(false) }}
             />
 
             <View style={styles.footer}>
@@ -86,29 +103,10 @@ export function Onboarding() {
                     textStyle={{ color: "#444", fontSize: 16 }}
                     buttonStyle={{ paddingLeft: 16, paddingRight: 16, height: 50, backgroundColor: "#FFFFFF" }}
                     shadowType={theme.shadowPropertiesVeryLow}
-                    onPress={async () => {
-                        const errorMessage = await signIn()
-                        if (errorMessage !== "cancelled" as any) {
-                            setModalVisible(true)
-                        }
-                    }}
+                    onPress={loginProcess}
                     isLoading={isSigningIn}
                 />
-                {/* <GoogleSigninButton
-                    size={GoogleSigninButton.Size.Wide}
-                    color={GoogleSigninButton.Color.Light}
-                    onPress={async () => {
-                        const errorMessage = await signIn()
-                        if (typeof errorMessage === "object") {
-                            setModalVisible(true)
-                        }
-                    }}
-                    disabled={isSigningIn}
-                /> */}
             </View>
-            {/* {
-                isSigningIn ? <LoadingScreen /> : null
-            } */}
         </View>
     );
 }

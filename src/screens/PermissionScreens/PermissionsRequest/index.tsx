@@ -27,7 +27,7 @@ let BUTTONS_TEXTS = ["Permitir acesso à localização", "Permitir acesso à câ
 
 let CameraPermission = false;
 let LocationPermission = false
-export function PermissionsResquest({ navigation }) {
+export function PermissionsRequest({ navigation }) {
     const [currentIndex, setCurrentIndex] = useState(0)
     const scrollX = useRef(new Animated.Value(0)).current;
     const slidesRef = useRef(null);

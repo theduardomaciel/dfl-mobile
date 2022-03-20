@@ -15,6 +15,8 @@ const reportsButtonDriver = new Animated.Value(0)
 const homeButtonDriver = new Animated.Value(1)
 const accountButtonDriver = new Animated.Value(0)
 
+export const TOLERANCE = 15
+
 const backgroundPositionDriver = new Animated.Value(0)
 const backgroundOpacityDriver = new Animated.Value(0)
 export const buttonDrivers = [communityButtonDriver, reportsButtonDriver, null, homeButtonDriver, accountButtonDriver]
@@ -49,7 +51,7 @@ export function TabBar({ state, descriptors, navigation }) {
     return (
         <>
             <Animated.View style={[styles.bottomBar, {
-                width: "100%", height: TAB_BAR_HEIGHT_LONG, position: "absolute", bottom: -135, zIndex: 0,
+                width: "100%", height: TAB_BAR_HEIGHT_LONG, position: "absolute", bottom: -135 + (TOLERANCE / 2), zIndex: 0,
                 opacity: backgroundOpacityDriver.interpolate({
                     inputRange: [0, 1],
                     outputRange: [0, 1]

@@ -16,6 +16,8 @@ import { ListMarkersOnMap } from "../../utils/functions/ListMarkersOnMap";
 import { ModalBase } from "../../components/ModalBase";
 import { LEVELS_DATA } from "../../utils/data/levels";
 
+import * as Location from "expo-location";
+
 function GetGreeting() {
     const hour = new Date().getHours();
     if (hour >= 0 && hour < 12) {
@@ -43,18 +45,14 @@ const initialRegion = {
 
 export function Home({ route, navigation }) {
 
-    const errorMessage = route.params?.errorMessage;
+    const [errorMessage, setErrorMessage] = useState(route.params?.errorMessage);
     const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     useEffect(() => {
         setErrorModalVisible(typeof errorMessage === "string" ? true : false)
     }, [errorMessage])
 
-    const { user, creatingAccount, updateUser } = useAuth();
-
-    if (user === null) return (
-        <View style={{ flex: 1 }} />
-    );
+    const { user, creatingAccount, updateUser, signOut } = useAuth();
 
     let mapReference: any;
     const [alreadyLoaded, setAlreadyLoaded] = useState(false)
@@ -81,10 +79,6 @@ export function Home({ route, navigation }) {
         HasPermission();
     }, []);
 
-    const userReports = user.profile.reports
-    const userReportsAmount = userReports.length
-    const userReportsSolvedAmount = [...userReports].filter(report => report.resolved === true).length
-
     const [isRefreshing, setIsRefreshing] = useState(false)
     const onRefresh = async () => {
         setIsRefreshing(true)
@@ -94,7 +88,7 @@ export function Home({ route, navigation }) {
     }
 
     const [region, setRegion] = useState(initialRegion as RegionType);
-    const [scopeText, setScopeText] = useState("seu bairro")
+    const [scopeText, setScopeText] = useState("em seu bairro")
     const getScopePicked = (scope, newRegion) => {
         switch (scope) {
             case "district":
@@ -109,6 +103,25 @@ export function Home({ route, navigation }) {
         }
         setRegion(newRegion)
     }
+
+    const [isAvailable, setIsAvailable] = useState(true)
+    async function CheckAvailability(coords) {
+        const userLocation = await Location.reverseGeocodeAsync(coords) as any;
+        console.log(userLocation)
+        if (userLocation.city && userLocation.subRegion !== "Maceió") {
+            setIsAvailable(false)
+            setErrorMessage("Por enquanto, o DFL não está disponível em sua localização :(\nAguarde o lançamento oficial do aplicativo para que sua região esteja disponível.")
+            setErrorModalVisible(true)
+        }
+    }
+
+    if (user === null) return (
+        <View style={{ flex: 1 }} />
+    );
+
+    const userReports = user.profile.reports
+    const userReportsAmount = userReports.length
+    const userReportsSolvedAmount = [...userReports].filter(report => report.resolved === true).length
 
     return (
         <ImageBackground source={require("../../assets/background_placeholder.png")} style={styles.container}>
@@ -202,6 +215,7 @@ export function Home({ route, navigation }) {
                             onUserLocationChange={locationChangedResult => {
                                 if (!alreadyLoaded) {
                                     setAlreadyLoaded(true)
+                                    CheckAvailability(locationChangedResult.nativeEvent.coordinate)
                                     const coords = locationChangedResult.nativeEvent.coordinate
                                     const newRegion = {
                                         latitude: coords.latitude,
@@ -222,8 +236,14 @@ export function Home({ route, navigation }) {
                     description={errorMessage}
                     isVisible={errorModalVisible}
                     backButton={true}
-                    toggleModal={() => setErrorModalVisible(!errorModalVisible)}
-                    onBackdropPress={() => setErrorModalVisible(false)}
+                    toggleModal={() => {
+                        if (isAvailable) {
+                            setErrorModalVisible(!errorModalVisible)
+                        } else {
+                            signOut()
+                        }
+                    }}
+                    onBackdropPress={() => { }}
                 />
                 <View style={{ height: 100 }} />
             </ScrollView>

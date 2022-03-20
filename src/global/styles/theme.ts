@@ -15,7 +15,7 @@ export const theme = {
         secondary2: '#346259',
 
         red: '#D1351B',
-        red_light: "#d45353",
+        red_light: "#FF7F7F",
         red_dark: '#AA2B2B',
         yellow: '#F0DE7B',
 

@@ -32,52 +32,65 @@ type PropTypes = {
 export function Reports({ route, navigation }) {
     const { user } = useAuth();
 
+    if (user === null) return (
+        <View style={{ flex: 1 }} />
+    );
+
     const [data, setData] = useState<Array<Report>>([])
     const [isLoadingNewData, setIsLoadingNewData] = useState(false)
 
     async function loadMoreReports() {
         setIsLoadingNewData(true)
         try {
-            const moreReportsResponse = await api.post("/report/location", { location: user.profile.defaultCity ? user.profile.defaultCity.split(",")[0] : "Brasil" })
+            const moreReportsResponse = await api.post("/report/location", {
+                location: user.profile.defaultCity ? user.profile.defaultCity.split(",")[0] : "Brasil",
+                exclusion: data.map(report => report.id),
+                profileToExclude: user.profile.id
+            })
             const moreReports = moreReportsResponse.data as Array<Report>;
             if (data.length > 0) {
                 setData(data.concat(moreReports))
             } else {
                 setData(moreReports)
             }
+            console.log(data.length)
         } catch (error) {
-            console.log("Não foi possível conectar-se ao servidor.")
+            console.log("Não foi possível conectar-se ao servidor.", error)
         }
         setIsLoadingNewData(false)
     }
 
     const renderFooter = ({ item, index }) => {
         return (
-            isLoadingNewData ?
-                <View key={index} style={{ marginTop: 20 }}>
-                    <ActivityIndicator size={"large"} color={theme.colors.text1} />
-                </View>
-                : null
+            <View key={index} style={{ paddingVertical: 10, marginBottom: 5, backgroundColor: "black" }}>
+                <ActivityIndicator size={"large"} color={theme.colors.text1} />
+            </View>
         )
     }
 
     const [isTabBarVisible, setTabBarVisible] = useState(false)
     useEffect(() => {
-        const unsubscribe = navigation.addListener('focus', () => {
-            backgroundDrivers[0].addListener((value) => {
-                if (value.value === 1) {
-                    setTabBarVisible(true)
-                } else {
-                    setTabBarVisible(false)
-                }
-            })
-            // Obtendo dados de relatórios da cidade do usuário
-            loadMoreReports()
-            // Animando a barra inferior
+        backgroundDrivers[0].addListener((value) => {
+            if (value.value === 1) {
+                setTabBarVisible(true)
+            } else {
+                setTabBarVisible(false)
+            }
+        })
+    }, [])
+
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('blur', () => {
+            console.log("Ocultando tab bar")
+            // Removendo a barra inferior da tela quando o usuário muda de tela
             setTabBarVisible(false)
         });
+        if (data.length === 0) {
+            console.log("Carregando dados...")
+            loadMoreReports()
+        }
         return unsubscribe;
-    }, [])
+    }, [navigation])
 
     const [rating, setRating] = useState(1)
     const [currentIndex, setCurrentIndex] = useState(0)
@@ -92,18 +105,14 @@ export function Reports({ route, navigation }) {
     const viewabilityConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
     const viewabilityConfigCallbackPairs = useRef([{ viewabilityConfig, onViewableItemsChanged }])
 
+    const dimensions = Dimensions.get("window")
+    const IMAGE_HEIGHT = dimensions.height - TAB_BAR_HEIGHT_LONG
+
     const renderItem = ({ item, index }) => {
-        const dimensions = Dimensions.get("window")
-        console.log(index)
         return (
-            <Image
-                key={index}
-                source={{ uri: item.image_url }}
-                style={{
-                    flex: 1,
-                    height: dimensions.height - (TAB_BAR_HEIGHT / 2),
-                }}
-            />
+            <View style={{ backgroundColor: index % 2 == 0 ? "blue" : "green", height: IMAGE_HEIGHT }}>
+                <Image style={{ flex: 1, resizeMode: "cover" }} source={{ uri: item.image_url }} />
+            </View>
         )
     }
 
@@ -188,32 +197,30 @@ export function Reports({ route, navigation }) {
         }
     }
 
-    let lastId = 0
-
     const [isCommentsModalVisible, setCommentsModalVisible] = useState(false)
     return (
         <View style={styles.container}>
             <StatusBar barStyle="light-content" backgroundColor={"black"} />
-            <FlatList
-                pagingEnabled
-                data={data}
-                renderItem={renderItem}
-                scrollEventThrottle={50}
-                keyExtractor={item => {
-                    if (item.id !== lastId) {
-                        lastId = item.id
-                        return item.id
-                    } else {
-                        return lastId + 1
-                    }
-                }}
-                viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
-                viewabilityConfig={viewabilityConfig}
-                ref={flatListRef}
-                onEndReached={loadMoreReports}
+            <View
+                style={{ height: IMAGE_HEIGHT, width: "100%", backgroundColor: "pink" }}
+            >
+                <FlatList
+                    pagingEnabled
+                    data={data}
+                    showsVerticalScrollIndicator={false}
+                    renderItem={renderItem}
+                    scrollEventThrottle={50}
+                    keyExtractor={item => item.id}
+                    viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
+                    viewabilityConfig={viewabilityConfig}
+                    ref={flatListRef}
+                    ListFooterComponent={renderFooter}
+                /* onEndReached={loadMoreReports}
                 onEndReachedThreshold={0}
-                ListFooterComponent={renderFooter}
-            />
+                 */
+                />
+            </View>
+
             <TextForm
                 customStyle={styles.searchBar}
                 textInputProps={{
@@ -225,7 +232,7 @@ export function Reports({ route, navigation }) {
 
             {
                 data.length === 0 ?
-                    <View style={{ height: "100%", alignItems: "center", justifyContent: "center" }}>
+                    <View style={{ height: "100%", alignSelf: "center", justifyContent: "center" }}>
                         <ActivityIndicator size={"large"} color={theme.colors.secondary1} />
                         <Text style={[styles.title, { width: "50%", color: theme.colors.secondary1, textAlign: "center" }]}>
                             Obtendo relatórios próximos a você
@@ -270,7 +277,6 @@ export function Reports({ route, navigation }) {
                     </View>
                     : null
             }
-
             {
                 isTabBarVisible &&
                 <View style={styles.tabBar}>

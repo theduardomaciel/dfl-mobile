@@ -25,10 +25,7 @@ type ImageUploadResponse = {
     link: string;
 }
 
-type ReportResponse = {
-    profile: Profile;
-    updatedReport: Report;
-}
+type ReportResponse = Profile
 
 export function ReportScreen3({ route, navigation }: any) {
     const { data } = route.params;
@@ -82,8 +79,7 @@ export function ReportScreen3({ route, navigation }: any) {
                 suggestion: data.suggestion,
                 hasTrashBins: data.hasTrashBins
             })
-            const response = submitResponse.data as ReportResponse
-            const updatedProfile = response.profile
+            const updatedProfile = submitResponse.data as ReportResponse
             if (updatedProfile.level > user.profile.level) {
                 console.log("O usuário subiu de nível.")
                 // Caso o usuário tenha subido de nível, indicamos que ele não ganhou nenhuma experiência, e realizamos a tratativa no modal

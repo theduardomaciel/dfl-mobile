@@ -42,6 +42,10 @@ const initialRegion = {
 export function Community() {
     const { user } = useAuth();
 
+    if (user === null) return (
+        <View style={{ flex: 1 }} />
+    );
+
     const [isFirstModalVisible, setFirstModalVisible] = useState(false)
     const [isSecondModalVisible, setSecondModalVisible] = useState(false)
     const firstToggleModal = () => {
@@ -74,7 +78,7 @@ export function Community() {
 
     const [isCityModalVisible, setCityModalVisible] = useState(false);
     const toggleCityModal = () => {
-        setCityModalVisible(!isCityModalVisible);
+        //setCityModalVisible(!isCityModalVisible);
     };
 
     const [defaultCity, setDefaultCity] = "Cidade não selecionada"
@@ -166,7 +170,7 @@ export function Community() {
                     element={
                         <Pressable style={styles.button} onPress={toggleCityModal}>
                             <Text style={styles.info}>Maceió</Text>
-                            <Entypo name="chevron-small-down" size={22} color="white" />
+                            {/* <Entypo name="chevron-small-down" size={22} color="white" /> */}
                         </Pressable>
                     }
                 />

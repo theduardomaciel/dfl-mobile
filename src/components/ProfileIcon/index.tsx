@@ -27,6 +27,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { TextForm } from '../TextForm';
 import { TextButton } from '../TextButton';
+import { ModalBase } from '../ModalBase';
 
 export function ProfileIcon({ uri, openConfig }: Props) {
     const { user, signOut } = useAuth();
@@ -38,7 +39,28 @@ export function ProfileIcon({ uri, openConfig }: Props) {
             titleStyle={{ color: theme.colors.secondary1, fontFamily: theme.fonts.section400, fontSize: 14 }}
             textInputProps={{ placeholder: user.profile ? `@${user.profile.username}` : user.first_name + user.last_name }}
         />
-        <TextButton title='Alterar nome de usuário' buttonStyle={{ backgroundColor: theme.colors.primary1, height: 35, marginTop: 10, width: "100%" }} />
+        <TextButton
+            title='Alterar nome de usuário'
+            buttonStyle={{ backgroundColor: theme.colors.primary1, height: 35, marginTop: 10, width: "100%" }}
+        />
+    </View>
+
+    const [isDeleteModalVisible, setDeleteModalVisible] = useState(false)
+    const deleteAccount = () => {
+        signOut()
+    }
+
+    const AccountComponents = <View style={{ flex: 1, width: "100%" }}>
+        {/* <Text style={{ fontSize: 14, color: theme.colors.text1, backgroundColor: theme.colors.red_light, opacity: 0.8, padding: 5, marginTop: 5, fontFamily: theme.fonts.title700, borderRadius: 10 }}>
+            ZONA DE PERIGO:
+        </Text> */}
+        <TextButton
+            title='APAGAR CONTA'
+            icon={<Ionicons name="trash" size={24} color={theme.colors.text1} />}
+            onPress={() => { setDeleteModalVisible(true) }}
+            buttonStyle={{ backgroundColor: theme.colors.red, marginTop: 10, paddingHorizontal: 15, paddingVertical: 7, alignSelf: "flex-start" }}
+        />
+
     </View>
 
     const CONFIG_BUTTONS = [
@@ -48,14 +70,13 @@ export function ProfileIcon({ uri, openConfig }: Props) {
             description: "como a comunidade lhe vê",
             icon: <Ionicons name="person" size={48} color={theme.colors.primary1} />,
             components: ProfileComponents,
-            onPress: () => { }
         },
         {
             id: "1",
             title: "Conta",
             description: "configurações",
             icon: <Ionicons name="settings" size={48} color={theme.colors.primary1} />,
-            onPress: () => { }
+            components: AccountComponents
         },
         {
             id: "2",
@@ -102,6 +123,25 @@ export function ProfileIcon({ uri, openConfig }: Props) {
                 openConfig ? setModalVisible(true) : navigation.navigate("Conta")
             }}
         >
+            <ModalBase
+                isVisible={isDeleteModalVisible}
+                onBackdropPress={() => { setDeleteModalVisible(!isDeleteModalVisible) }}
+                title={"Tem certeza que quer deletar sua conta?"}
+                showCloseButton
+                description={
+                    "Esta ação não poderá ser desfeita."}
+                children={
+                    <View style={{ alignItems: "center" }}>
+                        <TextButton
+                            title='APAGAR CONTA'
+                            icon={<Ionicons name="trash" size={24} color={theme.colors.text1} />}
+                            onPress={deleteAccount}
+                            buttonStyle={{ backgroundColor: theme.colors.red, marginTop: 10, paddingHorizontal: 15, paddingVertical: 7 }}
+                        />
+                    </View>
+                }
+                toggleModal={() => { setDeleteModalVisible(!isDeleteModalVisible) }}
+            />
             <View style={styles.logo}>
                 <Image
                     progressiveRenderingEnabled

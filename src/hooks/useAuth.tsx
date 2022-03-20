@@ -65,10 +65,6 @@ function AuthProvider({ children }: AuthProviderProps) {
                 // Chamar o backend com o usuário e o access_token
                 try {
                     console.log("Checando dados no servidor...")
-                    setTimeout(() => {
-                        // Caso o servidor demore muito para responder a requisição, iremos supor que a internet do usuário caiu, ou o servidor está indisponível
-                        return "error"
-                    }, 10 * 1000)
                     const authResponse = await api.post("/authenticate", { user_info: userInfoWithScopes, access_token: tokens.accessToken })
                     const { user, token } = authResponse.data as AuthResponse;
 
@@ -122,7 +118,10 @@ function AuthProvider({ children }: AuthProviderProps) {
         if (updatedUser === undefined) {
             console.log("Objeto do usuário atualizado não definido, atualizando via rede...")
             const readResponse = await api.post("/user", { user_id: user.id })
-            updatedUser = readResponse.data as User;
+            if (readResponse) {
+                console.log(readResponse.data)
+                updatedUser = readResponse.data as User;
+            }
         } else if (user && updatedElementKey) {
             let userCopy = Object.assign(user)
             userCopy[updatedElementKey] = updatedObject

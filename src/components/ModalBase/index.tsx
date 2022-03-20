@@ -15,14 +15,14 @@ type Props = CustomModalProps & {
     title: string;
     description?: string;
     backButton?: boolean;
-    showCloseButtom?: boolean;
+    showCloseButton?: boolean;
     style?: ViewStyle;
     descriptionStyle?: TextStyle;
     toggleModal: () => void;
     children?: React.ReactNode;
 }
 
-export function ModalBase({ title, description, backButton, showCloseButtom, toggleModal, children, style, descriptionStyle, ...rest }: Props) {
+export function ModalBase({ title, description, backButton, showCloseButton, toggleModal, children, style, descriptionStyle, ...rest }: Props) {
     return (
         <Modal
             statusBarTranslucent={true}
@@ -37,14 +37,14 @@ export function ModalBase({ title, description, backButton, showCloseButtom, tog
                     {title}
                 </Text>
                 {
-                    showCloseButtom && <TextButton title="X" buttonStyle={styles.closeButton} onPress={toggleModal} />
-                }
-                {
-                    description ? <Text style={descriptionStyle ? [styles.description, descriptionStyle] : styles.description}>{description}</Text> : null
+                    description && <Text style={descriptionStyle ? [styles.description, descriptionStyle] : styles.description}>{description}</Text>
                 }
                 {children}
                 {
                     backButton && <TextButton title="VOLTAR" buttonStyle={styles.largeCloseButton} onPress={toggleModal} />
+                }
+                {
+                    showCloseButton && <TextButton title="X" buttonStyle={styles.closeButton} onPress={toggleModal} />
                 }
             </View>
         </Modal>

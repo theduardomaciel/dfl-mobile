@@ -29,7 +29,7 @@ router.post("/profile/update", new UpdateProfileController().handle);
 router.post("/profile/update/experience", new UpdateUserExperienceController().handle);
 
 router.post("/profile", new ReadProfileController().handle);
-router.post("/user", new ReadUserController().handle);
+router.post("/user", ensureAuthenticated, new ReadUserController().handle);
 
 router.post("/upload", ensureAuthenticated, new UploadImageController().handle);
 router.post("/delete", ensureAuthenticated, new DeleteImageController().handle);
