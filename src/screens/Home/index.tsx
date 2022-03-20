@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, Image, RefreshControl, Platform, Pressable, ImageBackground } from "react-native";
+import { View, Text, ScrollView, Image, RefreshControl, Platform, Pressable, ImageBackground, StatusBar } from "react-native";
 import { MapScopePicker } from "../../components/MapScopePicker";
 
 import MapView, { PROVIDER_GOOGLE, Marker, Region } from "react-native-maps";
@@ -125,6 +125,7 @@ export function Home({ route, navigation }) {
 
     return (
         <ImageBackground source={require("../../assets/background_placeholder.png")} style={styles.container}>
+            <StatusBar barStyle="dark-content" backgroundColor={"transparent"} translucent />
             <View style={styles.header}>
                 <View style={styles.greetingsView}>
                     <Text style={styles.greetingsText}>

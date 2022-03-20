@@ -86,6 +86,7 @@ export function Community() {
 
     return (
         <ImageBackground source={require("../../assets/background_placeholder.png")} style={styles.container}>
+            <StatusBar barStyle="dark-content" backgroundColor={"transparent"} translucent />
             <ProfileModal
                 isVisible={isFirstModalVisible}
                 toggleModal={firstToggleModal}

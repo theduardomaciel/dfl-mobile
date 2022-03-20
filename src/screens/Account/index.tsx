@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { View, Text, ScrollView, Image, SectionList, TouchableOpacity, RefreshControl, ActivityIndicator, SafeAreaView, ImageBackground } from "react-native";
+import { View, Text, ScrollView, Image, SectionList, TouchableOpacity, RefreshControl, ActivityIndicator, SafeAreaView, ImageBackground, Pressable, Button, StatusBar } from "react-native";
 
 import { ProfileIcon } from "../../components/ProfileIcon";
 import { SectionTitle } from "../../components/SectionTitle";
@@ -13,8 +13,8 @@ import TrashbinSvg from "../../assets/trashbin_2.svg"
 import TrashbinSvgWhite from "../../assets/trashbin_white.svg"
 
 import { useAuth } from "../../hooks/useAuth";
-import { api } from "../../utils/api";
-import { response } from "express";
+
+import Toast from 'react-native-toast-message';
 
 // Os dados em uma SectionList devem ser sempre organizados em: "Title" e "Data". 
 // Se esse nomes não estiverem escritos, um erro será retornado.
@@ -114,11 +114,8 @@ const EmptyItem = ({ item, color, fontSize }: any) => {
 
 const months = ["Jan.", "Fev.", "Mar.", "Abr.", "Jun.", "Jul.", "Ago.", "Set.", "Out.", "Nov.", "Dez."]
 
-export function Account({ route, navigation }) {
+export function Account({ navigation, route }) {
     const { user } = useAuth();
-    if (user === null) return (
-        <View style={{ flex: 1 }} />
-    );
 
     const Header = () => {
         return (
@@ -179,8 +176,8 @@ export function Account({ route, navigation }) {
 
     // Código original: https://stackoverflow.com/questions/46802448/how-do-i-group-items-in-an-array-by-date
     const [reportsData, setReportsData] = useState(null)
-    async function LoadUserReports() {
-        const data = user.profile.reports;
+    async function LoadUserReports(profile) {
+        const data = profile.reports;
         const groups = data.reduce((groups, report) => {
             const date = report.createdAt.split('T')[0];
             const dateSplit = date.split('-')
@@ -200,8 +197,8 @@ export function Account({ route, navigation }) {
         setReportsData(groupArrays)
     }
 
-    function GetReportsAmountByMonth() {
-        const data = user.profile.reports;
+    function GetReportsAmountByMonth(profile) {
+        const data = profile.reports;
         const amountsByMonth = new Array(12).fill(0) as Array<number>;
         if (!data) return amountsByMonth;
         for (let index = 0; index < data.length; index++) {
@@ -214,8 +211,8 @@ export function Account({ route, navigation }) {
     }
 
     const [reportsAmountBars, setReportsAmountBars] = useState([])
-    function GetReportsAmountBars() {
-        const reportsAmountByMonth = GetReportsAmountByMonth()
+    function GetReportsAmountBars(profile) {
+        const reportsAmountByMonth = GetReportsAmountByMonth(profile)
         const max = Math.max(...reportsAmountByMonth);
 
         let bars = []
@@ -237,11 +234,28 @@ export function Account({ route, navigation }) {
         setReportsAmountBars(bars)
     }
 
+    const showSuccessToast = () => {
+        console.log("mostrando")
+        Toast.show({
+            type: 'success',
+            text1: 'Eba! Deu tudo certo!',
+            text2: 'O relatório selecionado foi excluído com sucesso ✅',
+        });
+    }
+
+    const showErrorToast = () => {
+        Toast.show({
+            type: 'error',
+            text1: 'Ocorreu um erro ao deletar o relatório.',
+            text2: 'Tente novamente mais tarde ❌'
+        });
+    }
+
     async function FetchData() {
         console.log("Atualizando dados da tela de relatórios.")
         if (user.profile.reports) {
-            LoadUserReports()
-            GetReportsAmountBars()
+            LoadUserReports(user.profile)
+            GetReportsAmountBars(user.profile)
         } else {
             setReportsData([])
             setReportsAmountBars([<EmptyItem fontSize={12} color={"white"} />])
@@ -249,21 +263,36 @@ export function Account({ route, navigation }) {
     }
 
     useEffect(() => {
+        console.log("Verificando mudanças na tela de relatórios.")
+        if (route.params?.status) {
+            const status = route.params.status.split("_")[0]
+            if (status === "error") {
+                console.log("Houve um erro ao apagar relatório. Exibindo toast.")
+                showErrorToast()
+            } else if (status === "success") {
+                console.log("Houve sucesso ao apagar relatório. Exibindo toast.")
+                showSuccessToast();
+            }
+        }
         if (user.profile.reports) {
             FetchData()
         }
-    }, [user]);
+    }, [route.params?.status]);
 
     const [isLoading, setIsLoading] = useState(false)
     const onRefresh = () => {
         if (user.profile.reports) {
             setIsLoading(true)
             console.log("Atualizando informações dos relatórios do usuário.")
-            LoadUserReports()
-            GetReportsAmountByMonth()
+            LoadUserReports(user.profile)
+            GetReportsAmountByMonth(user.profile)
             setIsLoading(false)
         }
     }
+
+    if (user === null) return (
+        <View style={{ flex: 1 }} />
+    );
 
     // Ano = 0 | mês = 1 | dia = 2 (tem que dar o slice)
     const userCreatedAtSplit = user.createdAt.split("-")
@@ -271,6 +300,7 @@ export function Account({ route, navigation }) {
 
     return (
         <ImageBackground source={require("../../assets/background_placeholder.png")} style={styles.container}>
+            <StatusBar barStyle="dark-content" backgroundColor={"transparent"} translucent />
             <Header />
             <ScrollView
                 style={{ width: "100%" }}

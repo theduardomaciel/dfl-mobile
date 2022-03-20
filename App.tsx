@@ -5,6 +5,8 @@ import React from "react";
 import { StatusBar } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 
+import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
+
 import { useFonts } from "expo-font";
 import AppLoading from "expo-app-loading";
 
@@ -14,6 +16,45 @@ import { Alatsi_400Regular } from "@expo-google-fonts/alatsi"
 
 import Routes from "./src/routes";
 import { AuthProvider } from "./src/hooks/useAuth"
+import { theme } from "./src/global/styles/theme";
+import { TAB_BAR_HEIGHT } from "./src/components/TabBar";
+
+const toastConfig = {
+    /*
+      Overwrite 'success' type,
+      by modifying the existing `BaseToast` component
+    */
+    success: (props) => (
+        <BaseToast
+            {...props}
+            style={{ width: "95%", borderLeftColor: theme.colors.primary1 }}
+            contentContainerStyle={{ paddingHorizontal: 15 }}
+            text1Style={{
+                fontSize: 16,
+            }}
+            text2Style={{
+                fontSize: 13
+            }}
+        />
+    ),
+    /*
+      Overwrite 'error' type,
+      by modifying the existing `ErrorToast` component
+    */
+    error: (props) => (
+        <ErrorToast
+            {...props}
+            style={{ width: "95%", borderLeftColor: theme.colors.red_light }}
+            contentContainerStyle={{ paddingHorizontal: 15 }}
+            text1Style={{
+                fontSize: 16,
+            }}
+            text2Style={{
+                fontSize: 13
+            }}
+        />
+    ),
+};
 
 export default function App() {
     const [fontsLoaded] = useFonts({
@@ -41,6 +82,12 @@ export default function App() {
                 />
                 <Routes />
             </NavigationContainer>
+            <Toast
+                config={toastConfig}
+                visibilityTime={3000}
+                position='bottom'
+                bottomOffset={50 + TAB_BAR_HEIGHT}
+            />
         </AuthProvider>
     )
 }

@@ -36,6 +36,8 @@ target 'dlftesting' do
   pod 'Permission-Notifications', :path => "#{permissions_path}/Notifications"
   pod 'Permission-PhotoLibrary', :path => "#{permissions_path}/PhotoLibrary"
 
+  pod 'RNShare', :path => '../node_modules/react-native-share'
+
   post_install do |installer|
     react_native_post_install(installer)
 

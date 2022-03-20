@@ -58,16 +58,16 @@ export function CommentsModal({ isVisible, closeFunction, reportComments }: Prop
 
     const EmptyItem = () => {
         return (
-            <View style={{ alignItems: "center" }}>
+            <View style={{ alignItems: "center", height: "100%", justifyContent: "center" }}>
                 <TrashBinSvg
-                    width={50}
-                    height={90}
+                    width={40}
+                    height={80}
                 />
                 <Text style={{
                     fontFamily: theme.fonts.title700,
                     color: theme.colors.secondary1,
                     fontSize: 18,
-                    textAlign: "center"
+                    textAlign: "center",
                 }}>
                     Está um pouco vazio aqui...
                 </Text>
@@ -75,9 +75,9 @@ export function CommentsModal({ isVisible, closeFunction, reportComments }: Prop
                     fontFamily: theme.fonts.subtitle400,
                     color: theme.colors.secondary1,
                     fontSize: 16,
-                    textAlign: "center"
+                    textAlign: "center",
                 }}>
-                    Seja o primeiro a comentar para que seu comentário apareça aqui!
+                    {`Seja o primeiro a comentar para que seu\ncomentário apareça aqui!`}
                 </Text>
             </View>
         )
@@ -105,20 +105,21 @@ export function CommentsModal({ isVisible, closeFunction, reportComments }: Prop
                 <Text style={styles.title}>{`${commentsAmount} comentários`}</Text>
                 <FlatList
                     data={reportComments}
+                    contentContainerStyle={{ flex: 1 }}
                     renderItem={renderComment}
                     keyExtractor={item => item.id}
                     ListEmptyComponent={EmptyItem}
                     showsVerticalScrollIndicator={false}
                 />
                 <TextForm
-                    customStyle={{ height: 35, width: "90%", marginTop: 15, marginBottom: 25 }}
+                    customStyle={{ height: 40, width: "90%", marginTop: 15, marginBottom: 20 }}
                     textInputProps={{
                         placeholder: "Deixe um comentário",
                         maxLength: 150
                     }}
                     icon={<MaterialIcons name="send" size={18} color={theme.colors.secondary1} />}
                     onIconPress={() => { console.log("ícone de enviar pressionado") }}
-                    fontStyle={{ fontSize: 12 }}
+                    fontStyle={{ fontSize: 13 }}
                 />
             </View>
         </Modal>

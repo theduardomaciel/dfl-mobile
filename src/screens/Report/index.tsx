@@ -2,23 +2,26 @@ import React, { useEffect, useState } from "react";
 import { View, StatusBar, Text, Image, useWindowDimensions, ScrollView, Pressable, Platform, UIManager, LayoutAnimation, Alert } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
-import MapView, { PROVIDER_GOOGLE, Marker, Region } from "react-native-maps";
+import { RectButton } from "react-native-gesture-handler";
+import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
+
 
 import { elements } from "../../global/styles/elements";
 import { theme } from "../../global/styles/theme";
-
 import { styles } from "./styles";
+
 import { MaterialIcons, Entypo } from "@expo/vector-icons"
+
 import { SectionTitle } from "../../components/SectionTitle";
 import { BottomBar } from "../../components/BottomBar";
 import { TextButton } from "../../components/TextButton";
 import { ModalBase } from "../../components/ModalBase";
 import { TagsSelector } from "../../components/TagsSelector";
-import { RectButton } from "react-native-gesture-handler";
 import { LoadingScreen } from "../../components/LoadingScreen";
-import { api } from "../../utils/api";
-import { Profile, User } from "../../@types/application";
+
 import { useAuth } from "../../hooks/useAuth";
+import { api } from "../../utils/api";
+import { Profile } from "../../@types/application";
 
 type Report = {
     id: number,
@@ -37,7 +40,9 @@ type TagsType = {
     title: string;
 }
 
-export function Report({ route, navigation }) {
+let counter = 0;
+
+export function Report({ navigation, route }) {
     const report = route.params.item as Report;
 
     const { updateUser } = useAuth();
@@ -105,22 +110,20 @@ export function Report({ route, navigation }) {
             const deleteResponse = await api.post("/report/delete", { report_id: report.id, image_deleteHash: report.image_deleteHash })
             const updatedProfile = deleteResponse.data as Profile
             await updateUser(updatedProfile, "profile")
-            Alert.alert(
-                'Eba! Deu tudo certo!',
-                'O relatório selecionado foi excluído com sucesso :)',
-            );
+            navigation.navigate("Main", {
+                screen: "Conta",
+                params: { status: `success_${counter}` },
+            });
             console.log("O relatório selecionado foi excluído com sucesso.")
         } catch (error) {
-            Alert.alert(
-                'Opa! Algo deu errado.',
-                'Ocorreu um erro ao deletar o relatório. Tente novamente mais tarde.',
-            );
+            navigation.navigate("Main", {
+                screen: "Conta",
+                params: { status: `error_${counter}` },
+            });
             console.log(error, "Não foi possível deletar o relatório selecionado")
         }
-
-        setIsLoadingDelete(false)
-        LayoutAnimation.configureNext(animationPreset);
-        navigation.goBack();
+        counter += 1
+        console.log("O relatório selecionado foi excluído com sucesso.")
     }
 
     return (

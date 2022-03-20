@@ -8,7 +8,7 @@ export const SELECTOR_WIDTH = (dimensions.width / 100) * 55
 
 export const styles = StyleSheet.create({
     container: {
-        backgroundColor: theme.colors.primary1,
+        backgroundColor: "black",
     },
     searchBar: {
         position: "absolute",
@@ -45,7 +45,7 @@ export const styles = StyleSheet.create({
     actionButtonsHolder: {
         position: "absolute",
         right: 15,
-        bottom: "17%", // Controla a distancia do bottom	
+        bottom: "7%", // Controla a distancia do bottom	
         alignItems: "center",
         justifyContent: "center",
         width: 65,

@@ -7,6 +7,8 @@ import { SELECTOR_WIDTH, styles } from "./styles";
 
 import TrashBinSVG from "../../assets/trashbin_white.svg"
 
+import Share from 'react-native-share';
+
 import { MaterialIcons } from "@expo/vector-icons"
 import { backgroundDrivers, buttonDrivers, TAB_BAR_HEIGHT, TAB_BAR_HEIGHT_LONG } from "../../components/TabBar";
 
@@ -62,6 +64,7 @@ export function Reports({ route, navigation }) {
 
     const renderFooter = ({ item, index }) => {
         return (
+            data.length > 0 &&
             <View key={index} style={{ paddingVertical: 10, marginBottom: 5, backgroundColor: "black" }}>
                 <ActivityIndicator size={"large"} color={theme.colors.text1} />
             </View>
@@ -202,12 +205,27 @@ export function Reports({ route, navigation }) {
         ToastAndroid.show("Não há mais relatórios para carregar!", ToastAndroid.SHORT);
     };
 
+    const shareReport = () => {
+        const report = data[currentIndex]
+        Share.open({
+            url: report.image_url,
+            message: `Encontrei ele pelo aplicativo DFL - Detector de Focos de Lixo, que envia relatórios de focos de lixo para a prefeitura.\nQue tal baixar e votar nesse foco pra que ele seja resolvido mais rápido?`,
+            title: `Olha esse foco de lixo que tá em ${report.address}!`
+        })
+            .then((response) => {
+                console.log(response);
+            })
+            .catch((error) => {
+                error && console.log(error);
+            });
+    }
+
     const [isCommentsModalVisible, setCommentsModalVisible] = useState(false)
     return (
         <View style={styles.container}>
             <StatusBar barStyle="light-content" backgroundColor={"black"} />
             <View
-                style={{ height: IMAGE_HEIGHT, width: "100%", backgroundColor: "pink" }}
+                style={{ height: IMAGE_HEIGHT, width: "100%", backgroundColor: theme.colors.background }}
             >
                 <FlatList
                     pagingEnabled
@@ -236,10 +254,10 @@ export function Reports({ route, navigation }) {
 
             {
                 data.length === 0 ?
-                    <View style={{ height: "100%", alignSelf: "center", justifyContent: "center" }}>
+                    <View style={{ position: "absolute", alignSelf: "center", top: "50%", justifyContent: "center" }}>
                         <ActivityIndicator size={"large"} color={theme.colors.secondary1} />
-                        <Text style={[styles.title, { width: "50%", color: theme.colors.secondary1, textAlign: "center" }]}>
-                            Obtendo relatórios próximos a você
+                        <Text style={[styles.title, { color: theme.colors.secondary1, textAlign: "center" }]}>
+                            {`Obtendo relatórios\npróximos a você...`}
                         </Text>
                     </View>
                     : null
@@ -259,7 +277,7 @@ export function Reports({ route, navigation }) {
                             <View style={[styles.buttonCircle, { width: 50, height: 50, opacity: 1 }]} />
                             <MaterialIcons name="comment" size={28} color={theme.colors.text1} />
                         </Pressable>
-                        <Pressable style={styles.actionButton}>
+                        <Pressable style={styles.actionButton} onPress={shareReport}>
                             <View style={[styles.buttonCircle, { width: 65, height: 65 }]} />
                             <View style={[styles.buttonCircle, { width: 50, height: 50, opacity: 1 }]} />
                             <MaterialIcons name="share" size={28} color={theme.colors.text1} />
@@ -285,12 +303,12 @@ export function Reports({ route, navigation }) {
                 isTabBarVisible &&
                 <View style={styles.tabBar}>
                     <Text style={[styles.title, { marginBottom: 5 }]}>
-                        @{data.length > 0 ? data[currentIndex].profile.username : "teste"}
+                        @{data.length > 0 ? data[currentIndex].profile.username : ""}
                     </Text>
                     <View style={{ flexDirection: "row" }}>
                         <MaterialIcons name="place" size={18} color={theme.colors.text1} style={{ marginRight: 5 }} />
                         <Text style={styles.description}>
-                            {data.length > 0 ? data[currentIndex].address : "testando"}
+                            {data.length > 0 ? data[currentIndex].address : ""}
                         </Text>
                     </View>
                 </View>
