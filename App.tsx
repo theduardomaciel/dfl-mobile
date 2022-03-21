@@ -91,14 +91,3 @@ export default function App() {
         </AuthProvider>
     )
 }
-
-/* <AuthProvider>
-            <NavigationContainer>
-                <StatusBar
-                    barStyle="dark-content"
-                    backgroundColor="transparent"
-                    translucent 
-                />
-                <Routes />
-            </NavigationContainer>
-        </AuthProvider> */

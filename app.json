@@ -1,9 +1,10 @@
 {
-  "expo": {
-    "name": "DFL - Detector de Focos de Lixo",
-    "slug": "dfl"
-  },
-  "plugins": [
-    "react-native-svg"
-  ]
+    "expo": {
+        "name": "DFL",
+        "slug": "dfl"
+    },
+    "plugins": [
+        "react-native-svg",
+        "@react-native-google-signin/google-signin"
+    ]
 }

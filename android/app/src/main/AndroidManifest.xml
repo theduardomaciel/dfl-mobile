@@ -1,4 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.dlftesting">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.dfl">
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
   <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
@@ -21,8 +21,9 @@
     <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="44.0.0"/>
     <meta-data android:name="expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH" android:value="ALWAYS"/>
     <meta-data android:name="expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS" android:value="0"/>
-    <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="https://exp.host/@meninocoiso/dfl-testing"/>
-    <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyCKZMrAWYeOHOoIHLnCDKoGxyi4VMlaa9A"/>
+    <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="https://exp.host/@meninocoiso/dfl"/>
+    <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyBQrpdH4XwBB5_2z6ztyobOgb_zmGrl_R8"/>
+    <uses-library android:name="org.apache.http.legacy" android:required="false"/>
     <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:screenOrientation="portrait">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
@@ -32,9 +33,9 @@
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
-        <data android:scheme="dlftesting"/>
-        <data android:scheme="com.dlftesting"/>
-        <data android:scheme="exp+dlftesting"/>
+        <data android:scheme="dfl"/>
+        <data android:scheme="com.dfl"/>
+        <data android:scheme="exp+dfl"/>
       </intent-filter>
     </activity>
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>

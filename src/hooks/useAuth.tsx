@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
 
 GoogleSignin.configure({
-    webClientId: '867322063173-idupsd05i0n5hi8k8ae2iamealrksu3u.apps.googleusercontent.com',
+    webClientId: '867322063173-u3jns36k76voo7tuv2cv20s0lhuh1i82.apps.googleusercontent.com',
     forceCodeForRefreshToken: true,
     offlineAccess: true,
     scopes: [
@@ -14,7 +14,6 @@ GoogleSignin.configure({
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { api } from "../utils/api";
-
 import { User } from "../@types/application";
 
 const SCOPE = "read:user";
@@ -23,10 +22,8 @@ const TOKEN_STORAGE = "@dfl:token";
 
 type AuthContextData = {
     user: User | null;
-    //reports: Array<Report> | null;
     isSigningIn: boolean;
     creatingAccount: boolean;
-    //signIn: () => Promise<void>;
     signIn: () => Promise<void>;
     signOut: () => Promise<void>;
     updateUser: (updatedObject?, updatedElementKey?) => Promise<void>;
@@ -77,28 +74,32 @@ function AuthProvider({ children }: AuthProviderProps) {
                     setUser(user);
                     console.log(`Usuário ${token} com sucesso!`, user);
                 } catch (error) {
-                    setIsSigningIn(false)
                     console.log(error)
+                    setIsSigningIn(false)
                     return error
                 }
             } else {
                 console.log("O usuário não foi encontrado.")
+                setIsSigningIn(false)
                 return "O usuário não foi encontrado."
             }
+            setIsSigningIn(false)
         } catch (error) {
             if (error.code === statusCodes.SIGN_IN_CANCELLED) {
                 console.log("Usuário cancelou o processo de login.");
                 setIsSigningIn(false)
                 return "cancelled"
             } else if (error.code === statusCodes.IN_PROGRESS) {
+                setIsSigningIn(false)
                 return console.log("Um processo de login já está em execução.");
             } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+                setIsSigningIn(false)
                 return console.log("Os serviços da Google Play estão desatualizados ou indisponíveis.");
             } else {
+                setIsSigningIn(false)
                 return console.log(error)
             }
         }
-        setIsSigningIn(false)
     }
 
     async function signOut() {

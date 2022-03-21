@@ -130,7 +130,7 @@ android {
     }
 
     defaultConfig {
-        applicationId 'com.dlftesting'
+        applicationId 'com.dfl'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -183,12 +183,12 @@ android {
 
 dependencies {
     implementation project(':react-native-permissions')
-    implementation 'com.google.android.gms:play-services-auth:20.1.0'
-    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
     implementation project(':react-native-svg')
+
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
+    //noinspection GradleDynamicVersion
 
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";

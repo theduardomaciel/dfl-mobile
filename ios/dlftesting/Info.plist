@@ -5,7 +5,7 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>$(DEVELOPMENT_LANGUAGE)</string>
     <key>CFBundleDisplayName</key>
-    <string>dlftesting</string>
+    <string>dfl</string>
     <key>CFBundleExecutable</key>
     <string>$(EXECUTABLE_NAME)</string>
     <key>CFBundleIdentifier</key>
@@ -25,14 +25,14 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>dlftesting</string>
-          <string>com.dlftesting.dlftesting</string>
+          <string>dfl</string>
+          <string>com.dfl.dfl</string>
         </array>
       </dict>
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>exp+dlftesting</string>
+          <string>exp+dfl</string>
         </array>
       </dict>
     </array>

@@ -209,7 +209,7 @@ export function Reports({ route, navigation }) {
         const report = data[currentIndex]
         Share.open({
             url: report.image_url,
-            message: `Encontrei ele pelo aplicativo DFL - Detector de Focos de Lixo, que envia relatórios de focos de lixo para a prefeitura.\nQue tal baixar e votar nesse foco pra que ele seja resolvido mais rápido?`,
+            message: `Olha esse foco de lixo que tá em ${report.address}! Encontrei ele pelo aplicativo DFL - Detector de Focos de Lixo, que envia relatórios de focos de lixo para a prefeitura.\nQue tal baixar e votar nesse foco pra que ele seja resolvido mais rápido?`,
             title: `Olha esse foco de lixo que tá em ${report.address}!`
         })
             .then((response) => {

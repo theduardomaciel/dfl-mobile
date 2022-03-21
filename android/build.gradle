@@ -2,14 +2,14 @@
 
 buildscript {
     ext {
-        buildToolsVersion = "29.0.3"
+        buildToolsVersion = "30.0.2"
         minSdkVersion = 21
         compileSdkVersion = 30
         targetSdkVersion = 30
         supportLibVersion = "28.0.0"
         playServicesVersion = "17.0.0"
         androidMapsUtilsVersion = "+2.3.0"
-        googlePlayServicesAuthVersion = "16.0.1"
+        googlePlayServicesAuthVersion = "19.2.0"
     }
     repositories {
         google()
@@ -17,9 +17,8 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:4.1.0")
-        classpath 'com.google.gms:google-services:4.1.0' // <--- use this version or newer
-
+        classpath("com.android.tools.build:gradle:4.2.2")
+        classpath 'com.google.gms:google-services:4.3.10'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -38,6 +37,8 @@ allprojects {
         }
          // * Add a new maven block after other repositories / blocks *
         maven {
+            // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+            url "$rootDir/../node_modules/react-native/android"
             // expo-camera bundles a custom com.google.android:cameraview
             url "$rootDir/../node_modules/expo-camera/android/maven"
         }

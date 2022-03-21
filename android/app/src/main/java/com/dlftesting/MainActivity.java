@@ -1,4 +1,4 @@
-package com.dlftesting;
+package com.dfl;
 import expo.modules.devmenu.react.DevMenuAwareReactActivity;
 import expo.modules.devlauncher.DevLauncherController;
 import android.content.res.Configuration;
