@@ -5,6 +5,7 @@
     },
     "plugins": [
         "react-native-svg",
-        "@react-native-google-signin/google-signin"
+        "@react-native-google-signin/google-signin",
+        "react-native-reanimated/plugin"
     ]
 }

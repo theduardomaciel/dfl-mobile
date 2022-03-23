@@ -5,7 +5,7 @@ import React from "react";
 import { StatusBar } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 
-import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
+import Toast, { BaseToast, ErrorToast, InfoToast } from 'react-native-toast-message';
 
 import { useFonts } from "expo-font";
 import AppLoading from "expo-app-loading";
@@ -45,6 +45,23 @@ const toastConfig = {
         <ErrorToast
             {...props}
             style={{ width: "95%", borderLeftColor: theme.colors.red_light }}
+            contentContainerStyle={{ paddingHorizontal: 15 }}
+            text1Style={{
+                fontSize: 16,
+            }}
+            text2Style={{
+                fontSize: 13
+            }}
+        />
+    ),
+    /*
+      Overwrite 'info' type,
+      by modifying the existing `InfoToast` component
+    */
+    info: (props) => (
+        <InfoToast
+            {...props}
+            style={{ width: "95%", borderLeftColor: theme.colors.yellow }}
             contentContainerStyle={{ paddingHorizontal: 15 }}
             text1Style={{
                 fontSize: 16,

@@ -107,9 +107,8 @@ export function Report({ navigation, route }) {
         setMenuVisible(false)
 
         try {
-            const deleteResponse = await api.post("/report/delete", { report_id: report.id, image_deleteHash: report.image_deleteHash })
-            const updatedProfile = deleteResponse.data as Profile
-            await updateUser(updatedProfile, "profile")
+            await api.post("/report/delete", { report_id: report.id, image_deleteHash: report.image_deleteHash })
+            await updateUser()
             navigation.navigate("Main", {
                 screen: "Conta",
                 params: { status: `success_${counter}` },
@@ -123,7 +122,6 @@ export function Report({ navigation, route }) {
             console.log(error, "Não foi possível deletar o relatório selecionado")
         }
         counter += 1
-        console.log("O relatório selecionado foi excluído com sucesso.")
     }
 
     return (
@@ -217,7 +215,7 @@ export function Report({ navigation, route }) {
             <BottomBar info={report.address} viewStyle={{ marginBottom: 15, width: "90%" }} />
             <View style={{ flexDirection: "row", width: "90%", justifyContent: "space-between" }}>
                 <SectionTitle title="Detalhes:" fontStyle={{ fontSize: 18 }} viewStyle={{ marginBottom: 5 }} />
-                <TextButton title="+" onPress={() => { setTagsModalVisible(true) }} buttonStyle={{ paddingHorizontal: 8, paddingVertical: 1, borderRadius: 8, }} />
+                {/* <TextButton title="+" onPress={() => { setTagsModalVisible(true) }} buttonStyle={{ paddingHorizontal: 8, paddingVertical: 1, borderRadius: 8, }} /> */}
             </View>
 
             {
@@ -235,14 +233,14 @@ export function Report({ navigation, route }) {
                 />
             }
 
-            <ScrollView showsVerticalScrollIndicator={false} style={[elements.subContainerWhite, styles.tagsContainer]}>
+            <ScrollView showsVerticalScrollIndicator={false} style={[elements.subContainerWhite, styles.tagsContainer]} contentContainerStyle={{ height: "100%" }}>
                 {tags.length > 0 ?
                     <View style={styles.gridContainer}>
                         {tags}
                         <View style={{ width: "100%", height: 20 }} />
                     </View> :
                     <View>
-                        <Text style={{ textAlign: "center", textAlignVertical: "center", fontFamily: theme.fonts.title600, justifyContent: "center", fontSize: 14, color: theme.colors.secondary1 }}>
+                        <Text style={{ textAlign: "center", textAlignVertical: "center", fontFamily: theme.fonts.title600, height: "100%", fontSize: 18, color: theme.colors.secondary1, paddingHorizontal: 25 }}>
                             Nenhuma tag foi selecionada para esse relatório!
                         </Text>
                     </View>

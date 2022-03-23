@@ -78,9 +78,6 @@ class AuthenticateUserService {
                     profile: {
                         create: {
                             image_url: photo,
-                            reports: {
-                                create: []
-                            }
                         }
                     }
                 },
@@ -88,7 +85,11 @@ class AuthenticateUserService {
                     profile: true
                 }
             })
+            console.log(user, "🙋 Usuário criado com sucesso!")
+        } else {
+            console.log(user, "🙋 Usuário logado com sucesso!")
         }
+
         const token = sign({
             user: {
                 first_name: user.first_name,
@@ -97,7 +98,6 @@ class AuthenticateUserService {
             },
         }, process.env.JWT_SECRET, { subject: user.google_id, expiresIn: "1d", audience: "mobile-app" });
 
-        console.log(user, "🙋 Usuário logado ou criado com sucesso!")
         return { token, user };
     }
 }

@@ -119,7 +119,7 @@ export function Home({ route, navigation }) {
         <View style={{ flex: 1 }} />
     );
 
-    const userReports = user.profile.reports
+    const userReports = user.profile.reports ? user.profile.reports : []
     const userReportsAmount = userReports.length
     const userReportsSolvedAmount = [...userReports].filter(report => report.resolved === true).length
 

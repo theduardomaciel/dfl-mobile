@@ -5,6 +5,8 @@ import { TextForm } from "../../components/TextForm";
 import { theme } from "../../global/styles/theme";
 import { SELECTOR_WIDTH, styles } from "./styles";
 
+import Toast from 'react-native-toast-message';
+
 import TrashBinSVG from "../../assets/trashbin_white.svg"
 
 import Share from 'react-native-share';
@@ -89,7 +91,7 @@ export function Reports({ route, navigation }) {
             setTabBarVisible(false)
         });
         if (data.length === 0) {
-            console.log("Carregando dados...")
+            console.log("Carregando dados...", data.length)
             loadMoreReports()
         }
         return unsubscribe;
@@ -202,8 +204,13 @@ export function Reports({ route, navigation }) {
     }
 
     const showToast = () => {
-        ToastAndroid.show("Não há mais relatórios para carregar!", ToastAndroid.SHORT);
-    };
+        console.log("mostrando")
+        Toast.show({
+            type: 'info',
+            text1: 'Eita! Calma aí...',
+            text2: 'Não há mais nenhum relatório pra carregar!',
+        });
+    }
 
     const shareReport = () => {
         const report = data[currentIndex]
@@ -303,7 +310,7 @@ export function Reports({ route, navigation }) {
                 isTabBarVisible &&
                 <View style={styles.tabBar}>
                     <Text style={[styles.title, { marginBottom: 5 }]}>
-                        @{data.length > 0 ? data[currentIndex].profile.username : ""}
+                        @{data.length > 0 && data[currentIndex].profile !== null ? data[currentIndex].profile.username : "inexistente :("}
                     </Text>
                     <View style={{ flexDirection: "row" }}>
                         <MaterialIcons name="place" size={18} color={theme.colors.text1} style={{ marginRight: 5 }} />

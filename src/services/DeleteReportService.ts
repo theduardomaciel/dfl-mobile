@@ -11,9 +11,6 @@ class DeleteReportService {
                 where: {
                     id: report_id
                 },
-                include: {
-                    profile: true
-                }
             })
             console.log("Relatório removido do banco de dados com sucesso!")
             const service = new DeleteImageService();

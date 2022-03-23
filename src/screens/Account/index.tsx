@@ -328,7 +328,7 @@ export function Account({ navigation, route }) {
                             nestedScrollEnabled={true}
                             showsVerticalScrollIndicator={false}
                             /* Não colocar { flex: 1 } no contentContainerStyle que trava o scroll */
-                            contentContainerStyle={{ justifyContent: reportsData === null ? "center" : "flex-start" }}
+                            contentContainerStyle={{ justifyContent: reportsData === null ? "center" : "flex-start", height: "100%" }}
                             style={[elements.subContainerWhite, { height: 375, marginBottom: 25 }]}
                             // Configurações dos elementos do Relatório
                             //sections={[...EXAMPLE_REPORTS, ...EXAMPLE_REPORTS2]}
@@ -373,7 +373,7 @@ export function Account({ navigation, route }) {
                     <View style={{ width: 1, height: "80%", backgroundColor: theme.colors.text1 }} />
                     <View style={{ flexDirection: "column" }}>
                         <Text style={[styles.statisticsTitle, { width: 125 }]}>Nível:</Text>
-                        <Text style={styles.statisticsDescription}>{user.profile ? user.profile.level : 0}</Text>
+                        <Text style={styles.statisticsDescription}>{user.profile.level}</Text>
                     </View>
                 </View>
 
