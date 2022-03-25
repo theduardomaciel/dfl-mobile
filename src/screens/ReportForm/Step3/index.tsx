@@ -114,7 +114,7 @@ export function ReportScreen3({ route, navigation }: any) {
             <ScrollView showsVerticalScrollIndicator={false} style={defaultStyles.safeView}>
                 <View style={defaultStyles.header}>
                     <Text style={defaultStyles.stepTitle}>3 | INFORMAÇÕES</Text>
-                    <AntDesign name="left" size={24} color={theme.colors.primary1} onPress={() => navigation.goBack()} />
+                    <AntDesign name="close" size={24} color={theme.colors.primary1} onPress={() => navigation.navigate("Main")} />
                 </View>
                 <Text style={defaultStyles.subtitle}>
                     Este passo é opcional, porém muito importante.
@@ -134,10 +134,12 @@ export function ReportScreen3({ route, navigation }: any) {
                         Busque descrever como você acha que o problema pode ser resolvido.
                     </Text>
                 </View>
-                <TextInput
-                    onChangeText={setSuggestion}
-                    style={styles.textForm}
-                />
+                <View style={{}}>
+                    <TextInput
+                        style={styles.textForm}
+                        onChangeText={setSuggestion}
+                    />
+                </View>
                 <BouncyCheckbox
                     size={30}
                     style={{ width: "92%", marginBottom: 15 }}
@@ -153,8 +155,9 @@ export function ReportScreen3({ route, navigation }: any) {
                     onPress={setHasTrashbin}
                 />
                 <TextButton
-                    title="Próximo passo"
+                    title="Enviar Relatório"
                     colors={[theme.colors.secondary1, theme.colors.secondary2]}
+                    textStyle={{ fontSize: 18 }}
                     buttonStyle={{ height: 55, width: "90%", }}
                     onPress={async () => {
                         data.tags = tags

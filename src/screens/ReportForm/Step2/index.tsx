@@ -16,8 +16,6 @@ import { AntDesign } from '@expo/vector-icons';
 import { TextButton } from "../../../components/TextButton";
 import { BottomBar } from "../../../components/BottomBar";
 
-import { useFocusEffect } from "@react-navigation/native";
-
 const { height, width } = Dimensions.get('window')
 
 export function ReportScreen2({ route, navigation }: any) {
@@ -33,7 +31,8 @@ export function ReportScreen2({ route, navigation }: any) {
     const [modalOpen, setModalOpen] = useState(false)
 
     async function takePicture() {
-        //setIsLoading(true)
+        setIsLoading(true)
+        console.log("Tirando foto com a câmera.")
         try {
             const imageData = await cameraRef.current.takePictureAsync(options)
             const source = imageData.base64
@@ -45,8 +44,9 @@ export function ReportScreen2({ route, navigation }: any) {
             } else {
                 return console.log("A imagem não foi convertida em Base64.")
             }
+            setIsLoading(false)
         } catch (error) {
-            //setIsLoading(false)
+            setIsLoading(false)
             console.log(error)
         }
     }
@@ -103,7 +103,7 @@ export function ReportScreen2({ route, navigation }: any) {
         }
     }
 
-    function flipCameraHandler() {
+    async function flipCameraHandler() {
         setCameraType(
             cameraType === Camera.Constants.Type.back
                 ? Camera.Constants.Type.front
@@ -111,18 +111,32 @@ export function ReportScreen2({ route, navigation }: any) {
         )
     }
 
-    useFocusEffect(() => {
-        if (navigation.isFocused()) {
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            "Ativando câmera."
             setActivateCamera(true)
-        }
-    })
+        });
+        return unsubscribe;
+
+        /* const unsubscribe2 = navigation.addListener('blur', () => {
+            console.log("Desativando câmera.")
+            setActivateCamera(false)
+        });
+        return () => {
+            unsubscribe
+            unsubscribe2;
+        }; */
+    }, [navigation])
 
     return (
         <View style={defaultStyles.container}>
             <View style={defaultStyles.safeView}>
                 <View style={defaultStyles.header}>
                     <Text style={defaultStyles.stepTitle}>2 | IMAGEM DO LOCAL</Text>
-                    <AntDesign name="left" size={24} color={theme.colors.primary1} onPress={() => navigation.goBack()} />
+                    <AntDesign name="left" size={24} color={theme.colors.primary1} onPress={() => {
+                        console.log("Testando")
+                        navigation.goBack()
+                    }} />
                 </View>
                 <Text style={defaultStyles.title}>
                     Tire uma foto para mostrar o local afetado pelo foco de lixo.
@@ -148,7 +162,7 @@ export function ReportScreen2({ route, navigation }: any) {
                 <BottomBar
                     viewStyle={{ marginBottom: 35 }}
                     element={
-                        <TouchableOpacity style={styles.bottomBar} onPress={takePicture}>
+                        <TouchableOpacity disabled={isLoading} style={styles.bottomBar} onPress={takePicture}>
                             {isLoading ? <ActivityIndicator size="large" color={theme.colors.text1} /> :
                                 <CameraIcon height={48} width={48} />}
                         </TouchableOpacity>

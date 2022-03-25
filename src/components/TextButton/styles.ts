@@ -6,8 +6,6 @@ export const styles = StyleSheet.create({
         borderRadius: 15,
         backgroundColor: theme.colors.primary1,
         flexDirection: "row",
-        //paddingHorizontal: 15,
-        //paddingVertical: 5,
         alignSelf: "center",
         alignItems: 'center',
         justifyContent: 'center'

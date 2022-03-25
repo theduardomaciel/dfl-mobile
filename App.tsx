@@ -19,7 +19,7 @@ import { AuthProvider } from "./src/hooks/useAuth"
 import { theme } from "./src/global/styles/theme";
 import { TAB_BAR_HEIGHT } from "./src/components/TabBar";
 
-const toastConfig = {
+export const toastConfig = {
     /*
       Overwrite 'success' type,
       by modifying the existing `BaseToast` component
@@ -30,10 +30,10 @@ const toastConfig = {
             style={{ width: "95%", borderLeftColor: theme.colors.primary1 }}
             contentContainerStyle={{ paddingHorizontal: 15 }}
             text1Style={{
-                fontSize: 16,
+                fontSize: 14,
             }}
             text2Style={{
-                fontSize: 13
+                fontSize: 12
             }}
         />
     ),
@@ -47,10 +47,10 @@ const toastConfig = {
             style={{ width: "95%", borderLeftColor: theme.colors.red_light }}
             contentContainerStyle={{ paddingHorizontal: 15 }}
             text1Style={{
-                fontSize: 16,
+                fontSize: 14,
             }}
             text2Style={{
-                fontSize: 13
+                fontSize: 12
             }}
         />
     ),
@@ -64,10 +64,10 @@ const toastConfig = {
             style={{ width: "95%", borderLeftColor: theme.colors.yellow }}
             contentContainerStyle={{ paddingHorizontal: 15 }}
             text1Style={{
-                fontSize: 16,
+                fontSize: 14,
             }}
             text2Style={{
-                fontSize: 13
+                fontSize: 12
             }}
         />
     ),

@@ -38,8 +38,7 @@ export const styles = StyleSheet.create({
         fontFamily: theme.fonts.subtitle400,
         color: theme.colors.secondary1,
         textAlign: 'center',
-        marginBottom: 10,
         width: "85%",
-
+        marginVertical: 15,
     }
 });

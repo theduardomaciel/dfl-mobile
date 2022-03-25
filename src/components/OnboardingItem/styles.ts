@@ -19,8 +19,8 @@ export const styles = StyleSheet.create({
         fontSize: 36,
         lineHeight: 35,
         letterSpacing: -1.5,
-        paddingHorizontal: 10,
-        //leterSpacing: -1,
+        paddingHorizontal: 15, //padrão: 10
+        //letterSpacing: -1,
         //paddingHorizontaL: 0
         color: theme.colors.secondary1,
         textAlign: 'center',

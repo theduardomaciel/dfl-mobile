@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
 import { theme } from "../../../global/styles/theme";
 //import { getStatusBarHeight } from 'react-native-iphone-x-helper'
 
@@ -18,6 +18,7 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 15,
         paddingVertical: 15,
         textAlignVertical: "top",
-        marginBottom: 10
+        marginBottom: 10,
+        minHeight: (Dimensions.get("window").height / 100) * 12
     }
 });
