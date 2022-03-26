@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const api = axios.create({
-    baseURL: 'http://192.168.1.103:4000',
-    timeout: 7 * 1000,
+    baseURL: 'https://dfl-detector-de-focos-de-lixo.herokuapp.com/',
+    timeout: 15 * 1000,
     timeoutErrorMessage: 'Timeout error',
 });
