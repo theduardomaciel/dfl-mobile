@@ -310,7 +310,7 @@ export function Reports({ route, navigation }) {
                 isTabBarVisible &&
                 <View style={styles.tabBar}>
                     <Text style={[styles.title, { marginBottom: 5 }]}>
-                        @{data.length > 0 && data[currentIndex].profile !== null ? data[currentIndex].profile.username : "inexistente :("}
+                        @{data.length > 0 && data[currentIndex].profile !== null ? data[currentIndex].profile.username : "indisponível"}
                     </Text>
                     <View style={{ flexDirection: "row" }}>
                         <MaterialIcons name="place" size={18} color={theme.colors.text1} style={{ marginRight: 5 }} />

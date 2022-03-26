@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 
 import Modal from "react-native-modal";
-import Toast, { InfoToast } from "react-native-toast-message"
 
 import { styles } from './styles';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -26,33 +25,14 @@ type Props = {
     openConfig?: boolean;
 }
 
-export const toastConfig = {
-    /*
-      Overwrite 'info' type,
-      by modifying the existing `InfoToast` component
-    */
-    info: (props) => (
-        <InfoToast
-            {...props}
-            style={{ width: "95%", borderLeftColor: theme.colors.facebook_blue }}
-            contentContainerStyle={{ paddingHorizontal: 15 }}
-            text1Style={{
-                fontSize: 14,
-            }}
-            text2Style={{
-                fontSize: 12
-            }}
-        />
-    ),
-};
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
-import { Ionicons } from '@expo/vector-icons';
-import { MaterialIcons } from '@expo/vector-icons';
 import { TextForm } from '../TextForm';
 import { TextButton } from '../TextButton';
 import { ModalBase } from '../ModalBase';
 import { LoadingScreen } from '../LoadingScreen';
 
+const MIN_USERNAME_CHARACTERS = 3;
 const MAX_USERNAME_CHARACTERS = 12
 
 export function ProfileIcon({ uri, openConfig }: Props) {
@@ -62,7 +42,7 @@ export function ProfileIcon({ uri, openConfig }: Props) {
     const [isLoading, setIsLoading] = useState(false)
 
     const [isChangeUsernameModalVisible, setChangeUsernameModalVisible] = useState(false);
-    const [usernameText, setUserNameText] = useState("")
+    const [usernameText, setUserNameText] = useState("OUT_OF_RANGE")
     const changeUsername = () => {
         console.log("Alterando nome do usuário...")
         setIsLoading(true)
@@ -74,13 +54,8 @@ export function ProfileIcon({ uri, openConfig }: Props) {
         setModalVisible(false)
     }
 
-    const showToast = () => {
-        Toast.show({
-            type: "info",
-            text1: "⚠️ Ou ou ou! Calma aí!",
-            text2: `Seu nome de usuário só pode ter até ${MAX_USERNAME_CHARACTERS} caracteres!"`,
-        })
-    }
+    const verifyRange = usernameText.length > MAX_USERNAME_CHARACTERS || usernameText.length < MIN_USERNAME_CHARACTERS
+    const verifyFormatting = (usernameText.includes(" ") || usernameText.toLowerCase() !== usernameText)
 
     const ProfileComponents = <View style={{ flex: 1, width: "100%" }}>
         <TextForm
@@ -90,19 +65,31 @@ export function ProfileIcon({ uri, openConfig }: Props) {
             textInputProps={{
                 autoCapitalize: "none",
                 placeholder: user.profile ? `@${user.profile.username}` : user.first_name + user.last_name,
-                onEndEditing: (text) => {
-                    const username = text.nativeEvent.text.replace(/ /g, "").toLowerCase()
-                    if (username.length > MAX_USERNAME_CHARACTERS) {
-                        setUserNameText("")
-                        showToast()
+                /* onEndEditing: (text) => {
+                    const username = text.nativeEvent.text
+                    if (username.length > MAX_USERNAME_CHARACTERS || username.length < MIN_USERNAME_CHARACTERS) {
+                        setUserNameText("OUT_OF_RANGE")
+                    } else if (username.includes(" ") || username.toLocaleLowerCase() !== username) {
+                        setUserNameText("OUT_OF_FORMATTING")
                     } else {
                         setUserNameText(username)
                     }
-                },
+                }, */
+                onChangeText: (text) => setUserNameText(text)
             }}
         />
-        <Text style={[styles.modalSubtitle, { color: theme.colors.secondary1 }]}>
-            {`• Seu nome de usuário não pode conter letras maiúsculas ou espaços.\n• O máximo de caracteres permitido é ${MAX_USERNAME_CHARACTERS}`}
+
+        {/* <Text style={[styles.modalSubtitle, { color: usernameText === "OUT_OF_FORMATTING" ? theme.colors.red_light : theme.colors.secondary2 }]}>
+            {`• Seu nome de usuário não pode conter letras maiúsculas ou espaços. ${usernameText === "OUT_OF_FORMATTING" ? "❌" : "✅"}`}
+        </Text>
+        <Text style={[styles.modalSubtitle, { color: usernameText === "MAX_USERNAME_CHARACTERS" ? theme.colors.red_light : theme.colors.secondary2 }]}>
+            {`• Seu nome de usuário deve ter no mínimo ${MIN_USERNAME_CHARACTERS} e no máximo ${MAX_USERNAME_CHARACTERS} caracteres. ${usernameText === "OUT_OF_RANGE" ? "❌" : "✅"}`}
+        </Text> */}
+        <Text style={[styles.modalSubtitle, { color: verifyFormatting ? theme.colors.red_light : theme.colors.secondary2 }]}>
+            {`• Seu nome de usuário não pode conter letras maiúsculas ou espaços. ${verifyFormatting ? "❌" : "✅"}`}
+        </Text>
+        <Text style={[styles.modalSubtitle, { color: verifyRange ? theme.colors.red_light : theme.colors.secondary2 }]}>
+            {`• Seu nome de usuário deve ter no mínimo ${MIN_USERNAME_CHARACTERS} e no máximo ${MAX_USERNAME_CHARACTERS} caracteres. ${verifyRange ? "❌" : "✅"}`}
         </Text>
         <TextButton
             title='Alterar nome de usuário'
@@ -112,27 +99,49 @@ export function ProfileIcon({ uri, openConfig }: Props) {
                     setChangeUsernameModalVisible(true)
                 }
             }}
-            disabled={usernameText.length === 0 ? true : false}
-            buttonStyle={{ backgroundColor: usernameText.length === 0 ? theme.colors.red_light : theme.colors.primary1, height: 35, marginTop: 10, width: "100%" }}
+            disabled={verifyFormatting || verifyRange === true ? true : false}
+            buttonStyle={{ backgroundColor: verifyFormatting || verifyRange === true ? theme.colors.red_light : theme.colors.primary1, height: 35, marginTop: 10, width: "100%" }}
         />
     </View>
 
     const [isDeleteModalVisible, setDeleteModalVisible] = useState(false)
+    const [timer, setTimer] = useState(0)
+    let counter = 5
+
     const deleteAccount = () => {
-        signOut()
+        console.log("Apagando conta do usuário...")
+        setIsLoading(true)
+        setDeleteModalVisible(false)
     }
 
     const AccountComponents = <View style={{ flex: 1, width: "100%" }}>
-        {/* <Text style={{ fontSize: 14, color: theme.colors.text1, backgroundColor: theme.colors.red_light, opacity: 0.8, padding: 5, marginTop: 5, fontFamily: theme.fonts.title700, borderRadius: 10 }}>
-            ZONA DE PERIGO:
-        </Text> */}
+        <Text style={{
+            fontSize: 14,
+            color: theme.colors.text1, backgroundColor: theme.colors.red,
+            padding: 5,
+            marginTop: 10,
+            fontFamily: theme.fonts.title700,
+            borderRadius: 10,
+            textAlign: "center"
+        }}>
+            ⚠️  ZONA DE PERIGO:
+        </Text>
         <TextButton
-            title='APAGAR CONTA'
+            title='EXCLUIR CONTA'
             icon={<Ionicons name="trash" size={24} color={theme.colors.text1} />}
-            onPress={() => { setDeleteModalVisible(true) }}
+            onPress={async () => {
+                await setTimer(5)
+                setDeleteModalVisible(true)
+                const interval = setInterval(function () {
+                    counter -= 1;
+                    setTimer(counter)
+                    if (counter === 0) {
+                        clearInterval(interval)
+                    }
+                }, 1000)
+            }}
             buttonStyle={{ backgroundColor: theme.colors.red, height: 35, marginTop: 10, width: "100%" }}
         />
-
     </View>
 
     const CONFIG_BUTTONS = [
@@ -197,7 +206,7 @@ export function ProfileIcon({ uri, openConfig }: Props) {
             <ModalBase
                 isVisible={isDeleteModalVisible}
                 onBackdropPress={() => { setDeleteModalVisible(!isDeleteModalVisible) }}
-                title={"Tem certeza que quer excluir sua conta?"}
+                title={"Tem certeza que deseja excluir sua conta?"}
                 showCloseButton
                 description={
                     "Esta ação não poderá ser desfeita."}
@@ -207,8 +216,10 @@ export function ProfileIcon({ uri, openConfig }: Props) {
                             title='EXCLUIR CONTA'
                             icon={<Ionicons name="trash" size={24} color={theme.colors.text1} />}
                             onPress={deleteAccount}
-                            buttonStyle={{ backgroundColor: theme.colors.red, marginTop: 10, paddingHorizontal: 15, paddingVertical: 7 }}
+                            disabled={timer === 0 ? false : true}
+                            buttonStyle={{ backgroundColor: timer !== 0 ? theme.colors.gray_light : theme.colors.red, marginTop: 10, paddingHorizontal: 15, paddingVertical: 7 }}
                         />
+                        <Text style={styles.title}>{timer}</Text>
                     </View>
                 }
                 toggleModal={() => { setDeleteModalVisible(!isDeleteModalVisible) }}
@@ -281,11 +292,6 @@ export function ProfileIcon({ uri, openConfig }: Props) {
                         /> */}
                     </View>
                 </View>
-                <Toast
-                    config={toastConfig}
-                    visibilityTime={3000}
-                    position={"bottom"}
-                />
                 {
                     isLoading ? <LoadingScreen /> : null
                 }
