@@ -14,7 +14,7 @@ GoogleSignin.configure({
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { api } from "../utils/api";
-import { User } from "../@types/application";
+import { Report, User } from "../@types/application";
 
 const SCOPE = "read:user";
 const USER_STORAGE = "@dfl:user";
@@ -27,6 +27,7 @@ type AuthContextData = {
     signIn: () => Promise<void>;
     signOut: () => Promise<void>;
     updateUser: (updatedObject?, updatedElementKey?) => Promise<void>;
+    updateReport: (actualObject?, updatedObject?, updatedElementKey?) => Promise<Report>;
 }
 
 type AuthProviderProps = {
@@ -128,12 +129,27 @@ function AuthProvider({ children }: AuthProviderProps) {
             userCopy[updatedElementKey] = updatedObject
             updatedUser = userCopy
         }
-        if (updateUser !== null) {
+        if (updatedUser !== null) {
             await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(updatedUser));
             setUser(updatedUser);
             console.log("Objeto do usuário atualizado com sucesso!")
         } else {
             console.log("Erro ao atualizar objeto do usuário.")
+        }
+    }
+
+    async function updateReport(actualObject, updatedObject, updatedElementKey) {
+        let updatedReport = updatedObject || undefined
+        if (actualObject && updatedElementKey) {
+            let reportCopy = Object.assign(actualObject)
+            reportCopy[updatedElementKey] = updatedObject
+            updatedReport = reportCopy
+        }
+        if (updatedReport !== null) {
+            console.log("Objeto do relatório atualizado com sucesso!")
+            return updatedReport;
+        } else {
+            console.log("Erro ao atualizar objeto do relatório.")
         }
     }
 
@@ -159,6 +175,7 @@ function AuthProvider({ children }: AuthProviderProps) {
             signIn,
             signOut,
             updateUser,
+            updateReport,
             user,
             creatingAccount,
             isSigningIn

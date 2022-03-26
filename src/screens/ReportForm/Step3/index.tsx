@@ -136,6 +136,7 @@ export function ReportScreen3({ route, navigation }: any) {
                 </View>
                 <View style={{}}>
                     <TextInput
+                        multiline
                         style={styles.textForm}
                         onChangeText={setSuggestion}
                     />

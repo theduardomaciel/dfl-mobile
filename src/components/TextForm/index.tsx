@@ -27,9 +27,10 @@ type Props = TextInputProps & {
     textInputProps?: TextInputProps;
     fontStyle?: TextStyle;
     shadow?: boolean;
+    disabled?: boolean;
 }
 
-export function TextForm({ title, icon, titleStyle, customStyle, textInputProps, fontStyle, onIconPress, shadow }: Props) {
+export function TextForm({ title, icon, titleStyle, disabled = false, customStyle, textInputProps, fontStyle, onIconPress, shadow }: Props) {
     const shadowOptions = theme.shadowPropertiesLow;
     const decider = shadow ? [styles.inputContainer, shadowOptions, fontStyle] : [styles.inputContainer, fontStyle]
     // O problema estava na elevação (elevation), pois a da sombra era maior que a do ícone
@@ -39,12 +40,12 @@ export function TextForm({ title, icon, titleStyle, customStyle, textInputProps,
                 title ? <Text style={titleStyle ? [styles.title, titleStyle] : styles.title}>{title}</Text> : null
             }
             <View style={[{ flex: 1 }, onIconPress ? { flexDirection: "row-reverse" } : null]}>
-                <TextInput style={icon ? [decider, onIconPress ? { paddingRight: 30 } : { paddingLeft: 30 }] : decider}
+                <TextInput editable={!disabled} style={icon ? [decider, onIconPress ? { paddingRight: 30 } : { paddingLeft: 30 }] : decider}
                     {...textInputProps}
                 />
                 {
                     onIconPress ?
-                        <TouchableOpacity style={styles.icon} onPress={onIconPress}>
+                        <TouchableOpacity disabled={disabled} style={styles.icon} onPress={onIconPress}>
                             {icon}
                         </TouchableOpacity>
                         :

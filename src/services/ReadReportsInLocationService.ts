@@ -13,6 +13,7 @@ class ReadReportsInLocationService {
                 include: {
                     comments: {
                         include: {
+                            subComments: true,
                             profile: true
                         }
                     },

@@ -17,6 +17,8 @@ import { backgroundDrivers, buttonDrivers, TAB_BAR_HEIGHT, TAB_BAR_HEIGHT_LONG }
 import { api } from "../../utils/api";
 import { useAuth } from "../../hooks/useAuth";
 
+import * as FileSystem from 'expo-file-system';
+
 import Animated, {
     withSpring,
     useAnimatedStyle,
@@ -28,6 +30,7 @@ import { PanGestureHandler } from "react-native-gesture-handler";
 
 import { CommentsModal } from "./Comments";
 import { Report } from "../../@types/application";
+import { LoadingScreen } from "../../components/LoadingScreen";
 
 type PropTypes = {
     viewableItems: Array<ViewToken>;
@@ -39,6 +42,8 @@ export function Reports({ route, navigation }) {
     if (user === null) return (
         <View style={{ flex: 1 }} />
     );
+
+    const [isLoading, setIsLoading] = useState(false)
 
     const [data, setData] = useState<Array<Report>>([])
     const [isLoadingNewData, setIsLoadingNewData] = useState(false)
@@ -57,7 +62,6 @@ export function Reports({ route, navigation }) {
             } else {
                 setData(moreReports)
             }
-            console.log(data.length)
         } catch (error) {
             console.log("Não foi possível conectar-se ao servidor.", error)
         }
@@ -91,7 +95,7 @@ export function Reports({ route, navigation }) {
             setTabBarVisible(false)
         });
         if (data.length === 0) {
-            console.log("Carregando dados...", data.length)
+            console.log("Carregando dados...")
             loadMoreReports()
         }
         return unsubscribe;
@@ -204,7 +208,7 @@ export function Reports({ route, navigation }) {
     }
 
     const showToast = () => {
-        console.log("mostrando")
+        console.log("Mostrando toast de aviso.")
         Toast.show({
             type: 'info',
             text1: 'Eita! Calma aí...',
@@ -212,18 +216,34 @@ export function Reports({ route, navigation }) {
         });
     }
 
-    const shareReport = () => {
+    const shareReport = async () => {
+        setIsLoading(true)
         const report = data[currentIndex]
-        Share.open({
-            url: report.image_url,
-            message: `Olha esse foco de lixo que tá em ${report.address}! Encontrei ele pelo aplicativo DFL - Detector de Focos de Lixo, que envia relatórios de focos de lixo para a prefeitura.\nQue tal baixar e votar nesse foco pra que ele seja resolvido mais rápido?`,
-            title: `Olha esse foco de lixo que tá em ${report.address}!`
-        })
-            .then((response) => {
-                console.log(response);
+        FileSystem.downloadAsync(
+            report.image_url,
+            FileSystem.documentDirectory + 'report_image'
+        )
+            .then(async ({ uri }) => {
+                console.log('Finished downloading to ', uri);
+                const base64 = await FileSystem.readAsStringAsync(uri, { encoding: 'base64' });
+                const base64Data = `data:image/png;base64,` + base64;
+                Share.open({
+                    url: base64Data,
+                    message: `Olha esse foco de lixo que vi em *${report.address}*!\nEncontrei ele pelo aplicativo *DFL - Detector de Focos de Lixo*, que envia relatórios de focos de lixo relatados pela comunidade para a prefeitura.\n*Que tal baixar e avaliar nesse foco pra que ele seja resolvido mais rápido?*`,
+                    title: `Olha esse foco de lixo que tá em ${report.address}!`
+                })
+                    .then((response) => {
+                        console.log(response);
+                        setIsLoading(false)
+                    })
+                    .catch((error) => {
+                        error && console.log(error, "Houve uma ocorrência ao compartilhar a imagem baixada.");
+                        setIsLoading(false)
+                    });
+                FileSystem.deleteAsync(uri, { idempotent: true })
             })
-            .catch((error) => {
-                error && console.log(error);
+            .catch(error => {
+                console.error(error, "Houve um erro ao baixar a imagem.");
             });
     }
 
@@ -325,8 +345,11 @@ export function Reports({ route, navigation }) {
                 <CommentsModal
                     isVisible={isCommentsModalVisible}
                     closeFunction={() => { setCommentsModalVisible(false) }}
-                    reportComments={data[currentIndex].comments}
+                    report={data[currentIndex]}
                 />
+            }
+            {
+                isLoading ? <LoadingScreen /> : null
             }
         </View>
     );

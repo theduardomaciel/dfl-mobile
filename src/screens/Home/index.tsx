@@ -76,7 +76,11 @@ export function Home({ route, navigation }) {
                     }
                 });
         }
-        HasPermission();
+        console.log(route.params?.errorMessage)
+        if (route.params?.errorMessage) {
+            setErrorMessage(route.params?.errorMessage)
+            setErrorModalVisible(true)
+        }
     }, []);
 
     const [isRefreshing, setIsRefreshing] = useState(false)
@@ -150,7 +154,6 @@ export function Home({ route, navigation }) {
                     />
                 }
             >
-                {/* Seu nível */}
                 <Text style={[styles.title, { paddingTop: 0 }]}>
                     Seu nível
                 </Text>
@@ -166,7 +169,6 @@ export function Home({ route, navigation }) {
                     <Image source={LEVELS_DATA[user.profile.level].icon} />
                 </Pressable>
 
-                {/* Seu engajamento */}
                 <Text style={styles.title}>
                     Seu engajamento
                 </Text>
@@ -191,7 +193,6 @@ export function Home({ route, navigation }) {
                     </View>
                 </View>
 
-                {/* Engajamento da Comunidade */}
                 <View style={styles.communityTitle}>
                     <Text style={[styles.title, { marginLeft: 12 }]}>
                         Engajamento da Comunidade

@@ -14,7 +14,7 @@ class UploadImageService {
                 title: `report_${date.getDay()}-${date.getMonth()}_${profile_id}`,
                 type: "base64",
             });
-            //console.log(response.data);
+            console.log("✅ Uploaded image with success!");
             return response.data;
         } catch (error) {
             console.log(error)
@@ -26,6 +26,7 @@ class DeleteImageService {
     async execute(image_deleteHash: string) {
         try {
             const response = await client.deleteImage(image_deleteHash)
+            console.log("✅ Deleted image with success!");
             return response.data;
         } catch (error) {
             console.log(error)

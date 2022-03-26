@@ -25,17 +25,17 @@ export const styles = StyleSheet.create({
     },
     usernameText: {
         fontFamily: theme.fonts.subtitle700,
-        fontSize: 12,
+        fontSize: 14,
         color: theme.colors.primary1
     },
     commentText: {
         fontFamily: theme.fonts.subtitle400,
-        fontSize: 10,
+        fontSize: 12,
         color: theme.colors.secondary1
     },
     createdAtText: {
         fontFamily: theme.fonts.subtitle400,
-        fontSize: 8,
+        fontSize: 10,
         color: theme.colors.primary1
     }
 });
