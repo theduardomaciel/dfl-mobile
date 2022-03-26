@@ -10,5 +10,4 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 app.use(router)
 
-const PORT = 4000;
-app.listen(PORT, () => { console.log(`🚀 O servidor está rodando na porta ${PORT}`) })
+app.listen(process.env.PORT || 5000, () => { console.log(`🚀 O servidor está rodando na porta ${process.env.PORT}`) })
