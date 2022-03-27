@@ -51,7 +51,7 @@ model Report {
     suggestion       String
     hasTrashBins     Boolean   @default(true)
 
-    ratings  Float[]
+    ratings  Json?
     resolved Boolean @default(false)
 
     profile    Profile? @relation(fields: [profile_id], references: [id], onDelete: SetNull)

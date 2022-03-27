@@ -76,7 +76,8 @@ export function Home({ route, navigation }) {
                     }
                 });
         }
-        console.log(route.params?.errorMessage)
+        HasPermission();
+        console.log("Error Message: ", route.params?.errorMessage)
         if (route.params?.errorMessage) {
             setErrorMessage(route.params?.errorMessage)
             setErrorModalVisible(true)
@@ -111,8 +112,8 @@ export function Home({ route, navigation }) {
     const [isAvailable, setIsAvailable] = useState(true)
     async function CheckAvailability(coords) {
         const userLocation = await Location.reverseGeocodeAsync(coords) as any;
-        console.log(userLocation)
         if (userLocation.city && userLocation.subRegion !== "Maceió") {
+            console.log("Usuário não está em um local permitido.")
             setIsAvailable(false)
             setErrorMessage("Por enquanto, o DFL não está disponível em sua localização :(\nAguarde o lançamento oficial do aplicativo para que sua região esteja disponível.")
             setErrorModalVisible(true)

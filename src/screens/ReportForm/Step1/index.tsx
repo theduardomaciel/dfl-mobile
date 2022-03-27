@@ -19,7 +19,12 @@ async function getLocationAddress(latitude: number, longitude: number) {
         if (!fullAddress) {
             return getLocationAddress(latitude, longitude)
         }
-        const address = fullAddress[0].street + ", " + fullAddress[0].streetNumber + ", " + fullAddress[0].postalCode + " - " + fullAddress[0].subregion + ", " + fullAddress[0].region
+        const address = fullAddress[0].street + ", "
+            + fullAddress[0].streetNumber + ", "
+            + fullAddress[0].postalCode + " - "
+            + fullAddress[0].subregion + ", "
+            + fullAddress[0].region + ", "
+            + fullAddress[0].country
         return address
     } catch (error) {
         console.log(error)

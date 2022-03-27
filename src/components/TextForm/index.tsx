@@ -30,6 +30,9 @@ type Props = TextInputProps & {
     disabled?: boolean;
 }
 
+const TEXT_DISTANCE_FROM_ICON = 35
+const ICON_DISTANCE_FROM_BORDER = 15
+
 export function TextForm({ title, icon, titleStyle, disabled = false, customStyle, textInputProps, fontStyle, onIconPress, shadow }: Props) {
     const shadowOptions = theme.shadowPropertiesLow;
     const decider = shadow ? [styles.inputContainer, shadowOptions, fontStyle] : [styles.inputContainer, fontStyle]
@@ -40,16 +43,16 @@ export function TextForm({ title, icon, titleStyle, disabled = false, customStyl
                 title ? <Text style={titleStyle ? [styles.title, titleStyle] : styles.title}>{title}</Text> : null
             }
             <View style={[{ flex: 1 }, onIconPress ? { flexDirection: "row-reverse" } : null]}>
-                <TextInput editable={!disabled} style={icon ? [decider, onIconPress ? { paddingRight: 30 } : { paddingLeft: 30 }] : decider}
+                <TextInput editable={!disabled} style={icon ? [decider, onIconPress ? { paddingRight: TEXT_DISTANCE_FROM_ICON } : { paddingLeft: TEXT_DISTANCE_FROM_ICON }] : decider}
                     {...textInputProps}
                 />
                 {
                     onIconPress ?
-                        <TouchableOpacity disabled={disabled} style={styles.icon} onPress={onIconPress}>
+                        <TouchableOpacity disabled={disabled} style={[styles.icon, { left: ICON_DISTANCE_FROM_BORDER }]} onPress={onIconPress}>
                             {icon}
                         </TouchableOpacity>
                         :
-                        <View style={[styles.icon, onIconPress ? { right: 25 } : { left: 5 }]}>
+                        <View style={[styles.icon, { left: ICON_DISTANCE_FROM_BORDER / 1.5 }]}>
                             {icon}
                         </View>
                 }

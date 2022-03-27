@@ -32,7 +32,7 @@ export type Report = {
     suggestion: string,
     hasTrashBins: boolean,
 
-    ratings: Array<number>,
+    ratings: string,
     resolved: boolean,
     comments: Array<Comment>,
 }
@@ -42,4 +42,5 @@ export type Comment = {
     content: string;
     profile: Profile;
     Report: Report;
+    createdAt: string;
 }

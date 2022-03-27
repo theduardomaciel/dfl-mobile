@@ -36,8 +36,10 @@ type PropTypes = {
     viewableItems: Array<ViewToken>;
 }
 
+let lastIndex = 0;
+
 export function Reports({ route, navigation }) {
-    const { user } = useAuth();
+    const { user, updateReport } = useAuth();
 
     if (user === null) return (
         <View style={{ flex: 1 }} />
@@ -53,17 +55,27 @@ export function Reports({ route, navigation }) {
         try {
             const moreReportsResponse = await api.post("/report/location", {
                 location: user.profile.defaultCity ? user.profile.defaultCity.split(",")[0] : "Brasil",
-                exclusion: data.map(report => report.id),
-                profileToExclude: user.profile.id
+                // Caso o usuário já tenha criado um perfil, utilizamos a cidade inserida (primeiro nome antes da vírgula), 
+                // caso contrário, utilizamos o Brasil inteiro como local de busca
+                exclusionsId: data.map(report => report.id),
+                // Excluímos os relatórios já adicionados em buscas anteriores
+                //profileToExcludeId: user.profile.id
+                // Excluímos os relatórios criados pelo próprio usuário
             })
             const moreReports = moreReportsResponse.data as Array<Report>;
-            if (data.length > 0) {
-                setData(data.concat(moreReports))
+            if (moreReports.length > 0) {
+                if (data.length > 0) {
+                    console.log(`➕ Adicionando novos relatórios à array de 'data'.`)
+                    setData(data.concat(moreReports))
+                } else {
+                    console.log(`✌️ Inserindo relatórios à array de 'data' pela primeira vez.`)
+                    setData(moreReports)
+                }
             } else {
-                setData(moreReports)
+                showToast();
             }
         } catch (error) {
-            console.log("Não foi possível conectar-se ao servidor.", error)
+            console.log("Não foi possível conectar-se ao servidor para obter relatórios próximos ao usuário.", error)
         }
         setIsLoadingNewData(false)
     }
@@ -94,22 +106,90 @@ export function Reports({ route, navigation }) {
             // Removendo a barra inferior da tela quando o usuário muda de tela
             setTabBarVisible(false)
         });
-        if (data.length === 0) {
-            console.log("Carregando dados...")
-            loadMoreReports()
+        const unsubscribe2 = navigation.addListener('focus', () => {
+            if (data.length === 0) {
+                console.log("Carregando dados...")
+                loadMoreReports()
+            }
+        });
+        return () => {
+            unsubscribe
+            unsubscribe2
         }
-        return unsubscribe;
     }, [navigation])
 
-    const [rating, setRating] = useState(1)
+    const [rating, setRating] = useState(0)
     const [currentIndex, setCurrentIndex] = useState(0)
     const flatListRef = useRef<FlatList<any>>(null);
     const onViewableItemsChanged = useCallback(({ viewableItems }: PropTypes) => {
         if (viewableItems[0]) {
-            setRating(1)
             return setCurrentIndex(viewableItems[0].index)
         }
     }, []);
+
+    function GetRatingsAverage() {
+        const actualReport = data[currentIndex]
+        const ratings = typeof actualReport.ratings !== "string" ? actualReport.ratings : JSON.parse(actualReport.ratings);
+        let average = 0
+        for (let note = 1; note <= 5; note++) {
+            const noteRatings = ratings[note]
+            const sum = noteRatings.reduce((partialSum, a) => partialSum + a, 0);
+            average += (sum / noteRatings.length)
+        }
+        return average / 5
+    }
+
+    useEffect(() => {
+        async function UpdateReportRating() {
+            if (rating !== 0) {
+                const lastReport = data[lastIndex]
+                const lastReportRatings = typeof lastReport.ratings !== "string" ? lastReport.ratings : JSON.parse(lastReport.ratings);
+
+                async function CheckIfProfileHasAlreadyRated() {
+                    // Loopamos entre cada uma das possíveis notas
+                    for (let note = 1; note <= 5; note++) {
+                        const noteRatings = lastReportRatings[note.toString()]
+                        console.log(noteRatings.toString())
+                        const index = noteRatings.indexOf(user.profile.id)
+                        if (index > -1) {
+                            console.log(`Usuário já avaliou esse relatório com a nota ${note} no index ${index}`)
+                            const copy = Object.assign(lastReportRatings)
+                            copy[note.toString()].splice(index, 1)
+                            const removeUserRatingResponse = await api.post("/report/update", {
+                                report_id: lastReport.id,
+                                rating: lastReportRatings
+                            })
+                            //const updatedReportWithoutRating = removeUserRatingResponse.data as Report;
+                            console.log("🚯 A avaliação do usuário foi removida com sucesso!")
+                        }
+                    }
+                }
+                await CheckIfProfileHasAlreadyRated();
+
+                const copy = Object.assign(lastReportRatings)
+                copy[rating.toString()].push(user.profile.id)
+
+                const addUserRatingResponse = await api.post("/report/update", {
+                    report_id: lastReport.id,
+                    rating: copy
+                })
+                const updatedReportWithNewRating = addUserRatingResponse.data as Report;
+                console.log("✌️ A avaliação do usuário foi adicionada com sucesso!")
+
+                const dataCopy = Object.assign(data)
+                dataCopy[lastIndex] = updatedReportWithNewRating
+
+                lastIndex = currentIndex
+
+                setData(dataCopy)
+                setRating(0)
+            }
+        }
+        if (data.length > 0) {
+            UpdateReportRating();
+            GetRatingsAverage();
+        }
+    }, [currentIndex])
 
     const viewabilityConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
     const viewabilityConfigCallbackPairs = useRef([{ viewabilityConfig, onViewableItemsChanged }])
@@ -240,7 +320,7 @@ export function Reports({ route, navigation }) {
                         error && console.log(error, "Houve uma ocorrência ao compartilhar a imagem baixada.");
                         setIsLoading(false)
                     });
-                FileSystem.deleteAsync(uri, { idempotent: true })
+                FileSystem.deleteAsync(uri, { idempotent: true }) // idempotent faz com que a imagem seja apagada mesmo que ela já exista no dispositivo
             })
             .catch(error => {
                 console.error(error, "Houve um erro ao baixar a imagem.");
@@ -265,7 +345,7 @@ export function Reports({ route, navigation }) {
                     viewabilityConfig={viewabilityConfig}
                     ref={flatListRef}
                     ListFooterComponent={renderFooter}
-                    onEndReached={() => { showToast() }}
+                    onEndReached={loadMoreReports}
                     onEndReachedThreshold={0}
                 />
             </View>
@@ -297,7 +377,7 @@ export function Reports({ route, navigation }) {
                             <View style={[styles.buttonCircle, { width: 65, height: 65 }]} />
                             <View style={[styles.buttonCircle, { width: 50, height: 50, opacity: 1 }]} />
                             <TrashBinSVG height={28} width={28} />
-                            <Text style={[styles.ratingViewerText]}>{rating}</Text>
+                            <Text style={[styles.ratingViewerText]}>{GetRatingsAverage()}</Text>
                         </View>
                         <Pressable style={styles.actionButton} onPress={() => setCommentsModalVisible(true)}>
                             <View style={[styles.buttonCircle, { width: 65, height: 65 }]} />

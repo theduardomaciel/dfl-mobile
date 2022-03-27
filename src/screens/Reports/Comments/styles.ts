@@ -16,6 +16,13 @@ export const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "flex-start"
     },
+    profile_image: {
+        width: 40,
+        height: 40,
+        borderRadius: 40 / 2,
+        marginRight: 10,
+        overflow: "hidden",
+    },
 
     title: {
         fontFamily: theme.fonts.subtitle700,

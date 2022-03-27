@@ -19,7 +19,7 @@ class UpdateProfileService {
                 console.log(`🙋 Perfil do usuário atualizado com sucesso!`);
                 return profile;
             } else {
-                console.log("❌ Ocorreu um erro ao tentar ao atualizar o perfil.")
+                console.log("❌ Ocorreu um erro ao tentar atualizar o perfil do usuário.")
             }
         } catch (error) {
             console.log(error);

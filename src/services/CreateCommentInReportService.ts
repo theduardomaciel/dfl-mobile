@@ -22,7 +22,7 @@ class CreateCommentInReportService {
                     profile: true
                 }
             });
-            console.log(comment, `💭 Comentário criado pelo perfil de ID: ${profile_id} com sucesso no relatório de ID: ${report_id}.`)
+            console.log(comment, `💭 Comentário criado pelo perfil ${profile_username} com sucesso no relatório de ID: ${report_id}.`)
             return comment;
         } catch (error) {
             console.log(error)

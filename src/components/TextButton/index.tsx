@@ -52,7 +52,7 @@ export function TextButton({ title, colors, icon, iconStyle, buttonStyle, textSt
                 isLoading ?
                     <ActivityIndicator size={"small"} color={textStyle && textStyle.color ? textStyle.color : styles.title.color} animating={isLoading} />
                     :
-                    <View style={[{ flexDirection: "row", alignItems: "center" }, icon ? { justifyContent: "space-evenly" } : null]}>
+                    <View style={[{ flexDirection: "row", alignItems: "center", minHeight: 20 }, icon ? { justifyContent: "space-evenly" } : null]}>
                         {
                             icon &&
                             <View style={[iconStyle, { marginRight: 15 }]}>

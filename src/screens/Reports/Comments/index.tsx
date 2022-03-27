@@ -1,5 +1,5 @@
-import React, { useRef, useState } from "react";
-import { ActivityIndicator, FlatList, Image, LayoutAnimation, Platform, ScrollView, Text, UIManager, View, ViewToken } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { ActivityIndicator, FlatList, Image, LayoutAnimation, Platform, Pressable, ScrollView, Text, UIManager, View, ViewToken } from "react-native";
 
 import { styles } from "./styles";
 import { theme } from "../../../global/styles/theme";
@@ -12,6 +12,8 @@ import { MaterialIcons } from "@expo/vector-icons"
 import { useAuth } from "../../../hooks/useAuth";
 import { Comment, Report } from "../../../@types/application";
 import { api } from "../../../utils/api";
+import { ModalBase } from "../../../components/ModalBase";
+import { TextButton } from "../../../components/TextButton";
 
 type Props = {
     isVisible: any;
@@ -19,10 +21,35 @@ type Props = {
     report: Report;
 }
 
+let actualComment = { id: 0, index: 0 }
+
+function CalculateCommentCreatedAt(item) {
+    const actualDate = new Date();
+    const differenceTime = actualDate.getTime() - new Date(item.createdAt).getTime()
+    const SECONDS = Math.floor(Math.abs(differenceTime) / 1000)
+    const MINUTES = Math.floor(SECONDS / 60)
+    const HOURS = Math.floor(MINUTES / 60)
+    let createdAtText = ""
+    if (HOURS > 24) {
+        createdAtText = `${Math.floor(HOURS / 24)} dias atrás`
+    } else if (HOURS >= 1) {
+        createdAtText = `${HOURS} hora${HOURS > 1 ? "s" : ""} atrás`
+    } else if (MINUTES >= 1) {
+        createdAtText = `${MINUTES} minuto${MINUTES > 1 ? "s" : ""} atrás`
+    } else {
+        createdAtText = `${SECONDS} segundo${SECONDS > 1 ? "s" : ""} atrás`
+    }
+    return createdAtText;
+}
+
 export function CommentsModal({ isVisible, closeFunction, report }: Props) {
     const [reportObject, setReportObject] = useState(report)
 
     const { user, updateReport } = useAuth();
+
+    useEffect(() => {
+        setReportObject(report)
+    }, [report])
 
     if (Platform.OS === 'android') {
         if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -30,53 +57,118 @@ export function CommentsModal({ isVisible, closeFunction, report }: Props) {
         }
     }
 
-    const actualDate = new Date();
+    const [isDeleteModalVisible, setDeleteModalVisible] = useState(false)
+    const [isDeletingComment, setDeletingComment] = useState(false)
+    const deleteComment = async () => {
+        console.log("Excluindo comentário do relatório.")
+        setDeletingComment(true)
+
+        // Atualizando objeto do relatório no banco de dados
+        await api.post("/report/comments/delete", { comment_id: actualComment.id })
+        console.log("Comentário adicionado com sucesso no relatório.")
+
+        // Atualizando objeto do relatório localmente
+        let commentCopy = Object.assign(report.comments)
+        console.log(actualComment.index)
+        commentCopy.splice(actualComment.index, 1)
+        const updatedReport = await updateReport(report, commentCopy, "comments")
+
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        setReportObject(updatedReport)
+
+        console.log("Relatório local atualizado com o comentário removido.")
+        setDeleteModalVisible(false)
+        setDeletingComment(false)
+    }
+
+    const [uploadingComment, setUploadingComment] = useState(false)
+    const [commentText, setCommentText] = useState("")
+    const shareComment = async () => {
+        console.log("Adicionando comentário ao relatório com a seguinte mensagem: ", commentText)
+        setUploadingComment(true)
+
+        // Atualizando objeto do relatório no banco de dados
+        const commentResponse = await api.post("/report/comments/create", {
+            profile_id: user.profile.id,
+            profile_username: user.profile.username,
+            report_id: report.id,
+            content: commentText
+        })
+        const comment = commentResponse.data as Comment;
+        console.log("Comentário adicionado com sucesso no relatório.", comment)
+
+        // Atualizando objeto do relatório localmente
+        let commentCopy = Object.assign(report.comments)
+        commentCopy.push(comment)
+        const updatedReport = await updateReport(report, commentCopy, "comments")
+
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        setReportObject(updatedReport)
+
+        console.log("Relatório local atualizado com o comentário adicionado.")
+
+        setUploadingComment(false)
+    }
+
     const renderComment = ({ item, index }) => {
-        const differenceTime = actualDate.getTime() - new Date(item.createdAt).getTime()
-        const SECONDS = Math.floor(differenceTime / 1000)
-        const MINUTES = Math.floor(SECONDS / 60)
-        const HOURS = Math.floor(MINUTES / 60)
-        let createdAtText = ""
-        if (HOURS > 24) {
-            createdAtText = `${Math.floor(HOURS / 24)} dias atrás`
-        } else if (MINUTES >= 1) {
-            createdAtText = `${MINUTES} minutos atrás`
-        } else if (SECONDS < 60) {
-            createdAtText = `${SECONDS} segundos atrás`
-        } else {
-            createdAtText = `${HOURS}h atrás`
-        }
+        const createdAtText = CalculateCommentCreatedAt(item)
         return (
-            <View style={{ flexDirection: "row", marginBottom: 10, width: "90%", overflow: "hidden" }}>
-                <Image
-                    source={{ uri: item.profile.image_url }}
-                    style={{
-                        overflow: "hidden",
-                        resizeMode: "cover",
-                        width: 40,
-                        height: 40,
-                        marginRight: 10,
-                        borderRadius: 40 / 2,
-                    }}
-                />
-                <View style={{ width: "90%", height: "100%" }}>
-                    <Text style={styles.usernameText}>
-                        {item.profile.username}
-                    </Text>
-                    <Text style={styles.commentText}>
-                        {item.content}
-                    </Text>
-                    <Text style={styles.createdAtText}>
-                        {createdAtText}
-                    </Text>
+            item.profile.id === user.profile.id ?
+                <Pressable style={{ flexDirection: "row", marginBottom: 10, width: "90%" }} onLongPress={() => {
+                    actualComment.index = index
+                    actualComment.id = item.id
+                    setDeleteModalVisible(true)
+                }} android_ripple={{ color: theme.colors.primary2 }} >
+                    <View style={styles.profile_image}>
+                        <Image
+                            progressiveRenderingEnabled
+                            style={{ flex: 1 }}
+                            source={{
+                                uri: item.profile.image_url,
+                            }}
+                        />
+                    </View>
+                    <View style={{ width: "90%", height: "100%" }}>
+                        <Text style={styles.usernameText}>
+                            {item.profile.username}
+                        </Text>
+                        <Text style={styles.commentText}>
+                            {item.content}
+                        </Text>
+                        <Text style={styles.createdAtText}>
+                            {createdAtText}
+                        </Text>
+                    </View>
+                </Pressable>
+                :
+                <View style={{ flexDirection: "row", marginBottom: 10, width: "90%" }}>
+                    <View style={styles.profile_image}>
+                        <Image
+                            progressiveRenderingEnabled
+                            style={{ flex: 1 }}
+                            source={{
+                                uri: item.profile.image_url,
+                            }}
+                        />
+                    </View>
+                    <View style={{ width: "90%", height: "100%" }}>
+                        <Text style={styles.usernameText}>
+                            {item.profile.username}
+                        </Text>
+                        <Text style={styles.commentText}>
+                            {item.content}
+                        </Text>
+                        <Text style={styles.createdAtText}>
+                            {createdAtText}
+                        </Text>
+                    </View>
                 </View>
-            </View>
         )
     }
 
     const EmptyItem = () => {
         return (
-            <View style={{ alignItems: "center", height: "100%", justifyContent: "center" }}>
+            <View style={{ alignItems: "center", justifyContent: "center", alignSelf: "center", flex: 1, backgroundColor: "transparent" }}>
                 <TrashBinSvg
                     width={40}
                     height={80}
@@ -101,35 +193,6 @@ export function CommentsModal({ isVisible, closeFunction, report }: Props) {
         )
     }
 
-    const [uploadingComment, setUploadingComment] = useState(false)
-    const [commentText, setCommentText] = useState("")
-    const shareComment = async () => {
-        console.log("Adicionando comentário ao relatório.", commentText)
-        setUploadingComment(true)
-
-        // Atualizando objeto do relatório no banco de dados
-        const commentResponse = await api.post("/report/comment/create", {
-            profile_id: user.profile.id,
-            profile_username: user.profile.username,
-            report_id: report.id,
-            content: commentText
-        })
-        const comment = commentResponse.data as Comment;
-        console.log("Comentário adicionado com sucesso no relatório.", comment)
-
-        // Atualizando objeto do relatório localmente
-        let commentCopy = Object.assign(report.comments)
-        commentCopy.push(comment)
-        const updatedReport = await updateReport(report, commentCopy, "comments")
-
-        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-        setReportObject(updatedReport)
-
-        console.log("Relatório local atualizado com o comentário adicionado.")
-
-        setUploadingComment(false)
-    }
-
     return (
         <Modal
             testID={'modal'}
@@ -140,6 +203,34 @@ export function CommentsModal({ isVisible, closeFunction, report }: Props) {
             style={styles.view}
             propagateSwipe
         >
+            <ModalBase
+                isVisible={isDeleteModalVisible}
+                onBackdropPress={() => { }}
+                title={"Tem certeza que deseja deletar o comentário?"}
+                description={"Essa ação não poderá ser desfeita."}
+                children={
+                    isDeletingComment ?
+                        <View style={{ flex: 1 }}>
+                            <ActivityIndicator size={"small"} color={theme.colors.primary1} />
+                        </View>
+                        :
+                        <View style={{ flex: 1, flexDirection: "row" }}>
+                            <TextButton
+                                title="CANCELAR"
+                                buttonStyle={{ backgroundColor: theme.colors.red_light, paddingVertical: 10, paddingHorizontal: 15, marginRight: 10 }}
+                                onPress={() => {
+                                    setDeleteModalVisible(false)
+                                }}
+                            />
+                            <TextButton
+                                title="CONTINUAR"
+                                buttonStyle={{ paddingVertical: 10, paddingHorizontal: 15 }}
+                                onPress={deleteComment}
+                            />
+                        </View>
+                }
+                toggleModal={() => { setDeleteModalVisible(!isDeleteModalVisible) }}
+            />
             <View style={styles.container}>
                 <View style={{
                     marginTop: 15,
@@ -150,18 +241,22 @@ export function CommentsModal({ isVisible, closeFunction, report }: Props) {
                     borderRadius: 5,
                     opacity: 0.5
                 }} />
-                <Text style={styles.title}>{`${report.comments.length} comentários`}</Text>
-                <ScrollView showsVerticalScrollIndicator={false} >
+                <Text style={styles.title}>{`${reportObject.comments.length} comentário${reportObject.comments.length > 1 ? 's' : ""}`}</Text>
+                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={reportObject.comments.length === 0 && { height: "100%" }} >
                     <View style={{ flex: 1 }} onStartShouldSetResponder={(): boolean => true}>
                         <FlatList
                             style={{ flex: 1 }}
-                            data={report.comments}
+                            data={reportObject.comments.sort(function (x, y) {
+                                const date1 = new Date(x.createdAt) as any;
+                                const date2 = new Date(y.createdAt) as any;
+                                return date2 - date1;
+                            })}
                             contentContainerStyle={{ flex: 1 }}
                             renderItem={renderComment}
                             keyExtractor={item => item.id}
                             ListEmptyComponent={EmptyItem}
                             showsVerticalScrollIndicator={false}
-                            inverted
+                            windowSize={10}
                         />
                     </View>
                 </ScrollView>
@@ -173,7 +268,7 @@ export function CommentsModal({ isVisible, closeFunction, report }: Props) {
                         maxLength: 150,
                         onChangeText: (text) => setCommentText(text),
                     }}
-                    icon={uploadingComment ? <ActivityIndicator size={"small"} color={theme.colors.secondary1} /> : <MaterialIcons name="send" size={18} color={theme.colors.secondary1} />}
+                    icon={uploadingComment ? <ActivityIndicator size={"small"} color={theme.colors.secondary1} /> : <MaterialIcons name="send" size={22} color={theme.colors.secondary1} />}
                     onIconPress={shareComment}
                     disabled={uploadingComment}
                     fontStyle={{ fontSize: 13 }}
