@@ -13,6 +13,6 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
         borderTopLeftRadius: 15,
         borderTopRightRadius: 15,
-        justifyContent: 'space-evenly',
+        justifyContent: 'space-around',
     },
 });

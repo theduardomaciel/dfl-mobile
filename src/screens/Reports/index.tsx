@@ -46,21 +46,17 @@ export function Reports({ route, navigation }) {
     );
 
     const [isLoading, setIsLoading] = useState(false)
-
     const [data, setData] = useState<Array<Report>>([])
-    const [isLoadingNewData, setIsLoadingNewData] = useState(false)
-
     async function loadMoreReports() {
-        setIsLoadingNewData(true)
         try {
             const moreReportsResponse = await api.post("/report/location", {
-                location: user.profile.defaultCity ? user.profile.defaultCity.split(",")[0] : "Brasil",
-                // Caso o usuário já tenha criado um perfil, utilizamos a cidade inserida (primeiro nome antes da vírgula), 
+                // Condição 1: Local - Caso o usuário já tenha criado um perfil, utilizamos a cidade inserida (primeiro nome antes da vírgula), 
                 // caso contrário, utilizamos o Brasil inteiro como local de busca
+                location: user.profile.defaultCity ? user.profile.defaultCity.split(",")[0] : "Brasil",
+                // Condição 2: Novos - Excluímos os relatórios já adicionados em buscas anteriores
                 exclusionsId: data.map(report => report.id),
-                // Excluímos os relatórios já adicionados em buscas anteriores
+                // Condição 3: Usuário - Excluímos os relatórios criados pelo próprio usuário
                 //profileToExcludeId: user.profile.id
-                // Excluímos os relatórios criados pelo próprio usuário
             })
             const moreReports = moreReportsResponse.data as Array<Report>;
             if (moreReports.length > 0) {
@@ -77,7 +73,6 @@ export function Reports({ route, navigation }) {
         } catch (error) {
             console.log("Não foi possível conectar-se ao servidor para obter relatórios próximos ao usuário.", error)
         }
-        setIsLoadingNewData(false)
     }
 
     const renderFooter = ({ item, index }) => {
@@ -98,25 +93,11 @@ export function Reports({ route, navigation }) {
                 setTabBarVisible(false)
             }
         })
-    }, [])
-
-    useEffect(() => {
-        const unsubscribe = navigation.addListener('blur', () => {
-            console.log("Ocultando tab bar")
-            // Removendo a barra inferior da tela quando o usuário muda de tela
-            setTabBarVisible(false)
-        });
-        const unsubscribe2 = navigation.addListener('focus', () => {
-            if (data.length === 0) {
-                console.log("Carregando dados...")
-                loadMoreReports()
-            }
-        });
-        return () => {
-            unsubscribe
-            unsubscribe2
+        if (data.length === 0) {
+            console.log("Os dados ainda não foram carregados. Carregando-os pela primeira vez.")
+            loadMoreReports()
         }
-    }, [navigation])
+    }, [])
 
     const [rating, setRating] = useState(0)
     const [currentIndex, setCurrentIndex] = useState(0)
@@ -128,66 +109,89 @@ export function Reports({ route, navigation }) {
     }, []);
 
     function GetRatingsAverage() {
+        //console.log("Atualizando rating do relatório atual.")
         const actualReport = data[currentIndex]
         const ratings = typeof actualReport.ratings !== "string" ? actualReport.ratings : JSON.parse(actualReport.ratings);
         let average = 0
+        let medium = 0;
         for (let note = 1; note <= 5; note++) {
+            // Loopamos por cada um dos 5 tipos de nota, e realizamos a média de cada um
             const noteRatings = ratings[note]
-            const sum = noteRatings.reduce((partialSum, a) => partialSum + a, 0);
-            average += (sum / noteRatings.length)
+            /* const sum = noteRatings.reduce((partialSum, a) => partialSum + a, 0); */
+            const sum = noteRatings.reduce((a, b) => a + b, 0)
+            //console.log(`Nota atual: ${note} | Somatório dessas notas: ${sum} | Somatório * o peso da nota: ${sum * note}`)
+            if (sum > 0) {
+                medium += 1
+                average += ((note * sum) / noteRatings.length)
+            }
         }
-        return average / 5
+        return average / medium
     }
 
     useEffect(() => {
         async function UpdateReportRating() {
+            // Quando o usuário passar de relatório, atualizaremos a nota do anterior, caso ele tenha votado (seu rating será diferente de 0)
             if (rating !== 0) {
                 const lastReport = data[lastIndex]
                 const lastReportRatings = typeof lastReport.ratings !== "string" ? lastReport.ratings : JSON.parse(lastReport.ratings);
 
-                async function CheckIfProfileHasAlreadyRated() {
+                function CheckIfProfileAlreadyRated() {
                     // Loopamos entre cada uma das possíveis notas
                     for (let note = 1; note <= 5; note++) {
                         const noteRatings = lastReportRatings[note.toString()]
-                        console.log(noteRatings.toString())
                         const index = noteRatings.indexOf(user.profile.id)
+                        // Caso encontremos um index diferente de -1, o usuário já votou com a "note" do loop atual
                         if (index > -1) {
-                            console.log(`Usuário já avaliou esse relatório com a nota ${note} no index ${index}`)
+                            console.log(`Usuário já avaliou esse relatório com a nota ${note}. 🚯 Removendo-a.`)
                             const copy = Object.assign(lastReportRatings)
                             copy[note.toString()].splice(index, 1)
-                            const removeUserRatingResponse = await api.post("/report/update", {
-                                report_id: lastReport.id,
-                                rating: lastReportRatings
-                            })
-                            //const updatedReportWithoutRating = removeUserRatingResponse.data as Report;
-                            console.log("🚯 A avaliação do usuário foi removida com sucesso!")
+                            // Retornamos o JSON de ratings sem o voto do usuário
+                            return copy
                         }
                     }
                 }
-                await CheckIfProfileHasAlreadyRated();
 
-                const copy = Object.assign(lastReportRatings)
-                copy[rating.toString()].push(user.profile.id)
+                const ratingWithoutUserVote = CheckIfProfileAlreadyRated()
+                try {
+                    let updatedReportWithNewRating = null;
+                    if (ratingWithoutUserVote) {
+                        const copy = Object.assign(ratingWithoutUserVote)
+                        copy[rating.toString()].push(user.profile.id)
 
-                const addUserRatingResponse = await api.post("/report/update", {
-                    report_id: lastReport.id,
-                    rating: copy
-                })
-                const updatedReportWithNewRating = addUserRatingResponse.data as Report;
-                console.log("✌️ A avaliação do usuário foi adicionada com sucesso!")
+                        const addUserRatingResponse = await api.post("/report/update", {
+                            report_id: lastReport.id,
+                            rating: copy
+                        })
+                        updatedReportWithNewRating = addUserRatingResponse.data as Report;
+                    } else {
+                        const copy = Object.assign(lastReportRatings)
+                        copy[rating.toString()].push(user.profile.id)
 
-                const dataCopy = Object.assign(data)
-                dataCopy[lastIndex] = updatedReportWithNewRating
+                        const addUserRatingResponse = await api.post("/report/update", {
+                            report_id: lastReport.id,
+                            rating: copy
+                        })
+                        updatedReportWithNewRating = addUserRatingResponse.data as Report;
+                    }
+                    console.log("✌️ A avaliação do usuário foi adicionada com sucesso!")
 
-                lastIndex = currentIndex
+                    if (updatedReportWithNewRating) {
+                        // Atualizamos os dados localmente para que a nota geral possa ser exibida corretamente
+                        const dataCopy = Object.assign(data)
+                        dataCopy[lastIndex] = updatedReportWithNewRating
+                        lastIndex = currentIndex
 
-                setData(dataCopy)
-                setRating(0)
+                        setData(dataCopy)
+                    } else {
+                        console.log("Não foi possível atualizar o rating do usuário.")
+                    }
+                } catch (error) {
+                    console.log(error)
+                }
             }
         }
         if (data.length > 0) {
             UpdateReportRating();
-            GetRatingsAverage();
         }
     }, [currentIndex])
 
@@ -232,13 +236,13 @@ export function Reports({ route, navigation }) {
     });
 
     const onGestureBegin = () => {
-        console.log("Pressionando o botão")
+        console.log("O gesto de avaliação iniciou.")
         offset.value = 62
         ratingPosition.value = 0
     }
 
     const onGestureEnded = () => {
-        console.log("O gesto acabou.")
+        console.log("O gesto de avaliação terminou.")
         offset.value = 62
         ratingPosition.value = 350
     }

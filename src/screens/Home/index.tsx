@@ -77,8 +77,8 @@ export function Home({ route, navigation }) {
                 });
         }
         HasPermission();
-        console.log("Error Message: ", route.params?.errorMessage)
         if (route.params?.errorMessage) {
+            console.log("Error Message: ", route.params?.errorMessage)
             setErrorMessage(route.params?.errorMessage)
             setErrorModalVisible(true)
         }
