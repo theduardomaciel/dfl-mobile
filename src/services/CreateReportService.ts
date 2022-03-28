@@ -25,13 +25,13 @@ class CreateReportService {
                     image_url: image_url,
                     image_deleteHash: image_deleteHash,
                     tags: JSON.stringify(tags),
-                    ratings: JSON.stringify({
-                        1: [],
-                        2: [],
-                        3: [],
-                        4: [],
-                        5: [],
-                    }),
+
+                    note1: 0,
+                    note2: 0,
+                    note3: 0,
+                    note4: 0,
+                    note5: 0,
+
                     suggestion: suggestion,
                     hasTrashBins: hasTrashBins,
                 },

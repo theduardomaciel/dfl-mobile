@@ -164,7 +164,10 @@ export function ProfileIcon({ uri, openConfig }: Props) {
             title: "Log-out",
             description: "nos vemos em breve!",
             icon: <MaterialIcons name="logout" size={48} color={theme.colors.primary1} />,
-            onPress: signOut
+            onPress: () => {
+                setIsLoading(true)
+                signOut()
+            }
         },
     ]
 

@@ -35,6 +35,7 @@ model Profile {
     comments    Comment[]
 
     reports Report[]
+    ratings Json
 
     user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
     user_id String @unique
@@ -51,7 +52,12 @@ model Report {
     suggestion       String
     hasTrashBins     Boolean   @default(true)
 
-    ratings  Json?
+    note1 Int @default(0)
+    note2 Int @default(0)
+    note3 Int @default(0)
+    note4 Int @default(0)
+    note5 Int @default(0)
+
     resolved Boolean @default(false)
 
     profile    Profile? @relation(fields: [profile_id], references: [id], onDelete: SetNull)

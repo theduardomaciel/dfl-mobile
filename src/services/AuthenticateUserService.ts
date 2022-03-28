@@ -62,7 +62,7 @@ class AuthenticateUserService {
             include: {
                 profile: {
                     include: {
-                        reports: true
+                        reports: true,
                     }
                 },
             }
@@ -78,11 +78,18 @@ class AuthenticateUserService {
                     profile: {
                         create: {
                             image_url: photo,
+                            ratings: {
+                                1: [],
+                                2: [],
+                                3: [],
+                                4: [],
+                                5: [],
+                            }
                         }
-                    }
+                    },
                 },
                 include: {
-                    profile: true
+                    profile: true,
                 }
             })
             console.log(user, "🙋 Usuário criado com sucesso!")

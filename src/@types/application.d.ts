@@ -18,6 +18,7 @@ export type Profile = {
     level: number;
     experience: number;
     reports?: Array<Report>;
+    ratings: any;
 }
 
 export type Report = {
@@ -32,7 +33,12 @@ export type Report = {
     suggestion: string,
     hasTrashBins: boolean,
 
-    ratings: string,
+    note1: number,
+    note2: number,
+    note3: number,
+    note4: number,
+    note5: number,
+
     resolved: boolean,
     comments: Array<Comment>,
 }

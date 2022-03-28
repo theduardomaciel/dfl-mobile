@@ -39,7 +39,7 @@ type PropTypes = {
 let lastIndex = 0;
 
 export function Reports({ route, navigation }) {
-    const { user, updateReport } = useAuth();
+    const { user, updateUser } = useAuth();
 
     if (user === null) return (
         <View style={{ flex: 1 }} />
@@ -97,7 +97,7 @@ export function Reports({ route, navigation }) {
             console.log("Os dados ainda não foram carregados. Carregando-os pela primeira vez.")
             loadMoreReports()
         }
-    }, [])
+    }, [navigation])
 
     const [rating, setRating] = useState(0)
     const [currentIndex, setCurrentIndex] = useState(0)
@@ -111,83 +111,63 @@ export function Reports({ route, navigation }) {
     function GetRatingsAverage() {
         //console.log("Atualizando rating do relatório atual.")
         const actualReport = data[currentIndex]
-        const ratings = typeof actualReport.ratings !== "string" ? actualReport.ratings : JSON.parse(actualReport.ratings);
-        let average = 0
-        let medium = 0;
-        for (let note = 1; note <= 5; note++) {
-            // Loopamos por cada um dos 5 tipos de nota, e realizamos a média de cada um
-            const noteRatings = ratings[note]
-            /* const sum = noteRatings.reduce((partialSum, a) => partialSum + a, 0); */
-            const sum = noteRatings.reduce((a, b) => a + b, 0)
-            //console.log(`Nota atual: ${note} | Somatório dessas notas: ${sum} | Somatório * o peso da nota: ${sum * note}`)
-            if (sum > 0) {
-                medium += 1
-                average += ((note * sum) / noteRatings.length)
-            }
-        }
-        return average / medium
+        const ratings = [actualReport.note1, actualReport.note2, actualReport.note3, actualReport.note4, actualReport.note5]
+        const sum = ratings.reduce((a, b) => a + b, 0)
+        return sum / 5
     }
 
     useEffect(() => {
         async function UpdateReportRating() {
+            await updateUser()
             // Quando o usuário passar de relatório, atualizaremos a nota do anterior, caso ele tenha votado (seu rating será diferente de 0)
             if (rating !== 0) {
                 const lastReport = data[lastIndex]
-                const lastReportRatings = typeof lastReport.ratings !== "string" ? lastReport.ratings : JSON.parse(lastReport.ratings);
+                const newRating = new Array(5)
 
+                let profileRating = Object.assign(typeof user.profile.ratings === "string" ? JSON.parse(user.profile.ratings) : user.profile.ratings);
+
+                // newRating[x] = nota | [0] = increment | [1] = decrement
                 function CheckIfProfileAlreadyRated() {
                     // Loopamos entre cada uma das possíveis notas
                     for (let note = 1; note <= 5; note++) {
-                        const noteRatings = lastReportRatings[note.toString()]
-                        const index = noteRatings.indexOf(user.profile.id)
+                        const noteRatings = profileRating[note.toString()]
+                        const index = noteRatings.indexOf(lastReport.id)
                         // Caso encontremos um index diferente de -1, o usuário já votou com a "note" do loop atual
                         if (index > -1) {
                             console.log(`Usuário já avaliou esse relatório com a nota ${note}. 🚯 Removendo-a.`)
-                            const copy = Object.assign(lastReportRatings)
-                            copy[note.toString()].splice(index, 1)
-                            // Retornamos o JSON de ratings sem o voto do usuário
-                            return copy
+                            // Removemos 1 voto da nota em que o usuário votou
+                            newRating[note] = [0, 1]
+                            // Removemos a avaliação do perfil do usuário para em seguida atualizarmos ele no banco de dados
+                            profileRating[note.toString()].splice(index, 1)
+                            return true
                         }
                     }
                 }
 
-                const ratingWithoutUserVote = CheckIfProfileAlreadyRated()
-                try {
-                    let updatedReportWithNewRating = null;
-                    if (ratingWithoutUserVote) {
-                        const copy = Object.assign(ratingWithoutUserVote)
-                        copy[rating.toString()].push(user.profile.id)
+                const hasAlreadyVoted = CheckIfProfileAlreadyRated();
 
-                        const addUserRatingResponse = await api.post("/report/update", {
-                            report_id: lastReport.id,
-                            rating: copy
-                        })
-                        updatedReportWithNewRating = addUserRatingResponse.data as Report;
-                    } else {
-                        const copy = Object.assign(lastReportRatings)
-                        copy[rating.toString()].push(user.profile.id)
+                // Deixa isso aqui depois da função que checa se o cara já votou por favor.
+                profileRating[rating.toString()].push(lastReport.id)
+                newRating[rating] = [1, 0]
 
-                        const addUserRatingResponse = await api.post("/report/update", {
-                            report_id: lastReport.id,
-                            rating: copy
-                        })
-                        updatedReportWithNewRating = addUserRatingResponse.data as Report;
-                    }
-                    console.log("✌️ A avaliação do usuário foi adicionada com sucesso!")
+                const serverResponse = await api.post("/report/update", {
+                    report_id: lastReport.id,
+                    decrement: hasAlreadyVoted ? true : false,
+                    rating: newRating,
+                    profile_id: user.profile.id,
+                    profileRating: profileRating
+                })
 
-                    if (updatedReportWithNewRating) {
-                        // Atualizamos os dados localmente para que a nota geral possa ser exibida corretamente
-                        const dataCopy = Object.assign(data)
-                        dataCopy[lastIndex] = updatedReportWithNewRating
-                        lastIndex = currentIndex
+                const { report, profile } = serverResponse.data;
 
-                        setData(dataCopy)
-                    } else {
-                        console.log("Não foi possível atualizar o rating do usuário.")
-                    }
-                } catch (error) {
-                    console.log(error)
-                }
+                const dataCopy = Object.assign(data)
+                dataCopy[lastIndex] = report
+                setData(dataCopy)
+
+                //updateUser(profile, "profile")
+
+                lastIndex = currentIndex
+                setRating(0)
             }
         }
         if (data.length > 0) {
