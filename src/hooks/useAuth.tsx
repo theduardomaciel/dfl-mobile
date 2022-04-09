@@ -64,16 +64,19 @@ function AuthProvider({ children }: AuthProviderProps) {
                 try {
                     console.log("Checando dados no servidor...")
                     const authResponse = await api.post("/authenticate", { user_info: userInfoWithScopes, access_token: tokens.accessToken })
-                    const { user, token } = authResponse.data as AuthResponse;
+                    const authResponseData = authResponse.data as AuthResponse;
+
+                    const responseUser = authResponseData.user
+                    const responseToken = authResponseData.token
 
                     console.log("Dados obtidos com sucesso!")
-                    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+                    api.defaults.headers.common['Authorization'] = `Bearer ${responseToken}`;
 
-                    await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(user));
-                    await AsyncStorage.setItem(TOKEN_STORAGE, token);
+                    await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(responseUser));
+                    await AsyncStorage.setItem(TOKEN_STORAGE, responseToken);
 
                     setUser(user);
-                    console.log(`Usuário ${token} com sucesso!`, user);
+                    console.log(`Usuário autenticou-se no aplicativo com sucesso!`);
                 } catch (error) {
                     console.log(error)
                     setIsSigningIn(false)

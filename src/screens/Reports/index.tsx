@@ -164,7 +164,7 @@ export function Reports({ route, navigation }) {
                 dataCopy[lastIndex] = report
                 setData(dataCopy)
 
-                //updateUser(profile, "profile")
+                updateUser(profile, "profile")
 
                 lastIndex = currentIndex
                 setRating(0)

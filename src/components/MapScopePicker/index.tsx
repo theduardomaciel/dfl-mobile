@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
 import { Picker } from '@react-native-picker/picker'
-import MapView, { MapViewProps } from 'react-native-maps'
 
-import {
-    Text,
-    View,
-} from 'react-native';
+import { View } from 'react-native';
 
 import { styles } from './styles';
 import { theme } from '../../global/styles/theme';
@@ -46,8 +42,8 @@ export function MapScopePicker({ actualRegion, changedScope, biggerScope }: Cust
                             newRegion.longitudeDelta = 0.25
                             break;
                         case 'state':
-                            newRegion.latitudeDelta = 0.75
-                            newRegion.longitudeDelta = 0.75
+                            newRegion.latitudeDelta = 2.5
+                            newRegion.longitudeDelta = 2.5
                             break;
                         case 'country':
                             newRegion.latitudeDelta = 10
