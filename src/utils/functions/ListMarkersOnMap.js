@@ -1,9 +1,10 @@
 export function ListMarkersOnMap(user, scope) {
-    if (user.reports !== undefined) {
+    const userReports = user.profile.reports;
+    if (userReports !== undefined) {
         switch (scope) {
             case "district":
                 let markersArray = []
-                user.reports.forEach((report) => {
+                userReports.forEach((report) => {
                     markersArray.push({
                         title: report.address,
                         description: report.suggestion,
@@ -13,10 +14,10 @@ export function ListMarkersOnMap(user, scope) {
                         }
                     })
                 })
-                return markersArray
+                console.log(markersArray)
+                return markersArray;
                 break;
             case "city":
-
                 break;
         }
     }

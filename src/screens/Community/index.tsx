@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, Image, StatusBar, Pressable, ImageBackground, Linking } from "react-native";
+import { View, Text, ScrollView, Image, Pressable, ImageBackground, Linking } from "react-native";
 
 import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
 
@@ -20,6 +20,7 @@ import { Entypo } from '@expo/vector-icons';
 import { useAuth } from "../../hooks/useAuth";
 import { ListMarkersOnMap } from "../../utils/functions/ListMarkersOnMap";
 import { CITIES_DATA } from "../../utils/data/cities";
+import FocusAwareStatusBar from "../../utils/FocusAwareStatusBar";
 
 const Marcadores = [
     {
@@ -64,7 +65,9 @@ export function Community() {
             }
         }
         CheckIfProfileIsCreated()
-        setMarkers(ListMarkersOnMap(user, "district"))
+        const newMarkers = ListMarkersOnMap(user, "district")
+        console.log("Marcadores: ", newMarkers)
+        setMarkers(newMarkers)
     }, []);
 
     const [region, setRegion] = useState(initialRegion);
@@ -86,7 +89,7 @@ export function Community() {
 
     return (
         <ImageBackground source={require("../../assets/background_placeholder.png")} style={styles.container}>
-            <StatusBar barStyle="dark-content" backgroundColor={"transparent"} translucent />
+            <FocusAwareStatusBar translucent barStyle="dark-content" />
             <ProfileModal
                 isVisible={isFirstModalVisible}
                 toggleModal={firstToggleModal}
@@ -111,11 +114,6 @@ export function Community() {
                 <DefaultCityPicker state={defaultCity} setState={setDefaultCity} />
                 <TextButton title="ALTERAR CIDADE" textStyle={{ fontSize: 12 }} buttonStyle={{ backgroundColor: theme.colors.primary2, paddingVertical: 10, paddingHorizontal: 25, borderRadius: 25 }} />
             </ModalBase>
-            <StatusBar
-                barStyle="dark-content"
-                backgroundColor="transparent"
-                translucent
-            />
             <View style={styles.header}>
                 <Text style={styles.title}>
                     Comunidade
@@ -170,7 +168,7 @@ export function Community() {
                     viewStyle={{ width: "90%" }}
                     element={
                         <Pressable style={styles.button} onPress={toggleCityModal}>
-                            <Text style={styles.info}>Maceió</Text>
+                            <Text style={styles.info}>{user.profile.defaultCity}</Text>
                             {/* <Entypo name="chevron-small-down" size={22} color="white" /> */}
                         </Pressable>
                     }

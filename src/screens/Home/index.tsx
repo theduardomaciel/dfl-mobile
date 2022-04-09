@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, Image, RefreshControl, Platform, Pressable, ImageBackground, StatusBar } from "react-native";
+import { View, Text, ScrollView, Image, RefreshControl, Platform, Pressable, ImageBackground } from "react-native";
 import { MapScopePicker } from "../../components/MapScopePicker";
 
 import MapView, { PROVIDER_GOOGLE, Marker, Region } from "react-native-maps";
@@ -17,6 +17,7 @@ import { ModalBase } from "../../components/ModalBase";
 import { LEVELS_DATA } from "../../utils/data/levels";
 
 import * as Location from "expo-location";
+import FocusAwareStatusBar from "../../utils/FocusAwareStatusBar";
 
 function GetGreeting() {
     const hour = new Date().getHours();
@@ -130,7 +131,7 @@ export function Home({ route, navigation }) {
 
     return (
         <ImageBackground source={require("../../assets/background_placeholder.png")} style={styles.container}>
-            <StatusBar barStyle="dark-content" backgroundColor={"transparent"} translucent />
+            <FocusAwareStatusBar translucent barStyle="dark-content" />
             <View style={styles.header}>
                 <View style={styles.greetingsView}>
                     <Text style={styles.greetingsText}>

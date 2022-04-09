@@ -2,28 +2,12 @@
     "expo": {
         "name": "DFL",
         "slug": "dfl",
-        "platforms": [
-            "ios",
-            "android"
-        ],
         "orientation": "portrait",
         "backgroundColor": "#F6F7EB",
         "primaryColor": "#4F9D69",
         "icon": "./assets/icon.png",
         "androidNavigationBar": {
-            "backgroundColor": "4F9D69"
-        },
-        "splash": {
-            "image": "./assets/splash.png",
-            "resizeMode": "contain",
-            "backgroundColor": "#F6F7EB"
-        },
-        "android": {
-            "package": "dfl.com",
-            "adaptiveIcon": {
-                "foregroundImage": "./assets/adaptative-icon.png",
-                "backgroundColor": "#F6F7EB"
-            }
+            "backgroundColor": "#4F9D69"
         }
     },
     "plugins": [

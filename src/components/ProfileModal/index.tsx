@@ -57,7 +57,7 @@ export function ProfileModal({ toggleModal, isSecond, secondToggleModal, ...rest
         }
     }
 
-    const secondProfileModalContent = <KeyboardAvoidingView style={styles.modal}>
+    const secondProfileModalContent = <View style={styles.modal}>
         <Text style={styles.title}>
             Participando da Comunidade
         </Text>
@@ -66,7 +66,9 @@ export function ProfileModal({ toggleModal, isSecond, secondToggleModal, ...rest
             Selecione um nome de usuário que os outros usuários visualizarão em seus relatórios e comentários!
         </Text>
         <Svg2 width={300} />
-        <UsernamePicker usernameState={setUsername} />
+        <KeyboardAvoidingView behavior='position' keyboardVerticalOffset={200}>
+            <UsernamePicker usernameState={setUsername} />
+        </KeyboardAvoidingView>
         <TextButton isLoading={loading} title="ENTRAR NA COMUNIDADE" buttonStyle={styles.actionButton} textStyle={{ fontSize: 12 }} onPress={async () => {
             const result = await CreateProfile();
             if (result === "error") {
@@ -76,19 +78,20 @@ export function ProfileModal({ toggleModal, isSecond, secondToggleModal, ...rest
         }} />
         <AntDesign
             style={{ position: "absolute", top: -50, left: 0, backgroundColor: theme.colors.primary3, padding: 5, borderRadius: 15 }}
-            name="arrowleft" size={24}
+            name="arrowleft"
+            size={24}
             color="white"
         />
-    </KeyboardAvoidingView>
+    </View>
 
     return (
         <Modal
             statusBarTranslucent={true}
             deviceHeight={1920}
-            style={{ alignItems: "center", flex: 1 }}
             animationIn={"fadeInLeft"}
             animationOut={"fadeOutLeft"}
             useNativeDriver={true}
+            avoidKeyboard={true}
             useNativeDriverForBackdrop={true}
             backdropTransitionOutTiming={0}
             {...rest}
@@ -96,7 +99,7 @@ export function ProfileModal({ toggleModal, isSecond, secondToggleModal, ...rest
             {
                 isSecond ? secondProfileModalContent
                     :
-                    <KeyboardAvoidingView style={styles.modal}>
+                    <View style={styles.modal}>
                         <Text style={styles.title}>
                             Participando da Comunidade
                         </Text>
@@ -109,7 +112,7 @@ export function ProfileModal({ toggleModal, isSecond, secondToggleModal, ...rest
                             toggleModal()
                             secondToggleModal()
                         }} />
-                    </KeyboardAvoidingView>
+                    </View>
             }
 
         </Modal>

@@ -1,5 +1,15 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { View, Text, ScrollView, Image, SectionList, TouchableOpacity, RefreshControl, ActivityIndicator, SafeAreaView, ImageBackground, Pressable, Button, StatusBar } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+    View,
+    Text,
+    ScrollView,
+    Image,
+    SectionList,
+    TouchableOpacity,
+    RefreshControl,
+    ActivityIndicator,
+    ImageBackground
+} from "react-native";
 
 import { ProfileIcon } from "../../components/ProfileIcon";
 import { SectionTitle } from "../../components/SectionTitle";
@@ -15,6 +25,7 @@ import TrashbinSvgWhite from "../../assets/trashbin_white.svg"
 import { useAuth } from "../../hooks/useAuth";
 
 import Toast from 'react-native-toast-message';
+import FocusAwareStatusBar from "../../utils/FocusAwareStatusBar";
 
 // Os dados em uma SectionList devem ser sempre organizados em: "Title" e "Data". 
 // Se esse nomes não estiverem escritos, um erro será retornado.
@@ -300,7 +311,7 @@ export function Account({ navigation, route }) {
 
     return (
         <ImageBackground source={require("../../assets/background_placeholder.png")} style={styles.container}>
-            <StatusBar barStyle="dark-content" backgroundColor={"transparent"} translucent />
+            <FocusAwareStatusBar translucent barStyle="dark-content" />
             <Header />
             <ScrollView
                 style={{ width: "100%" }}

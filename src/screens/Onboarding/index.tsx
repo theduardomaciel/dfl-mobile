@@ -54,7 +54,7 @@ export function Onboarding() {
 
     const loginProcess = async () => {
         const errorMessage = await signIn()
-        if (errorMessage !== "cancelled" as any) {
+        if (errorMessage !== "cancelled" as any && errorMessage !== "success" as any) {
             setErrorModalVisible(true)
             /* setErrorModalInfo([
                 `Não foi possível autenticar.`,

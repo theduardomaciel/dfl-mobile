@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { View, StatusBar, Text, FlatList, Dimensions, Image, ViewToken, Pressable, ActivityIndicator, ToastAndroid } from "react-native";
+import { View, Text, FlatList, Dimensions, Image, ViewToken, Pressable, ActivityIndicator } from "react-native";
 import { TextForm } from "../../components/TextForm";
 
 import { theme } from "../../global/styles/theme";
@@ -31,6 +31,7 @@ import { PanGestureHandler } from "react-native-gesture-handler";
 import { CommentsModal } from "./Comments";
 import { Report } from "../../@types/application";
 import { LoadingScreen } from "../../components/LoadingScreen";
+import FocusAwareStatusBar from "../../utils/FocusAwareStatusBar";
 
 type PropTypes = {
     viewableItems: Array<ViewToken>;
@@ -118,7 +119,6 @@ export function Reports({ route, navigation }) {
 
     useEffect(() => {
         async function UpdateReportRating() {
-            await updateUser()
             // Quando o usuário passar de relatório, atualizaremos a nota do anterior, caso ele tenha votado (seu rating será diferente de 0)
             if (rating !== 0) {
                 const lastReport = data[lastIndex]
@@ -314,7 +314,7 @@ export function Reports({ route, navigation }) {
     const [isCommentsModalVisible, setCommentsModalVisible] = useState(false)
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor={"black"} />
+            <FocusAwareStatusBar barStyle="light-content" backgroundColor="#000000" />
             <View
                 style={{ height: IMAGE_HEIGHT, width: "100%", backgroundColor: theme.colors.background }}
             >

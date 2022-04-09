@@ -75,8 +75,9 @@ function AuthProvider({ children }: AuthProviderProps) {
                     await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(responseUser));
                     await AsyncStorage.setItem(TOKEN_STORAGE, responseToken);
 
-                    setUser(user);
+                    setUser(responseUser);
                     console.log(`Usuário autenticou-se no aplicativo com sucesso!`);
+                    return "success"
                 } catch (error) {
                     console.log(error)
                     setIsSigningIn(false)

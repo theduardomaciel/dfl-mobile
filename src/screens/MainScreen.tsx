@@ -70,7 +70,6 @@ export function MainScreen() {
                 headerShown: false,
                 headerTransparent: true,
                 tabBarHideOnKeyboard: true,
-                tabBarStyle: { backgroundColor: "green" }
             }}
         >
             <Tab.Screen

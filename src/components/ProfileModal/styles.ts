@@ -4,10 +4,10 @@ import { theme } from '../../global/styles/theme';
 export const styles = StyleSheet.create({
     modal: {
         justifyContent: "space-evenly",
-        minHeight: 475,
+        alignSelf: "center",
         alignItems: "center",
-        height: 500,
-        width: 350,
+        height: "60%",
+        width: "95%",
         borderRadius: 15,
         backgroundColor: theme.colors.modalBackground,
         paddingVertical: 20,
@@ -17,6 +17,8 @@ export const styles = StyleSheet.create({
         height: 35,
         borderRadius: 50,
         marginTop: 10,
+        marginLeft: 0,
+        alignItems: "center",
         backgroundColor: theme.colors.primary2,
     },
     title: {
