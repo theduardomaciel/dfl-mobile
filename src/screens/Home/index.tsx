@@ -126,8 +126,8 @@ export function Home({ route, navigation }) {
     );
 
     const userReports = user.profile.reports ? user.profile.reports : []
-    const userReportsAmount = userReports.length
-    const userReportsSolvedAmount = [...userReports].filter(report => report.resolved === true).length
+    const userReportsInMonthAmount = [...userReports].filter(report => new Date(report.createdAt).getMonth() === new Date().getMonth()).length
+    const userReportsSolvedInMonthAmount = [...userReports].filter(report => new Date(report.createdAt).getMonth() === new Date().getMonth() && report.resolved === true).length
 
     return (
         <ImageBackground source={require("../../assets/background_placeholder.png")} style={styles.container}>
@@ -175,24 +175,20 @@ export function Home({ route, navigation }) {
                     Seu engajamento
                 </Text>
                 <View style={[elements.subContainerGreen, theme.shadowProperties, { height: 100 }]}>
-                    <View>
-                        <Text style={styles.subtitle}>
-                            Focos de lixo encontrados por você este mês:
-                        </Text>
-                        <Text style={[styles.info, theme.shadowProperties, { fontSize: 36, textAlign: "center" }]}>
-                            {userReportsAmount === 1 ? `1 foco de lixo` : userReportsAmount + " focos de lixo"}
-                        </Text>
-                    </View>
+                    <Text style={styles.subtitle}>
+                        Focos de lixo encontrados por você este mês:
+                    </Text>
+                    <Text style={[styles.info, { fontSize: 36, textAlign: "center" }]}>
+                        {userReportsInMonthAmount === 1 ? `1 foco de lixo` : userReportsInMonthAmount + " focos de lixo"}
+                    </Text>
                 </View>
                 <View style={[elements.subContainerGreen, theme.shadowProperties, { height: 125, marginTop: 17 }]}>
-                    <View>
-                        <Text style={styles.subtitle}>
-                            {userReportsAmount === 1 ? `Deste 1 foco,` : `Destes ${userReportsAmount} focos,`}
-                        </Text>
-                        <Text style={[styles.info, { fontSize: 24, textAlign: "center" }]}>
-                            {userReportsSolvedAmount === 1 ? `1 já foi recolhido pelos órgãos responsáveis` : userReportsSolvedAmount + " já foram recolhidos pelos órgãos responsáveis"}
-                        </Text>
-                    </View>
+                    <Text style={styles.subtitle}>
+                        {userReportsInMonthAmount === 1 ? `Deste 1 foco,` : `Destes ${userReportsInMonthAmount} focos,`}
+                    </Text>
+                    <Text style={[styles.info, { flex: 1, textAlign: "center", textAlignVertical: "center" }]}>
+                        {userReportsSolvedInMonthAmount === 1 ? `1 já foi recolhido pelos órgãos responsáveis` : userReportsSolvedInMonthAmount + " já foram recolhidos pelos órgãos responsáveis"}
+                    </Text>
                 </View>
 
                 <View style={styles.communityTitle}>
@@ -203,10 +199,10 @@ export function Home({ route, navigation }) {
                 </View>
                 <View style={[elements.subContainerGreen, theme.shadowProperties, { height: 256 }]}>
                     <Text style={[styles.info, { fontSize: 36 }]}>
-                        {userReportsAmount === 1 ? `1 foco de lixo` : `${userReportsAmount} focos de lixo`}
+                        {userReportsInMonthAmount === 1 ? `1 foco de lixo` : `${userReportsInMonthAmount} focos de lixo`}
                     </Text>
                     <Text style={styles.subtitle}>
-                        {userReportsAmount === 1 ? `foi encontrado ${scopeText}` : `foram encontrados ${scopeText}`}
+                        {userReportsInMonthAmount === 1 ? `foi encontrado ${scopeText}` : `foram encontrados ${scopeText}`}
                     </Text>
                     <View style={styles.mapView}>
                         <MapView

@@ -17,7 +17,7 @@ export const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         marginTop: 35, //+ getStatusBarHeight(),
-        marginBottom: 25,
+        marginBottom: 15,
     },
     userInfoContainer: {
         flexDirection: "column"

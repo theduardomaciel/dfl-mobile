@@ -80,6 +80,7 @@ export function ReportScreen3({ route, navigation }: any) {
                 hasTrashBins: data.hasTrashBins
             })
             const updatedProfile = submitResponse.data as ReportResponse
+            console.log(updatedProfile)
             if (updatedProfile.level > user.profile.level) {
                 console.log("O usuário subiu de nível.")
                 // Caso o usuário tenha subido de nível, indicamos que ele não ganhou nenhuma experiência, e realizamos a tratativa no modal

@@ -5,7 +5,6 @@
         "orientation": "portrait",
         "backgroundColor": "#F6F7EB",
         "primaryColor": "#4F9D69",
-        "icon": "./assets/icon.png",
         "androidNavigationBar": {
             "backgroundColor": "#4F9D69"
         }

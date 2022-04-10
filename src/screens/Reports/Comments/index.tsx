@@ -33,11 +33,11 @@ function CalculateCommentCreatedAt(item) {
     if (HOURS > 24) {
         createdAtText = `${Math.floor(HOURS / 24)} dias atrás`
     } else if (HOURS >= 1) {
-        createdAtText = `${HOURS} hora${HOURS > 1 ? "s" : ""} atrás`
+        createdAtText = `${HOURS} hora${HOURS !== 1 ? "s" : ""} atrás`
     } else if (MINUTES >= 1) {
-        createdAtText = `${MINUTES} minuto${MINUTES > 1 ? "s" : ""} atrás`
+        createdAtText = `${MINUTES} minuto${MINUTES !== 1 ? "s" : ""} atrás`
     } else {
-        createdAtText = `${SECONDS} segundo${SECONDS > 1 ? "s" : ""} atrás`
+        createdAtText = `${SECONDS} segundo${SECONDS !== 1 ? "s" : ""} atrás`
     }
     return createdAtText;
 }
@@ -241,7 +241,7 @@ export function CommentsModal({ isVisible, closeFunction, report }: Props) {
                     borderRadius: 5,
                     opacity: 0.5
                 }} />
-                <Text style={styles.title}>{`${reportObject.comments.length} comentário${reportObject.comments.length > 1 ? 's' : ""}`}</Text>
+                <Text style={styles.title}>{`${reportObject.comments.length} comentário${reportObject.comments.length !== 1 ? 's' : ""}`}</Text>
                 <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={reportObject.comments.length === 0 && { height: "100%" }} >
                     <View style={{ flex: 1 }} onStartShouldSetResponder={(): boolean => true}>
                         <FlatList

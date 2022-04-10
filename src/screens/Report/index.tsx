@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { View, StatusBar, Text, Image, useWindowDimensions, ScrollView, Pressable, Platform, UIManager, LayoutAnimation, Alert } from "react-native";
+import { View, StatusBar, Text, Image, useWindowDimensions, ScrollView, Platform, UIManager, LayoutAnimation } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
 import { RectButton } from "react-native-gesture-handler";
 import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
-
 
 import { elements } from "../../global/styles/elements";
 import { theme } from "../../global/styles/theme";
@@ -19,21 +18,13 @@ import { ModalBase } from "../../components/ModalBase";
 import { TagsSelector } from "../../components/TagsSelector";
 import { LoadingScreen } from "../../components/LoadingScreen";
 
+import TrashBinSVG from "../../assets/trashbin_white.svg"
+
 import { useAuth } from "../../hooks/useAuth";
 import { api } from "../../utils/api";
-import { Profile } from "../../@types/application";
-
-type Report = {
-    id: number,
-    address: string,
-    coordinates: Array<number>,
-    image_url: string,
-    image_deleteHash: string,
-    tags: string,
-    suggestion: string,
-    hasTrashBins: boolean
-    resolved: boolean;
-}
+import { Profile, Report } from "../../@types/application";
+import { GetRatingsAverage } from "../Reports";
+import { CommentsModal } from "../Reports/Comments";
 
 type TagsType = {
     id: string;
@@ -42,10 +33,10 @@ type TagsType = {
 
 let counter = 0;
 
-export function Report({ navigation, route }) {
+export function ReportScreen({ navigation, route }) {
     const report = route.params.item as Report;
 
-    const { updateUser } = useAuth();
+    const { user, updateUser } = useAuth();
 
     const latitude = typeof report.coordinates[0] === "string" ? parseFloat(report.coordinates[0]) : report.coordinates[0]
     const longitude = typeof report.coordinates[1] === "string" ? parseFloat(report.coordinates[1]) : report.coordinates[0]
@@ -76,6 +67,9 @@ export function Report({ navigation, route }) {
             }
         }
         setTags(groups)
+        if (report.comments === undefined) {
+            report.comments = []
+        }
     }, [])
 
     const [isTagsModalVisible, setTagsModalVisible] = useState(false)
@@ -124,6 +118,7 @@ export function Report({ navigation, route }) {
         counter += 1
     }
 
+    const [isCommentsModalVisible, setCommentsModalVisible] = useState(false)
     return (
         <View style={styles.container}>
             <StatusBar barStyle="light-content" />
@@ -164,7 +159,10 @@ export function Report({ navigation, route }) {
                     <Text style={styles.headerText}>
                         {report.address.length > 20 ? report.address.slice(0, 20) + "..." : report.address}
                     </Text>
-                    <Entypo name="dots-three-vertical" size={18} color="#FFFFFF" onPress={toggleMenu} />
+                    {
+                        user.profile.id === report.profile.id &&
+                        <Entypo name="dots-three-vertical" size={18} color="#FFFFFF" onPress={toggleMenu} />
+                    }
                     {
                         isMenuVisible ?
                             <RectButton
@@ -247,6 +245,21 @@ export function Report({ navigation, route }) {
                 }
 
             </ScrollView>
+            <View style={{ flexDirection: "row", marginTop: 15, width: "90%", justifyContent: "space-between" }}>
+                <TextButton
+                    title="Comentários"
+                    icon={<MaterialIcons name="comment" size={28} color={theme.colors.text1} />}
+                    buttonStyle={styles.commentButton}
+                    onPress={() => {
+                        console.log(report)
+                        setCommentsModalVisible(true)
+                    }}
+                />
+                <View style={styles.ratingView}>
+                    <TrashBinSVG height={28} width={28} />
+                    <Text style={{ fontSize: 18, color: theme.colors.text1, fontFamily: theme.fonts.title600, textAlignVertical: "center", flex: 0.65 }}>{GetRatingsAverage(report)}</Text>
+                </View>
+            </View>
             <LinearGradient
                 colors={report.resolved ? [theme.colors.secondary1, theme.colors.primary1] : [theme.colors.red_dark, theme.colors.red]}
                 style={[styles.resolvedView, theme.shadowPropertiesLow]}
@@ -260,6 +273,14 @@ export function Report({ navigation, route }) {
             <Text style={styles.reportInfo}>
                 {`ID do Relatório: ${report.id}`}
             </Text>
+            {
+                report.comments &&
+                <CommentsModal
+                    isVisible={isCommentsModalVisible}
+                    closeFunction={() => { setCommentsModalVisible(false) }}
+                    report={report}
+                />
+            }
             {
                 isLoadingDelete ? <LoadingScreen /> : null
             }

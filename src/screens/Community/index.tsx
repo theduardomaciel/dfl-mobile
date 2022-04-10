@@ -66,7 +66,6 @@ export function Community() {
         }
         CheckIfProfileIsCreated()
         const newMarkers = ListMarkersOnMap(user, "district")
-        console.log("Marcadores: ", newMarkers)
         setMarkers(newMarkers)
     }, []);
 

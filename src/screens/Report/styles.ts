@@ -55,7 +55,7 @@ export const styles = StyleSheet.create({
         height: 50,
         width: "80%",
         borderRadius: 15,
-        marginTop: 20,
+        marginTop: 10,
         alignItems: "center",
         justifyContent: "center",
     },
@@ -130,5 +130,19 @@ export const styles = StyleSheet.create({
         borderRadius: 15,
         backgroundColor: theme.colors.modalBackground,
         paddingVertical: 20,
+    },
+
+    commentButton: {
+        height: 35,
+        width: "45%",
+        backgroundColor: theme.colors.primary1,
+    },
+    ratingView: {
+        flexDirection: "row",
+        backgroundColor: theme.colors.secondary1,
+        borderRadius: 10,
+        width: "25%",
+        alignItems: "center",
+        justifyContent: "space-around"
     }
 });

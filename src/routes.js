@@ -6,7 +6,8 @@ import { MainScreen } from './screens/MainScreen';
 
 import { Level } from "./screens/Level"
 import { NewLevel } from "./screens/NewLevel"
-import { Report } from "./screens/Report"
+import { ReportScreen } from "./screens/Report"
+import { Search } from './screens/Reports/Search';
 
 import { PermissionsExplanation } from './screens/PermissionScreens/PermissionsExplanation';
 import { PermissionsRequest } from './screens/PermissionScreens/PermissionsRequest';
@@ -41,7 +42,11 @@ export default function Routes() {
                     />
                     <Stack.Screen
                         name="Report"
-                        component={Report}
+                        component={ReportScreen}
+                    />
+                    <Stack.Screen
+                        name="Search"
+                        component={Search}
                     />
                 </Stack.Group>
             ) :

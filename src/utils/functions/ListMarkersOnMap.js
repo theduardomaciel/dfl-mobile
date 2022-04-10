@@ -14,7 +14,6 @@ export function ListMarkersOnMap(user, scope) {
                         }
                     })
                 })
-                console.log(markersArray)
                 return markersArray;
                 break;
             case "city":

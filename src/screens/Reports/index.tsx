@@ -6,13 +6,12 @@ import { theme } from "../../global/styles/theme";
 import { SELECTOR_WIDTH, styles } from "./styles";
 
 import Toast from 'react-native-toast-message';
+import Share from 'react-native-share';
 
 import TrashBinSVG from "../../assets/trashbin_white.svg"
 
-import Share from 'react-native-share';
-
 import { MaterialIcons } from "@expo/vector-icons"
-import { backgroundDrivers, buttonDrivers, TAB_BAR_HEIGHT, TAB_BAR_HEIGHT_LONG } from "../../components/TabBar";
+import { backgroundDrivers, TAB_BAR_HEIGHT_LONG } from "../../components/TabBar";
 
 import { api } from "../../utils/api";
 import { useAuth } from "../../hooks/useAuth";
@@ -36,8 +35,16 @@ import FocusAwareStatusBar from "../../utils/FocusAwareStatusBar";
 type PropTypes = {
     viewableItems: Array<ViewToken>;
 }
+import { useFocusEffect } from '@react-navigation/native';
 
 let lastIndex = 0;
+
+export function GetRatingsAverage(actualReport) {
+    //console.log("Atualizando rating do relatório atual.")
+    const ratings = [actualReport.note1, actualReport.note2, actualReport.note3, actualReport.note4, actualReport.note5]
+    const sum = ratings.reduce((a, b) => a + b, 0)
+    return sum / 5
+}
 
 export function Reports({ route, navigation }) {
     const { user, updateUser } = useAuth();
@@ -50,7 +57,8 @@ export function Reports({ route, navigation }) {
     const [data, setData] = useState<Array<Report>>([])
     async function loadMoreReports() {
         try {
-            const moreReportsResponse = await api.post("/report/location", {
+            console.log(data, data.length)
+            const moreReportsResponse = await api.post("/reports/search", {
                 // Condição 1: Local - Caso o usuário já tenha criado um perfil, utilizamos a cidade inserida (primeiro nome antes da vírgula), 
                 // caso contrário, utilizamos o Brasil inteiro como local de busca
                 location: user.profile.defaultCity ? user.profile.defaultCity.split(",")[0] : "Brasil",
@@ -94,11 +102,14 @@ export function Reports({ route, navigation }) {
                 setTabBarVisible(false)
             }
         })
-        if (data.length === 0) {
-            console.log("Os dados ainda não foram carregados. Carregando-os pela primeira vez.")
-            loadMoreReports()
-        }
-    }, [navigation])
+    }, [])
+
+    const shouldLoadData = data && data.length === 0
+    useFocusEffect(
+        useCallback(() => {
+            if (shouldLoadData) loadMoreReports()
+        }, [data])
+    );
 
     const [rating, setRating] = useState(0)
     const [currentIndex, setCurrentIndex] = useState(0)
@@ -108,14 +119,6 @@ export function Reports({ route, navigation }) {
             return setCurrentIndex(viewableItems[0].index)
         }
     }, []);
-
-    function GetRatingsAverage() {
-        //console.log("Atualizando rating do relatório atual.")
-        const actualReport = data[currentIndex]
-        const ratings = [actualReport.note1, actualReport.note2, actualReport.note3, actualReport.note4, actualReport.note5]
-        const sum = ratings.reduce((a, b) => a + b, 0)
-        return sum / 5
-    }
 
     useEffect(() => {
         async function UpdateReportRating() {
@@ -338,7 +341,9 @@ export function Reports({ route, navigation }) {
                 customStyle={styles.searchBar}
                 textInputProps={{
                     placeholder: `Pesquisar relatos (ex.: bairro, cidade, estado)`,
-                    placeholderTextColor: theme.colors.gray_light
+                    placeholderTextColor: theme.colors.gray_light,
+                    autoCapitalize: "none",
+                    onSubmitEditing: ({ nativeEvent: { text } }) => { text.length > 0 && navigation.navigate("Search", { search: text }) }
                 }}
                 icon={<MaterialIcons name="search" size={24} color={theme.colors.secondary1} />}
             />
@@ -361,7 +366,7 @@ export function Reports({ route, navigation }) {
                             <View style={[styles.buttonCircle, { width: 65, height: 65 }]} />
                             <View style={[styles.buttonCircle, { width: 50, height: 50, opacity: 1 }]} />
                             <TrashBinSVG height={28} width={28} />
-                            <Text style={[styles.ratingViewerText]}>{GetRatingsAverage()}</Text>
+                            <Text style={[styles.ratingViewerText]}>{GetRatingsAverage(data[currentIndex])}</Text>
                         </View>
                         <Pressable style={styles.actionButton} onPress={() => setCommentsModalVisible(true)}>
                             <View style={[styles.buttonCircle, { width: 65, height: 65 }]} />

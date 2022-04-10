@@ -7,7 +7,6 @@ import {
     LayoutAnimation,
     Platform,
     Pressable,
-    Share,
     StatusBar,
     Text,
     UIManager,
@@ -28,25 +27,9 @@ import { TextButton } from "../../components/TextButton";
 import { useAuth } from "../../hooks/useAuth";
 import { LEVELS_DATA } from "../../utils/data/levels";
 
-const onShare = async () => {
-    try {
-        const result = await Share.share({
-            message:
-                'DFL - Detector de Focos de Lixo',
-        });
-        if (result.action === Share.sharedAction) {
-            if (result.activityType) {
-                // shared with activity type of result.activityType
-            } else {
-                // shared
-            }
-        } else if (result.action === Share.dismissedAction) {
-            // dismissed
-        }
-    } catch (error) {
-        Alert.alert(error.message);
-    }
-};
+import * as FileSystem from 'expo-file-system';
+import Share from "react-native-share";
+import { LoadingScreen } from "../../components/LoadingScreen";
 
 type PropTypes = {
     viewableItems: Array<ViewToken>;
@@ -55,8 +38,44 @@ type PropTypes = {
 export function Level({ route, navigation }) {
     const { user } = useAuth();
 
+    const [isLoading, setIsLoading] = useState(false)
+
     const [currentIndex, setCurrentIndex] = useState(0)
     const flatListRef = useRef<FlatList<any>>(null);
+
+    const onShare = async () => {
+        try {
+            setIsLoading(true)
+            FileSystem.downloadAsync(
+                "https://i.imgur.com/MHBkR8n.png",
+                FileSystem.documentDirectory + 'dfl_level_share_image'
+            )
+                .then(async ({ uri }) => {
+                    console.log('Finished downloading to ', uri);
+                    const base64 = await FileSystem.readAsStringAsync(uri, { encoding: 'base64' });
+                    const base64Data = `data:image/png;base64,` + base64;
+                    Share.open({
+                        url: base64Data,
+                        message: `Já sou um ${LEVELS_DATA[user.profile.level].title} no DFL!\nUm aplicativo para ajudar nossa cidade a ser mais limpa e livre de poluição.\nEsse é o link pra baixar: https://meninocoiso.notion.site/DFL-Detector-de-Focos-de-Lixo-83e5732ef74043a2a88bd748d6d03bd4`,
+                        title: `Já sou um ${LEVELS_DATA[user.profile.level].title} no DFL!`
+                    })
+                        .then((response) => {
+                            console.log(response);
+                            setIsLoading(false)
+                        })
+                        .catch((error) => {
+                            error && console.log(error, "Houve uma ocorrência ao compartilhar a imagem baixada.");
+                            setIsLoading(false)
+                        });
+                    FileSystem.deleteAsync(uri, { idempotent: true }) // idempotent faz com que a imagem seja apagada mesmo que ela já exista no dispositivo
+                })
+                .catch(error => {
+                    console.error(error, "Houve um erro ao baixar a imagem.");
+                });
+        } catch (error) {
+            Alert.alert(error.message);
+        }
+    };
 
     /* const scrollTo = (index: number) => {
         if (flatListRef.current !== null) {
@@ -224,6 +243,9 @@ export function Level({ route, navigation }) {
                     </Text>
                 </Text>
             </View>
+            {
+                isLoading ? <LoadingScreen /> : null
+            }
         </View>
     );
 }

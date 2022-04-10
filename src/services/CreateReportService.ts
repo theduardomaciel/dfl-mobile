@@ -15,7 +15,7 @@ class CreateReportService {
         hasTrashBins: boolean
     ) {
         try {
-            const report = await prismaClient.report.create({
+            await prismaClient.report.create({
                 data: {
                     profile: {
                         connect: { id: profile_id },
