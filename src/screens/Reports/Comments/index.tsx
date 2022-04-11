@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, FlatList, Image, LayoutAnimation, Platform, Pressable, ScrollView, Text, UIManager, View, ViewToken } from "react-native";
+import { ActivityIndicator, Dimensions, FlatList, Image, KeyboardAvoidingView, LayoutAnimation, Platform, Pressable, ScrollView, Text, UIManager, View, ViewToken } from "react-native";
+
+import { initialWindowMetrics } from 'react-native-safe-area-context'
 
 import { styles } from "./styles";
 import { theme } from "../../../global/styles/theme";
@@ -42,10 +44,19 @@ function CalculateCommentCreatedAt(item) {
     return createdAtText;
 }
 
+import changeNavigationBarColor, {
+    hideNavigationBar,
+    showNavigationBar,
+} from 'react-native-navigation-bar-color';
+
 export function CommentsModal({ isVisible, closeFunction, report }: Props) {
     const [reportObject, setReportObject] = useState(report)
 
     const { user, updateReport } = useAuth();
+
+    /* const { frame } = initialWindowMetrics
+    const deviceWidth = Dimensions.get('window').width
+    const deviceHeight = Platform.OS === 'ios' ? Dimensions.get('window').height : frame.height */
 
     useEffect(() => {
         setReportObject(report)
@@ -84,6 +95,7 @@ export function CommentsModal({ isVisible, closeFunction, report }: Props) {
     const [uploadingComment, setUploadingComment] = useState(false)
     const [commentText, setCommentText] = useState("")
     const shareComment = async () => {
+        if (commentText.length < 1) return;
         console.log("Adicionando comentário ao relatório com a seguinte mensagem: ", commentText)
         setUploadingComment(true)
 
@@ -202,6 +214,8 @@ export function CommentsModal({ isVisible, closeFunction, report }: Props) {
             swipeDirection={['down']}
             style={styles.view}
             propagateSwipe
+            avoidKeyboard
+            statusBarTranslucent // tirando isso, o teclado funciona de boa
         >
             <ModalBase
                 isVisible={isDeleteModalVisible}
@@ -231,7 +245,7 @@ export function CommentsModal({ isVisible, closeFunction, report }: Props) {
                 }
                 toggleModal={() => { setDeleteModalVisible(!isDeleteModalVisible) }}
             />
-            <View style={styles.container}>
+            <KeyboardAvoidingView behavior='padding' pointerEvents='box-none' style={[styles.container, { margin: 0, flex: 0.35, justifyContent: 'center' }]}>
                 <View style={{
                     marginTop: 15,
                     marginBottom: 3,
@@ -273,7 +287,7 @@ export function CommentsModal({ isVisible, closeFunction, report }: Props) {
                     disabled={uploadingComment}
                     fontStyle={{ fontSize: 13 }}
                 />
-            </View>
+            </KeyboardAvoidingView>
         </Modal>
     );
 }

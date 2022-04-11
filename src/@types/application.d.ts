@@ -33,6 +33,8 @@ export type Report = {
     suggestion: string,
     hasTrashBins: boolean,
 
+    profile_id: number,
+
     note1: number,
     note2: number,
     note3: number,

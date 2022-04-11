@@ -19,6 +19,11 @@ import { LEVELS_DATA } from "../../utils/data/levels";
 import * as Location from "expo-location";
 import FocusAwareStatusBar from "../../utils/FocusAwareStatusBar";
 
+import changeNavigationBarColor, {
+    hideNavigationBar,
+    showNavigationBar,
+} from 'react-native-navigation-bar-color';
+
 function GetGreeting() {
     const hour = new Date().getHours();
     if (hour >= 0 && hour < 12) {
@@ -83,6 +88,8 @@ export function Home({ route, navigation }) {
             setErrorMessage(route.params?.errorMessage)
             setErrorModalVisible(true)
         }
+        changeNavigationBarColor("black", false, true);
+        hideNavigationBar()
     }, []);
 
     const [isRefreshing, setIsRefreshing] = useState(false)

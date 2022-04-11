@@ -2,11 +2,12 @@ import React from 'react';
 import { SvgProps } from "react-native-svg";
 
 import {
+    Dimensions,
     Text,
     View,
 } from 'react-native';
 
-import { Feather } from '@expo/vector-icons'; 
+import { Feather } from '@expo/vector-icons';
 import { styles } from './styles';
 
 type Props = {
@@ -19,14 +20,14 @@ type Props = {
 import Trashbin_Vector from "../../assets/menu/trashbin.svg"
 
 const icon_sizes = [
-    [ 38, 38 ],
-    [ 35, 38 ],
-    [ 38, 38 ],
-    [ 45, 37 ],
+    [38, 38],
+    [35, 38],
+    [38, 38],
+    [45, 37],
 ]
 
 export function MenuButton({ image: Image, title, isMiddleButton, index }: Props) {
-    const icon_size = icon_sizes[index]
+    const screenSize = Dimensions.get("screen").width
     return (
         isMiddleButton ?
             <View style={[styles.container, { width: 80, height: 175 }]}>
@@ -36,13 +37,13 @@ export function MenuButton({ image: Image, title, isMiddleButton, index }: Props
                 </View>
                 <Text style={[styles.title, { marginTop: 0 }]}> {title} </Text>
             </View>
-        :
-        <View style={styles.container}>
-            <Trashbin_Vector style={styles.svg} width={75} height={150} />
-            <Text style={styles.title}> {title} </Text>
-            <View style={styles.icon}>
-                <Image width={40} height={40} />
+            :
+            <View style={styles.container}>
+                <Trashbin_Vector style={styles.svg} width={screenSize < 400 ? 70 : 75} height={150} />
+                <Text style={styles.title}> {title} </Text>
+                <View style={styles.icon}>
+                    <Image width={40} height={40} />
+                </View>
             </View>
-        </View>
     );
 }

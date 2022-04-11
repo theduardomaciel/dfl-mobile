@@ -42,7 +42,7 @@ export function ProfileIcon({ uri, openConfig }: Props) {
     const [isLoading, setIsLoading] = useState(false)
 
     const [isChangeUsernameModalVisible, setChangeUsernameModalVisible] = useState(false);
-    const [usernameText, setUserNameText] = useState("OUT_OF_RANGE")
+    const [usernameText, setUserNameText] = useState("")
     const changeUsername = () => {
         console.log("Alterando nome do usuário...")
         setIsLoading(true)

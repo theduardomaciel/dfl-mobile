@@ -95,6 +95,7 @@ export function ReportScreen({ navigation, route }) {
     const [isDeleteModalVisible, setDeleteModalVisible] = useState(false)
     const [isLoadingDelete, setIsLoadingDelete] = useState(false)
 
+    console.log(report)
     const deleteReport = async () => {
         setIsLoadingDelete(true)
         setDeleteModalVisible(false)
@@ -118,6 +119,7 @@ export function ReportScreen({ navigation, route }) {
         counter += 1
     }
 
+    console.log(report)
     const [isCommentsModalVisible, setCommentsModalVisible] = useState(false)
     return (
         <View style={styles.container}>
@@ -160,7 +162,7 @@ export function ReportScreen({ navigation, route }) {
                         {report.address.length > 20 ? report.address.slice(0, 20) + "..." : report.address}
                     </Text>
                     {
-                        user.profile.id === report.profile.id &&
+                        user.profile.id === report.profile_id &&
                         <Entypo name="dots-three-vertical" size={18} color="#FFFFFF" onPress={toggleMenu} />
                     }
                     {
@@ -231,7 +233,7 @@ export function ReportScreen({ navigation, route }) {
                 />
             }
 
-            <ScrollView showsVerticalScrollIndicator={false} style={[elements.subContainerWhite, styles.tagsContainer]} contentContainerStyle={{ height: "100%" }}>
+            <ScrollView showsVerticalScrollIndicator={false} style={[elements.subContainerWhite, styles.tagsContainer]} >
                 {tags.length > 0 ?
                     <View style={styles.gridContainer}>
                         {tags}
@@ -243,7 +245,6 @@ export function ReportScreen({ navigation, route }) {
                         </Text>
                     </View>
                 }
-
             </ScrollView>
             <View style={{ flexDirection: "row", marginTop: 15, width: "90%", justifyContent: "space-between" }}>
                 <TextButton
@@ -277,7 +278,9 @@ export function ReportScreen({ navigation, route }) {
                 report.comments &&
                 <CommentsModal
                     isVisible={isCommentsModalVisible}
-                    closeFunction={() => { setCommentsModalVisible(false) }}
+                    closeFunction={() => {
+                        setCommentsModalVisible(false)
+                    }}
                     report={report}
                 />
             }

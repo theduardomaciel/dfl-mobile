@@ -39,6 +39,11 @@ import { useFocusEffect } from '@react-navigation/native';
 
 let lastIndex = 0;
 
+import changeNavigationBarColor, {
+    hideNavigationBar,
+    showNavigationBar,
+} from 'react-native-navigation-bar-color';
+
 export function GetRatingsAverage(actualReport) {
     //console.log("Atualizando rating do relatório atual.")
     const ratings = [actualReport.note1, actualReport.note2, actualReport.note3, actualReport.note4, actualReport.note5]
@@ -368,7 +373,10 @@ export function Reports({ route, navigation }) {
                             <TrashBinSVG height={28} width={28} />
                             <Text style={[styles.ratingViewerText]}>{GetRatingsAverage(data[currentIndex])}</Text>
                         </View>
-                        <Pressable style={styles.actionButton} onPress={() => setCommentsModalVisible(true)}>
+                        <Pressable style={styles.actionButton} onPress={() => {
+
+                            setCommentsModalVisible(true)
+                        }}>
                             <View style={[styles.buttonCircle, { width: 65, height: 65 }]} />
                             <View style={[styles.buttonCircle, { width: 50, height: 50, opacity: 1 }]} />
                             <MaterialIcons name="comment" size={28} color={theme.colors.text1} />
@@ -413,13 +421,16 @@ export function Reports({ route, navigation }) {
                 data.length > 0 &&
                 <CommentsModal
                     isVisible={isCommentsModalVisible}
-                    closeFunction={() => { setCommentsModalVisible(false) }}
+                    closeFunction={() => {
+                        hideNavigationBar()
+                        setCommentsModalVisible(false)
+                    }}
                     report={data[currentIndex]}
                 />
             }
             {
                 isLoading ? <LoadingScreen /> : null
             }
-        </View>
+        </View >
     );
 }
