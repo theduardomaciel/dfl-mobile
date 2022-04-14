@@ -15,10 +15,8 @@ const reportsButtonDriver = new Animated.Value(0)
 const homeButtonDriver = new Animated.Value(1)
 const accountButtonDriver = new Animated.Value(0)
 
-export const TOLERANCE = 15
-
 const backgroundPositionDriver = new Animated.Value(0)
-const backgroundOpacityDriver = new Animated.Value(0)
+const backgroundOpacityDriver = new Animated.Value(1)
 export const buttonDrivers = [communityButtonDriver, reportsButtonDriver, null, homeButtonDriver, accountButtonDriver]
 export const backgroundDrivers = [backgroundPositionDriver, backgroundOpacityDriver]
 
@@ -30,7 +28,7 @@ const BottomTab = ({ title, index }) => {
     )
 }
 
-export const TAB_BAR_HEIGHT_LONG = 150
+export const TAB_BAR_HEIGHT_LONG = 200
 export const TAB_BAR_HEIGHT = 65
 
 export function TabBar({ state, descriptors, navigation }) {
@@ -51,7 +49,7 @@ export function TabBar({ state, descriptors, navigation }) {
     return (
         <>
             <Animated.View style={[styles.bottomBar, {
-                width: "100%", height: TAB_BAR_HEIGHT_LONG, position: "absolute", bottom: -135 + TOLERANCE + (TOLERANCE / 2), zIndex: 0,
+                width: "100%", height: TAB_BAR_HEIGHT_LONG, bottom: -TAB_BAR_HEIGHT_LONG, zIndex: 0,
                 opacity: backgroundOpacityDriver.interpolate({
                     inputRange: [0, 1],
                     outputRange: [0, 1]
@@ -59,7 +57,7 @@ export function TabBar({ state, descriptors, navigation }) {
                 transform: [{
                     translateY: backgroundPositionDriver.interpolate({
                         inputRange: [0, 1],
-                        outputRange: [0, -175]
+                        outputRange: [0, -TAB_BAR_HEIGHT_LONG]
                     })
                 }]
             }]} />

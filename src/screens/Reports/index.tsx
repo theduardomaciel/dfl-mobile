@@ -11,7 +11,7 @@ import Share from 'react-native-share';
 import TrashBinSVG from "../../assets/trashbin_white.svg"
 
 import { MaterialIcons } from "@expo/vector-icons"
-import { backgroundDrivers, TAB_BAR_HEIGHT_LONG } from "../../components/TabBar";
+import { backgroundDrivers, TAB_BAR_HEIGHT, TAB_BAR_HEIGHT_LONG } from "../../components/TabBar";
 
 import { api } from "../../utils/api";
 import { useAuth } from "../../hooks/useAuth";
@@ -100,13 +100,15 @@ export function Reports({ route, navigation }) {
 
     const [isTabBarVisible, setTabBarVisible] = useState(false)
     useEffect(() => {
-        backgroundDrivers[0].addListener((value) => {
-            if (value.value === 1) {
-                setTabBarVisible(true)
-            } else {
-                setTabBarVisible(false)
-            }
-        })
+        setTimeout(() => {
+            backgroundDrivers[0].addListener((value) => {
+                if (value.value === 1) {
+                    setTabBarVisible(true)
+                } else {
+                    setTabBarVisible(false)
+                }
+            })
+        }, 500);
     }, [])
 
     const shouldLoadData = data && data.length === 0
@@ -186,8 +188,10 @@ export function Reports({ route, navigation }) {
     const viewabilityConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
     const viewabilityConfigCallbackPairs = useRef([{ viewabilityConfig, onViewableItemsChanged }])
 
-    const dimensions = Dimensions.get("window")
-    const IMAGE_HEIGHT = dimensions.height - TAB_BAR_HEIGHT_LONG
+    const dimensions = Dimensions.get("screen")
+    const TOLERANCE = 15 // Tolerância que damos para que as imagens fiquem por trás das bordas arredondadas 
+
+    const IMAGE_HEIGHT = dimensions.height - TAB_BAR_HEIGHT_LONG + TOLERANCE
 
     const renderItem = ({ item, index }) => {
         return (
@@ -323,16 +327,14 @@ export function Reports({ route, navigation }) {
     return (
         <View style={styles.container}>
             <FocusAwareStatusBar barStyle="light-content" backgroundColor="#000000" />
-            <View
-                style={{ height: IMAGE_HEIGHT, width: "100%", backgroundColor: theme.colors.background }}
-            >
+            <View style={{ height: IMAGE_HEIGHT, width: "100%", backgroundColor: theme.colors.background }}>
                 <FlatList
                     pagingEnabled
                     data={data}
                     showsVerticalScrollIndicator={false}
                     renderItem={renderItem}
                     scrollEventThrottle={50}
-                    keyExtractor={item => item.id}
+                    keyExtractor={(item, index) => index.toString()}
                     viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
                     viewabilityConfig={viewabilityConfig}
                     ref={flatListRef}
@@ -355,13 +357,28 @@ export function Reports({ route, navigation }) {
 
             {
                 data.length === 0 ?
-                    <View style={{ position: "absolute", alignSelf: "center", top: "50%", justifyContent: "center" }}>
+                    <View style={{ position: "absolute", alignSelf: "center", top: "35%", justifyContent: "center" }}>
                         <ActivityIndicator size={"large"} color={theme.colors.secondary1} />
                         <Text style={[styles.title, { color: theme.colors.secondary1, textAlign: "center" }]}>
                             {`Obtendo relatórios\npróximos a você...`}
                         </Text>
                     </View>
                     : null
+            }
+
+            {
+                isTabBarVisible &&
+                <View style={styles.tabBar}>
+                    <Text style={[styles.title, { marginBottom: 5 }]}>
+                        @{data.length > 0 && data[currentIndex].profile !== null ? data[currentIndex].profile.username : "indisponível"}
+                    </Text>
+                    <View style={{ flexDirection: "row" }}>
+                        <MaterialIcons name="place" size={18} color={theme.colors.text1} style={{ marginRight: 5 }} />
+                        <Text style={styles.description}>
+                            {data.length > 0 ? data[currentIndex].address : ""}
+                        </Text>
+                    </View>
+                </View>
             }
 
             {
@@ -404,20 +421,6 @@ export function Reports({ route, navigation }) {
                     : null
             }
             {
-                isTabBarVisible &&
-                <View style={styles.tabBar}>
-                    <Text style={[styles.title, { marginBottom: 5 }]}>
-                        @{data.length > 0 && data[currentIndex].profile !== null ? data[currentIndex].profile.username : "indisponível"}
-                    </Text>
-                    <View style={{ flexDirection: "row" }}>
-                        <MaterialIcons name="place" size={18} color={theme.colors.text1} style={{ marginRight: 5 }} />
-                        <Text style={styles.description}>
-                            {data.length > 0 ? data[currentIndex].address : ""}
-                        </Text>
-                    </View>
-                </View>
-            }
-            {
                 data.length > 0 &&
                 <CommentsModal
                     isVisible={isCommentsModalVisible}
@@ -431,6 +434,6 @@ export function Reports({ route, navigation }) {
             {
                 isLoading ? <LoadingScreen /> : null
             }
-        </View >
+        </View>
     );
 }

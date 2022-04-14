@@ -1,14 +1,15 @@
 import { Dimensions, Platform, StyleSheet } from "react-native";
 import { theme } from "../../global/styles/theme";
 
-import { TAB_BAR_HEIGHT_LONG, TOLERANCE } from "../../components/TabBar";
+import { TAB_BAR_HEIGHT, TAB_BAR_HEIGHT_LONG } from "../../components/TabBar";
 
 const dimensions = Dimensions.get("window")
 export const SELECTOR_WIDTH = (dimensions.width / 100) * 55
 
 export const styles = StyleSheet.create({
     container: {
-        backgroundColor: "black",
+        backgroundColor: theme.colors.background,
+        flex: 1
     },
     searchBar: {
         position: "absolute",
@@ -36,7 +37,7 @@ export const styles = StyleSheet.create({
         width: "100%",
         height: TAB_BAR_HEIGHT_LONG,
         position: "absolute",
-        bottom: -TAB_BAR_HEIGHT_LONG + TOLERANCE,
+        bottom: 0,
         zIndex: 0,
         paddingHorizontal: 20,
         paddingVertical: 10,

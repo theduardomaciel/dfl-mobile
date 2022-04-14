@@ -68,6 +68,9 @@ class UpdateReportService {
                         },
                         data: {
                             ratings: JSON.stringify(profileRating)
+                        },
+                        include: {
+                            reports: true
                         }
                     })
                     console.log("Perfil do usuário atualizado com sucesso.")

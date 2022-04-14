@@ -31,9 +31,10 @@ function CalculateCommentCreatedAt(item) {
     const SECONDS = Math.floor(Math.abs(differenceTime) / 1000)
     const MINUTES = Math.floor(SECONDS / 60)
     const HOURS = Math.floor(MINUTES / 60)
+    const DAYS = Math.floor(HOURS / 24)
     let createdAtText = ""
     if (HOURS > 24) {
-        createdAtText = `${Math.floor(HOURS / 24)} dias atrás`
+        createdAtText = `${DAYS} dia${DAYS !== 1 ? "s" : ""} atrás`
     } else if (HOURS >= 1) {
         createdAtText = `${HOURS} hora${HOURS !== 1 ? "s" : ""} atrás`
     } else if (MINUTES >= 1) {

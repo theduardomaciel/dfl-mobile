@@ -274,7 +274,7 @@ export function Account({ navigation, route }) {
     }
 
     useEffect(() => {
-        console.log("Verificando mudanças na tela de relatórios.")
+        console.log("Verificando mudanças na tela de relatórios.", user.profile)
         if (route.params?.status) {
             const status = route.params.status.split("_")[0]
             if (status === "error") {
