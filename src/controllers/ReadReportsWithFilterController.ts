@@ -3,11 +3,11 @@ import { ReadReportsWithFilterService } from "../services/ReadReportsWithFilterS
 
 class ReadReportsWithFilterController {
     async handle(request: Request, response: Response) {
-        const { location, username, exclusionsId, profileToExcludeId } = request.body;
+        const { location, username, exclusionsId, profileToExcludeId, searchCount } = request.body;
 
         const service = new ReadReportsWithFilterService();
         try {
-            const result = await service.execute(location, username, exclusionsId, profileToExcludeId)
+            const result = await service.execute(location, username, exclusionsId, profileToExcludeId, searchCount)
             return response.json(result);
         } catch (err) {
             return response.json({ error: err.message });

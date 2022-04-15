@@ -20,6 +20,8 @@ import { levelStyles } from "../Level/styles"
 import { LEVELS_DATA } from '../../utils/data/levels';
 import { useAuth } from '../../hooks/useAuth';
 
+import FocusAwareStatusBar from "../../utils/functions/FocusAwareStatusBar";
+
 import AnimatedNumbers from 'react-native-animated-numbers';
 import Confetti from "../../components/Confetti/index"
 
@@ -136,6 +138,7 @@ export function NewLevel({ route, navigation }) {
 
     return (
         <ImageBackground source={require("../../assets/background_placeholder.png")} style={styles.container}>
+            <FocusAwareStatusBar translucent barStyle="dark-content" />
             <View style={{ alignItems: "center" }}>
                 <Text style={[styles.title, { fontSize: 24, marginTop: 100 }]}>
                     Parabéns!

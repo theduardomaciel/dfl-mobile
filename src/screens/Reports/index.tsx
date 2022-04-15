@@ -39,10 +39,7 @@ import { useFocusEffect } from '@react-navigation/native';
 
 let lastIndex = 0;
 
-import changeNavigationBarColor, {
-    hideNavigationBar,
-    showNavigationBar,
-} from 'react-native-navigation-bar-color';
+import { hideNavigationBar } from 'react-native-navigation-bar-color';
 
 export function GetRatingsAverage(actualReport) {
     //console.log("Atualizando rating do relatório atual.")
@@ -370,7 +367,7 @@ export function Reports({ route, navigation }) {
                 isTabBarVisible &&
                 <View style={styles.tabBar}>
                     <Text style={[styles.title, { marginBottom: 5 }]}>
-                        @{data.length > 0 && data[currentIndex].profile !== null ? data[currentIndex].profile.username : "indisponível"}
+                        @{data.length > 0 && data[currentIndex].profile !== null ? data[currentIndex].profile.username : "carregando..."}
                     </Text>
                     <View style={{ flexDirection: "row" }}>
                         <MaterialIcons name="place" size={18} color={theme.colors.text1} style={{ marginRight: 5 }} />

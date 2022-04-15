@@ -46,7 +46,7 @@ export const styles = StyleSheet.create({
     actionButtonsHolder: {
         position: "absolute",
         right: 15,
-        bottom: "7%", // Controla a distancia do bottom	
+        bottom: "25%", // Controla a distancia do bottom	
         alignItems: "center",
         justifyContent: "center",
         width: 65,

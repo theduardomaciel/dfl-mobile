@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { SvgProps } from "react-native-svg";
 import { View, Text, ScrollView } from "react-native";
 
@@ -14,6 +14,10 @@ type Props = {
     description: React.ReactNode;
     explanation: React.ReactNode;
 }
+
+import changeNavigationBarColor, {
+    showNavigationBar,
+} from 'react-native-navigation-bar-color';
 
 import { MaterialIcons } from '@expo/vector-icons';
 import { AccordionOptions } from "../../../components/AccordionOptions";
@@ -68,6 +72,11 @@ export function PermissionsExplanation({ navigation }) {
             <MaterialIcons style={{ transform: [{ rotate: '-90deg' }] }} name="keyboard-arrow-down" size={32} color={theme.colors.secondary1} />
         </View>
     );
+
+    useEffect(() => {
+        changeNavigationBarColor(theme.colors.background, false, true);
+        showNavigationBar()
+    }, [])
 
     function PermissionItem(itemMaster) {
         const item = itemMaster.item;

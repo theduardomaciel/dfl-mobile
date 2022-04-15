@@ -27,6 +27,45 @@ import { useAuth } from "../../hooks/useAuth";
 import Toast from 'react-native-toast-message';
 import FocusAwareStatusBar from "../../utils/functions/FocusAwareStatusBar";
 
+function GetReportsAmountByMonth(profile) {
+    const data = profile.reports;
+    const amountsByMonth = new Array(12).fill(0) as Array<number>;
+    if (!data) return amountsByMonth;
+    for (let index = 0; index < data.length; index++) {
+        const report = data[index];
+        const date = new Date(report.createdAt);
+        const month = date.getMonth()
+        amountsByMonth[month] = amountsByMonth[month] + 1;
+    }
+    return amountsByMonth
+}
+
+function GetReportsAmountBars(profile) {
+    const reportsAmountByMonth = GetReportsAmountByMonth(profile)
+    const max = Math.max(...reportsAmountByMonth);
+
+    const TOP_DIFFERENCE = 30
+    let bars = []
+    for (let index = 0; index < 11; index++) {
+        const monthAmount = reportsAmountByMonth[index];
+        const MAX_HEIGHT = 100 - TOP_DIFFERENCE
+        const PERCENTAGE = `${Math.abs((monthAmount * MAX_HEIGHT) / max)}%`
+        const height = monthAmount ? PERCENTAGE : "10%"
+        bars.push(
+            <View key={index} style={{ alignItems: "center" }}>
+                <Text style={{ fontSize: 7, color: theme.colors.primary3, fontFamily: theme.fonts.subtitle400 }}>
+                    {monthAmount ? monthAmount : 0}
+                </Text>
+                <View style={{ backgroundColor: theme.colors.primary3, borderRadius: 15, height: height, width: 12 }} />
+                <Text style={{ fontSize: 9, color: theme.colors.primary3, fontFamily: theme.fonts.title700 }}>
+                    {months[index]}
+                </Text>
+            </View>
+        )
+    }
+    return bars
+}
+
 // Os dados em uma SectionList devem ser sempre organizados em: "Title" e "Data". 
 // Se esse nomes não estiverem escritos, um erro será retornado.
 const EXAMPLE_REPORTS = [
@@ -213,42 +252,7 @@ export function Account({ navigation, route }) {
         setReportsData(groupArrays)
     }
 
-    function GetReportsAmountByMonth(profile) {
-        const data = profile.reports;
-        const amountsByMonth = new Array(12).fill(0) as Array<number>;
-        if (!data) return amountsByMonth;
-        for (let index = 0; index < data.length; index++) {
-            const report = data[index];
-            const date = new Date(report.createdAt);
-            const month = date.getMonth()
-            amountsByMonth[month] = amountsByMonth[month] + 1;
-        }
-        return amountsByMonth
-    }
-
     const [reportsAmountBars, setReportsAmountBars] = useState([])
-    function GetReportsAmountBars(profile) {
-        const reportsAmountByMonth = GetReportsAmountByMonth(profile)
-        const max = Math.max(...reportsAmountByMonth);
-
-        let bars = []
-        for (let index = 0; index < 11; index++) {
-            const monthAmount = reportsAmountByMonth[index];
-            const height = monthAmount ? `${Math.abs(((100 * monthAmount) / max) - 25)}%` : "10%"
-            bars.push(
-                <View key={index} style={{ alignItems: "center" }}>
-                    <Text style={{ fontSize: 7, color: theme.colors.primary3, fontFamily: theme.fonts.subtitle400 }}>
-                        {monthAmount ? monthAmount : 0}
-                    </Text>
-                    <View style={{ backgroundColor: theme.colors.primary3, borderRadius: 15, height: height, width: 12 }} />
-                    <Text style={{ fontSize: 9, color: theme.colors.primary3, fontFamily: theme.fonts.title700 }}>
-                        {months[index]}
-                    </Text>
-                </View>
-            )
-        }
-        setReportsAmountBars(bars)
-    }
 
     const showSuccessToast = () => {
         console.log("mostrando")
@@ -271,7 +275,7 @@ export function Account({ navigation, route }) {
         console.log("Atualizando dados da tela de relatórios.")
         if (user.profile.reports) {
             LoadUserReports(user.profile)
-            GetReportsAmountBars(user.profile)
+            setReportsAmountBars(GetReportsAmountBars(user.profile))
         } else {
             setReportsData([])
             setReportsAmountBars([<EmptyItem fontSize={12} color={"white"} />])
@@ -314,6 +318,8 @@ export function Account({ navigation, route }) {
     const userCreatedAtSplit = user.createdAt.split("-")
     const userCreatedAt = userCreatedAtSplit[2].slice(0, 2) + "/" + userCreatedAtSplit[1] + "/" + userCreatedAtSplit[0]
 
+    const userReportsSolvedAmount = [...user.profile.reports].filter(report => report.resolved === true).length
+
     return (
         <ImageBackground source={require("../../assets/background_placeholder.png")} style={styles.container}>
             <FocusAwareStatusBar translucent barStyle="dark-content" />
@@ -322,6 +328,7 @@ export function Account({ navigation, route }) {
                 style={{ width: "100%" }}
                 contentContainerStyle={styles.scrollContainer}
                 showsVerticalScrollIndicator={false}
+                fadingEdgeLength={25}
                 nestedScrollEnabled={true}
                 refreshControl={
                     <RefreshControl
@@ -377,7 +384,7 @@ export function Account({ navigation, route }) {
                     </Text>
                     <View style={{ width: "80%", height: 1, backgroundColor: theme.colors.primary2 }} />
                     <Text style={styles.statisticsTitle}>
-                        {"0 focos reportados foram resolvidos"}
+                        {`${userReportsSolvedAmount} foco${userReportsSolvedAmount !== 1 && "s"} reportados foram resolvidos`}
                     </Text>
                 </View>
 

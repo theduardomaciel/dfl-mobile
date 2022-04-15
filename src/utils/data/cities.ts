@@ -1,5 +1,5 @@
 export const CITIES_DATA = {
-    "Maceió, AL - Brasil": {
+    "Maceió, Alagoas - Brasil": {
         id: 0,
         location: "",
         name: "Maceió",

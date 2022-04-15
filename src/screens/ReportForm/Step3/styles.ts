@@ -7,7 +7,8 @@ export const styles = StyleSheet.create({
         fontFamily: theme.fonts.section400,
         color: theme.colors.secondary1,
         fontSize: 12,
-        lineHeight: 12
+        lineHeight: 12,
+        marginBottom: 5
     },
     textForm: {
         backgroundColor: theme.colors.primary2,
@@ -19,6 +20,6 @@ export const styles = StyleSheet.create({
         paddingVertical: 15,
         textAlignVertical: "top",
         marginBottom: 10,
-        minHeight: (Dimensions.get("window").height / 100) * 13
+        minHeight: (Dimensions.get("window").height / 100) * 12
     }
 });

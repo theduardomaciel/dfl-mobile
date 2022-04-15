@@ -5,13 +5,7 @@ import { View } from 'react-native';
 
 import { styles } from './styles';
 import { theme } from '../../global/styles/theme';
-
-type RegionType = {
-    latitude: number,
-    longitude: number,
-    latitudeDelta: number,
-    longitudeDelta: number,
-}
+import { RegionType } from '../../@types/application';
 
 type CustomProps = {
     changedScope: (scope, newRegion) => void;
@@ -46,8 +40,8 @@ export function MapScopePicker({ actualRegion, changedScope, biggerScope }: Cust
                             newRegion.longitudeDelta = 2.5
                             break;
                         case 'country':
-                            newRegion.latitudeDelta = 10
-                            newRegion.longitudeDelta = 10
+                            newRegion.latitudeDelta = 35
+                            newRegion.longitudeDelta = 35
                             break;
                     }
                     //console.log(`Atualizando escopo do mapa para ${itemValue}`, newRegion)
@@ -58,11 +52,11 @@ export function MapScopePicker({ actualRegion, changedScope, biggerScope }: Cust
                 <Picker.Item label="Cidade" value="city" color={theme.colors.secondary1} fontFamily={theme.fonts.title700} />
                 {
                     biggerScope &&
-                    <>
-                        <Picker.Item label="Estado" value="state" color={theme.colors.secondary1} fontFamily={theme.fonts.title700} />
-                        <Picker.Item label="País" value="country" color={theme.colors.secondary1} fontFamily={theme.fonts.title700} />
-
-                    </>
+                    <Picker.Item label="Estado" value="state" color={theme.colors.secondary1} fontFamily={theme.fonts.title700} />
+                }
+                {
+                    biggerScope &&
+                    <Picker.Item label="País" value="country" color={theme.colors.secondary1} fontFamily={theme.fonts.title700} />
                 }
             </Picker>
         </View>

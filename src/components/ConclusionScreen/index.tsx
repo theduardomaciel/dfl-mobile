@@ -25,7 +25,7 @@ type Props = {
     title: string;
     info: string;
     icon?: string;
-    gainedExperience: number | null;
+    gainedExperience?: number | null;
     backButtonText?: string;
     onPress: () => void;
 }

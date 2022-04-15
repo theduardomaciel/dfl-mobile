@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, ScrollView, Image, RefreshControl, Platform, Pressable, ImageBackground } from "react-native";
 import { MapScopePicker } from "../../components/MapScopePicker";
 
-import MapView, { PROVIDER_GOOGLE, Marker, Region } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
 import { check, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 import { ProfileIcon } from "../../components/ProfileIcon";
@@ -16,13 +16,18 @@ import { ListMarkersOnMap } from "../../utils/functions/ListMarkersOnMap";
 import { ModalBase } from "../../components/ModalBase";
 import { LEVELS_DATA } from "../../utils/data/levels";
 
+import { MaterialIcons } from '@expo/vector-icons';
+
 import * as Location from "expo-location";
 import FocusAwareStatusBar from "../../utils/functions/FocusAwareStatusBar";
 
 import changeNavigationBarColor, {
     hideNavigationBar,
-    showNavigationBar,
 } from 'react-native-navigation-bar-color';
+
+import { useFocusEffect } from '@react-navigation/native';
+import { api } from "../../utils/api";
+import { Report } from "../../@types/application";
 
 function GetGreeting() {
     const hour = new Date().getHours();
@@ -60,49 +65,46 @@ export function Home({ route, navigation }) {
 
     const { user, creatingAccount, updateUser, signOut } = useAuth();
 
+    async function HasPermission() {
+        let permissionToCheck;
+        if (Platform.OS === "android") {
+            permissionToCheck = PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION
+        } else if (Platform.OS === "ios") {
+            permissionToCheck = PERMISSIONS.IOS.LOCATION_WHEN_IN_USE
+        }
+        check(permissionToCheck)
+            .then((result) => {
+                if (result !== RESULTS.GRANTED) {
+                    creatingAccount ?
+                        navigation.navigate("PermissionsExplanation")
+                        : navigation.navigate("PermissionsRequest")
+                }
+            });
+    }
+
     let mapReference: any;
     const [alreadyLoaded, setAlreadyLoaded] = useState(false)
 
-    const [markers, setMarkers] = useState([]);
-    useEffect(() => {
-        setMarkers(ListMarkersOnMap(user, "district"))
-        async function HasPermission() {
-            let permissionToCheck;
-            if (Platform.OS === "android") {
-                permissionToCheck = PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION
-            } else if (Platform.OS === "ios") {
-                permissionToCheck = PERMISSIONS.IOS.LOCATION_WHEN_IN_USE
+    useFocusEffect(
+        useCallback(() => {
+            if (route.params?.errorMessage) {
+                console.log("Error Message: ", route.params?.errorMessage)
+                setErrorMessage(route.params?.errorMessage)
+                setErrorModalVisible(true)
             }
-            check(permissionToCheck)
-                .then((result) => {
-                    if (result !== RESULTS.GRANTED) {
-                        creatingAccount ?
-                            navigation.navigate("PermissionsExplanation")
-                            : navigation.navigate("PermissionsRequest")
-                    }
-                });
-        }
-        HasPermission();
-        if (route.params?.errorMessage) {
-            console.log("Error Message: ", route.params?.errorMessage)
-            setErrorMessage(route.params?.errorMessage)
-            setErrorModalVisible(true)
-        }
-        changeNavigationBarColor("black", false, true);
-        hideNavigationBar()
-    }, []);
+            changeNavigationBarColor("black", false, true);
+            hideNavigationBar()
+        }, [navigation])
+    );
 
-    const [isRefreshing, setIsRefreshing] = useState(false)
-    const onRefresh = async () => {
-        setIsRefreshing(true)
-        await updateUser()
-        setIsRefreshing(false)
-        console.log("Usuário atualizou página Home.")
-    }
 
     const [region, setRegion] = useState(initialRegion as RegionType);
     const [scopeText, setScopeText] = useState("em seu bairro")
-    const getScopePicked = (scope, newRegion) => {
+    const [markers, setMarkers] = useState([]);
+
+    const [reportsInDistrict, setReportsInDistrict] = useState([])
+    const getScopePicked = async (scope, newRegion?) => {
+        if (newRegion) setRegion(newRegion);
         switch (scope) {
             case "district":
                 setScopeText("em seu bairro")
@@ -114,7 +116,39 @@ export function Home({ route, navigation }) {
                 setScopeText("em seu estado")
                 break;
         }
-        setRegion(newRegion)
+        if (scope === "district") {
+            const result = await Location.reverseGeocodeAsync({ latitude: region.latitude, longitude: region.longitude });
+            const district = result[0].district
+            const markersArray = ListMarkersOnMap(user, scope, district)
+            setMarkers(markersArray)
+
+            console.log(district)
+            const reportsInDistrictResponse = await api.post("/reports/search", {
+                // Condição 1: Local - Caso o usuário já tenha criado um perfil, utilizamos a cidade inserida (primeiro nome antes da vírgula), 
+                // caso contrário, utilizamos o Brasil inteiro como local de busca
+                searchCount: 1000,
+                location: district,
+            })
+            const reportsGot = reportsInDistrictResponse.data as Array<Report>;
+            console.log(reportsGot)
+            setReportsInDistrict(reportsGot)
+        } else {
+            const markersArray = ListMarkersOnMap(user, scope)
+            setMarkers(markersArray)
+        }
+    }
+
+    useEffect(() => {
+        HasPermission()
+        getScopePicked("district");
+    }, []);
+
+    const [isRefreshing, setIsRefreshing] = useState(false)
+    const onRefresh = async () => {
+        setIsRefreshing(true)
+        await updateUser()
+        setIsRefreshing(false)
+        console.log("Usuário atualizou a página inicial.")
     }
 
     const [isAvailable, setIsAvailable] = useState(true)
@@ -153,7 +187,7 @@ export function Home({ route, navigation }) {
             <ScrollView
                 contentContainerStyle={styles.scrollContainer}
                 showsVerticalScrollIndicator={false}
-                fadingEdgeLength={50}
+                fadingEdgeLength={25}
                 refreshControl={
                     <RefreshControl
                         progressViewOffset={-10}
@@ -168,9 +202,12 @@ export function Home({ route, navigation }) {
                 </Text>
                 <Pressable style={[elements.subContainerGreen, theme.shadowProperties, { flexDirection: "row" }]} onPress={() => { navigation.navigate("Level") }}>
                     <View>
-                        <Text style={styles.subtitle}>
-                            Nível Atual:
-                        </Text>
+                        <View style={{ flexDirection: "row", alignItems: "center" }}>
+                            <Text style={styles.subtitle}>
+                                Nível Atual:
+                            </Text>
+                            <MaterialIcons name="keyboard-arrow-right" size={18} color={theme.colors.text1} />
+                        </View>
                         <Text style={styles.info}>
                             {LEVELS_DATA[user.profile.level].title}
                         </Text>
@@ -206,10 +243,10 @@ export function Home({ route, navigation }) {
                 </View>
                 <View style={[elements.subContainerGreen, theme.shadowProperties, { height: 256 }]}>
                     <Text style={[styles.info, { fontSize: 36 }]}>
-                        {userReportsInMonthAmount === 1 ? `1 foco de lixo` : `${userReportsInMonthAmount} focos de lixo`}
+                        {reportsInDistrict.length === 1 ? `1 foco de lixo` : `${reportsInDistrict.length} focos de lixo`}
                     </Text>
                     <Text style={styles.subtitle}>
-                        {userReportsInMonthAmount === 1 ? `foi encontrado ${scopeText}` : `foram encontrados ${scopeText}`}
+                        {reportsInDistrict.length === 1 ? `foi encontrado ${scopeText}` : `foram encontrados ${scopeText}`}
                     </Text>
                     <View style={styles.mapView}>
                         <MapView
@@ -235,6 +272,18 @@ export function Home({ route, navigation }) {
                                 }
                             }}
                         >
+                            {
+                                markers ?
+                                    markers.map((marker, index) => (
+                                        <Marker
+                                            key={index}
+                                            coordinate={marker.coordinates}
+                                            title={marker.title}
+                                            description={marker.description}
+                                        />
+                                    ))
+                                    : null
+                            }
                         </MapView>
                     </View>
                 </View>

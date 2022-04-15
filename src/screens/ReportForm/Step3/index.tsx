@@ -27,6 +27,10 @@ type ImageUploadResponse = {
 
 type ReportResponse = Profile
 
+import changeNavigationBarColor, {
+    hideNavigationBar,
+} from 'react-native-navigation-bar-color';
+
 export function ReportScreen3({ route, navigation }: any) {
     const { data } = route.params;
     const { user, updateUser } = useAuth();
@@ -100,6 +104,8 @@ export function ReportScreen3({ route, navigation }: any) {
     }
 
     useEffect(() => {
+        changeNavigationBarColor("black", false, true);
+        hideNavigationBar()
         navigation.addListener('beforeRemove', (event) => {
             if (isLoading) {
                 // Prevent default behavior of leaving the screen
@@ -111,7 +117,7 @@ export function ReportScreen3({ route, navigation }: any) {
     }, [navigation, isLoading])
 
     return (
-        <KeyboardAvoidingView style={defaultStyles.container} behavior={"padding"}>
+        <KeyboardAvoidingView style={defaultStyles.container} behavior={"height"}>
             <ScrollView showsVerticalScrollIndicator={false} style={defaultStyles.safeView}>
                 <View style={defaultStyles.header}>
                     <Text style={defaultStyles.stepTitle}>3 | INFORMAÇÕES</Text>
@@ -135,10 +141,13 @@ export function ReportScreen3({ route, navigation }: any) {
                         Busque descrever como você acha que o problema pode ser resolvido.
                     </Text>
                 </View>
-                <TextInput
-                    style={styles.textForm}
-                    onChangeText={setSuggestion}
-                />
+                <View style={{}}>
+                    <TextInput
+                        multiline
+                        style={styles.textForm}
+                        onChangeText={setSuggestion}
+                    />
+                </View>
                 <BouncyCheckbox
                     size={30}
                     style={{ width: "92%", marginBottom: 15 }}

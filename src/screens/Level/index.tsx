@@ -35,6 +35,53 @@ type PropTypes = {
     viewableItems: Array<ViewToken>;
 }
 
+import changeNavigationBarColor, {
+    showNavigationBar,
+} from 'react-native-navigation-bar-color';
+
+import { styles } from "../Account/styles";
+
+function GetReportsAmountByRating(profile) {
+    const data = profile.reports;
+    const amountsByRating = new Array(5).fill(0) as Array<number>;
+    if (!data) return amountsByRating;
+    data.forEach(report => {
+        for (let index = 1; index <= 5; index++) {
+            if (report["note" + index] !== 0) {
+                amountsByRating[index] += report["note" + index]
+            }
+        }
+    });
+    return amountsByRating
+}
+
+function GetReportsRatingBars(profile) {
+    const reportsAmountByRating = GetReportsAmountByRating(profile)
+
+    const max = Math.max(...reportsAmountByRating);
+
+    const TOP_DIFFERENCE = 30
+    let bars = []
+    for (let index = 1; index <= 5; index++) {
+        const ratingAmount = reportsAmountByRating[index];
+        const MAX_HEIGHT = 100 - TOP_DIFFERENCE
+        const PERCENTAGE = `${Math.abs((ratingAmount * MAX_HEIGHT) / max)}%`
+        const height = ratingAmount ? PERCENTAGE : "10%"
+        bars.push(
+            <View key={index} style={{ alignItems: "center" }}>
+                <Text style={{ fontSize: 7, color: theme.colors.primary3, fontFamily: theme.fonts.subtitle400 }}>
+                    {ratingAmount ? ratingAmount : 0}
+                </Text>
+                <View style={{ backgroundColor: theme.colors.primary3, borderRadius: 15, height: height, width: 12 }} />
+                <Text style={{ fontSize: 9, color: theme.colors.primary3, fontFamily: theme.fonts.title700 }}>
+                    {`Nota ${index}`}
+                </Text>
+            </View>
+        )
+    }
+    return bars
+}
+
 export function Level({ route, navigation }) {
     const { user } = useAuth();
 
@@ -121,20 +168,21 @@ export function Level({ route, navigation }) {
     };
 
     useEffect(() => {
+        changeNavigationBarColor(theme.colors.background, false, true);
+        showNavigationBar()
         if (user.profile === undefined) {
             return navigation.goBack();
         }
+        if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+            UIManager.setLayoutAnimationEnabledExperimental(true);
+        }
     }, [])
+
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
 
     const USER_LEVEL = user.profile.level
     const USER_EXP = user.profile.experience;
     const BAR_WIDTH = ((USER_EXP * 100) / LEVELS_DATA[currentIndex + 1].exp)
-
-    if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-        UIManager.setLayoutAnimationEnabledExperimental(true);
-    }
-
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
 
     return (
         <View style={levelStyles.container}>
@@ -235,13 +283,13 @@ export function Level({ route, navigation }) {
                     </Text> */}
                 </View>
             </View>
-            <View style={[elements.subContainerGreen, { height: 85, marginBottom: 25 }]}>
-                <Text style={[levelStyles.levelDescription2, { fontSize: 14 }]}>
-                    Média geral de avaliação dos seus relatórios{`\n`}
-                    <Text style={{ fontFamily: theme.fonts.subtitle900, fontSize: 28 }}>
-                        1.832/5
-                    </Text>
+            <View style={[elements.subContainerGreen, { minHeight: 90, marginBottom: 15, width: "75%" }]}>
+                <Text style={[levelStyles.levelDescription2, { fontSize: 10, marginBottom: 5 }]}>
+                    Média geral de avaliação dos seus relatórios
                 </Text>
+                <View style={styles.userActivityView}>
+                    {GetReportsRatingBars(user.profile)}
+                </View>
             </View>
             {
                 isLoading ? <LoadingScreen /> : null

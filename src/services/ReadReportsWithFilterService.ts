@@ -1,7 +1,7 @@
 import prismaClient from "../prisma";
 
 class ReadReportsWithFilterService {
-    async execute(location, username, exclusionsId, profileToExcludeId) {
+    async execute(location, username, exclusionsId, profileToExcludeId, searchCount) {
         try {
             const reports = await prismaClient.report.findMany({
                 where: {
@@ -31,7 +31,7 @@ class ReadReportsWithFilterService {
                         }
                     ]
                 },
-                take: 10,
+                take: searchCount && searchCount,
                 include: {
                     comments: {
                         include: {
@@ -57,7 +57,7 @@ class ReadReportsWithFilterService {
             SELECT *
             FROM   reports
             WHERE  lower(f_unaccent(address)) = lower(f_unaccent(${location}));` */
-            console.log(reports, "Obtivemos os 10 primeiros relatórios com os filtros determinados.")
+            console.log(reports, `Obtivemos os ${searchCount && searchCount} primeiros relatórios com os filtros determinados.`)
             return reports;
         } catch (error) {
             console.log(error)

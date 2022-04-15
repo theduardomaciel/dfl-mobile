@@ -14,8 +14,7 @@ import { MapScopePicker } from "../../components/MapScopePicker";
 import { elements } from "../../global/styles/elements";
 import { theme } from "../../global/styles/theme";
 import { styles } from "./styles";
-
-import { Entypo } from '@expo/vector-icons';
+import { Entypo } from "@expo/vector-icons"
 
 import { useAuth } from "../../hooks/useAuth";
 
@@ -26,7 +25,7 @@ import FocusAwareStatusBar from "../../utils/functions/FocusAwareStatusBar";
 
 import * as Location from 'expo-location';
 
-const Marcadores = [
+/* Marcadores = [
     {
         title: "Marcador 1",
         description: "Coiso",
@@ -35,97 +34,129 @@ const Marcadores = [
             longitude: 43.14820
         }
     },
-]
+] */
 
-const initialRegion = {
-    latitude: 37.78825,
-    longitude: -122.4324,
-    latitudeDelta: 0.015,
-    longitudeDelta: 0.0121,
-}
+import { Profile, RegionType } from "../../@types/application";
+import { api } from "../../utils/api";
+
+let defaultCity = "Maceió, Alagoas - Brasil"
 
 export function Community() {
-    const { user } = useAuth();
+    const { user, updateUser } = useAuth();
 
     if (user === null) return (
         <View style={{ flex: 1 }} />
     );
 
     const [isFirstModalVisible, setFirstModalVisible] = useState(false)
-    const [isSecondModalVisible, setSecondModalVisible] = useState(false)
     const firstToggleModal = () => {
         setFirstModalVisible(!isFirstModalVisible)
     }
+
+    const [isSecondModalVisible, setSecondModalVisible] = useState(false)
     const secondToggleModal = () => {
         setSecondModalVisible(!isSecondModalVisible)
     }
 
     const [markers, setMarkers] = useState([])
+    const getScopePicked = async (scope, newRegion?) => {
+        if (newRegion) setRegion(newRegion);
+        if (scope === "district") {
+            const result = await Location.reverseGeocodeAsync({ latitude: region.latitude, longitude: region.longitude });
+            const markersArray = ListMarkersOnMap(user, scope, result[0].district)
+            setMarkers(markersArray)
+        } else {
+            console.log(scope)
+            const markersArray = ListMarkersOnMap(user, scope)
+            setMarkers(markersArray)
+        }
+    }
+
+    const [profilesInCityAmount, setProfilesInCityAmount] = useState(0)
+    async function GetProfilesInCityAmount() {
+        const usersInLocationResults = await api.post("/profiles/search", {
+            // Condição 1: Local - Caso o usuário já tenha criado um perfil, utilizamos a cidade inserida (primeiro nome antes da vírgula), 
+            // caso contrário, utilizamos o Brasil inteiro como local de busca
+            location: user.profile.defaultCity.split(",")[0],
+        })
+        const profiles = usersInLocationResults.data as Array<Profile>;
+        setProfilesInCityAmount(profiles.length)
+    }
+
     useEffect(() => {
         function CheckIfProfileIsCreated() {
-            if (user.profile.defaultCity === null) {
+            if (user.profile.defaultCity === null || user.profile.defaultCity === "") {
                 console.log("Usuário não possui perfil. Exibindo modal para criação.")
                 setFirstModalVisible(true)
             }
         }
         CheckIfProfileIsCreated()
-        const newMarkers = ListMarkersOnMap(user, "district")
-        setMarkers(newMarkers)
+        GetProfilesInCityAmount()
+        getScopePicked("district")
     }, []);
 
-    const [region, setRegion] = useState(initialRegion);
+    let mapReference: any;
+    const [region, setRegion] = useState({
+        latitude: -14.2400732,
+        longitude: -53.1805017,
+        latitudeDelta: 35,
+        longitudeDelta: 35
+    } as RegionType);
+
     const [alreadyLoaded, setAlreadyLoaded] = useState(false)
 
-    let mapReference: any;
-    const getScopePicked = (scope, newRegion) => {
-        setRegion(newRegion)
-        Location.reverseGeocodeAsync({ latitude: region.latitude, longitude: region.longitude }).then((result) => {
-            setMarkers(ListMarkersOnMap(user, scope, result[0].district))
-        })
+    const getCityPicked = async (scope, newRegion?) => {
+        console.log(scope, newRegion)
+        defaultCity = scope;
+        console.log(defaultCity)
     }
 
     const [isCityModalVisible, setCityModalVisible] = useState(false);
     const toggleCityModal = () => {
-        //setCityModalVisible(!isCityModalVisible);
+        setCityModalVisible(!isCityModalVisible);
     };
 
-    const [defaultCity, setDefaultCity] = "Cidade não selecionada"
+    const [updatingProfile, setUpdatingProfile] = useState(false)
+    async function UpdateDefaultCity() {
+        setUpdatingProfile(true)
+        const profileResponse = await api.post("/profile/update", { profile_id: user.profile.id, defaultCity: defaultCity })
+        const updatedProfile = profileResponse.data as Profile;
+        if (updatedProfile) {
+            await updateUser(updatedProfile, "profile");
+            console.log(`Perfil do usuário criado com sucesso!`)
+        }
+        setCityModalVisible(false)
+        setUpdatingProfile(false)
+    }
+
     const CITY_DATA = CITIES_DATA[user.profile.defaultCity]
 
     return (
         <ImageBackground source={require("../../assets/background_placeholder.png")} style={styles.container}>
             <FocusAwareStatusBar translucent barStyle="dark-content" />
-            <ProfileModal
-                isVisible={isFirstModalVisible}
-                toggleModal={firstToggleModal}
-                secondToggleModal={secondToggleModal}
-            />
-            <ProfileModal
-                onBackdropPress={() => {
-                    firstToggleModal()
-                    secondToggleModal()
-                }}
-                isSecond
-                isVisible={isSecondModalVisible}
-                toggleModal={secondToggleModal}
-                secondToggleModal={firstToggleModal}
-            />
             <ModalBase
                 title="Alterar cidade padrão"
                 isVisible={isCityModalVisible}
-                onBackdropPress={() => setCityModalVisible(false)}
+                onBackdropPress={() => updatingProfile ? null : setCityModalVisible(false)}
                 toggleModal={() => { setCityModalVisible(false) }}
             >
-                <DefaultCityPicker state={defaultCity} setState={setDefaultCity} />
-                <TextButton title="ALTERAR CIDADE" textStyle={{ fontSize: 12 }} buttonStyle={{ backgroundColor: theme.colors.primary2, paddingVertical: 10, paddingHorizontal: 25, borderRadius: 25 }} />
+                <DefaultCityPicker changedScope={getCityPicked} />
+                <TextButton
+                    title="ALTERAR CIDADE"
+                    textStyle={{ fontSize: 12 }}
+                    isLoading={updatingProfile}
+                    disabled={updatingProfile}
+                    onPress={UpdateDefaultCity}
+                    buttonStyle={{ backgroundColor: theme.colors.primary2, paddingVertical: 10, paddingHorizontal: 25, borderRadius: 25 }}
+                />
             </ModalBase>
             <View style={styles.header}>
                 <Text style={styles.title}>
                     Comunidade
                 </Text>
             </View>
-            <ScrollView style={{ width: "100%", flex: 1 }} contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false} >
-                <SectionTitle title="Sua Cidade" info="212 usuários" />
+            <ScrollView style={{ width: "100%", flex: 1 }} contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false} fadingEdgeLength={25} >
+                <SectionTitle title="Sua Cidade" info={`${profilesInCityAmount} usuários`} hasLine />
                 <View style={styles.mapView}>
                     <MapView
                         style={{ flex: 1, borderRadius: 10, justifyContent: "center" }}
@@ -150,7 +181,6 @@ export function Community() {
                                 }
                             }
                         }}
-                        initialRegion={initialRegion}
                     >
                         {
                             markers ?
@@ -166,7 +196,7 @@ export function Community() {
                         }
                     </MapView>
                     <View style={{ position: "absolute", bottom: 0, right: 0 }}>
-                        <MapScopePicker changedScope={getScopePicked} actualRegion={region} />
+                        <MapScopePicker changedScope={getScopePicked} actualRegion={region} biggerScope />
                     </View>
                 </View>
                 <BottomBar
@@ -174,7 +204,7 @@ export function Community() {
                     element={
                         <Pressable style={styles.button} onPress={toggleCityModal}>
                             <Text style={styles.info}>{user.profile.defaultCity}</Text>
-                            {/* <Entypo name="chevron-small-down" size={22} color="white" /> */}
+                            <Entypo name="chevron-small-down" size={22} color="white" />
                         </Pressable>
                     }
                 />
@@ -183,8 +213,9 @@ export function Community() {
                 <View style={[elements.subContainerWhite, { height: 25 }]}>
 
                 </View>
+
                 {
-                    user.profile.defaultCity ?
+                    user.profile.defaultCity === "Maceió, Alagoas - Brasil" ?
                         <>
                             <SectionTitle title="Contato" hasLine viewStyle={{ marginTop: 25 }} />
                             <SectionTitle title={`Órgão Responsável (${CITY_DATA.name})`} fontStyle={{ fontSize: 18 }} viewStyle={{ marginBottom: 5 }} />
@@ -209,10 +240,29 @@ export function Community() {
                                 </View>
                                 <Image style={{ width: "35%", borderTopRightRadius: 15, borderBottomRightRadius: 15, height: "100%" }} source={{ uri: CITY_DATA.contact.image }} />
                             </View>
-                            <View style={{ height: 100 }} />
+                            <Text style={{ textAlign: "center", color: theme.colors.secondary1, marginTop: 35, paddingHorizontal: 15, marginBottom: 55 }}>
+                                {`Está dando um trabalhão programar todo o app.\nMas desde já, lhe agradeço. Por tudo. ❣️`}
+                            </Text>
                         </>
                         : null
                 }
+                <View style={{ height: 55 }} />
+
+                <ProfileModal
+                    isVisible={isFirstModalVisible}
+                    toggleModal={firstToggleModal}
+                    secondToggleModal={secondToggleModal}
+                />
+                <ProfileModal
+                    onBackdropPress={() => {
+                        firstToggleModal()
+                        secondToggleModal()
+                    }}
+                    isSecond
+                    isVisible={isSecondModalVisible}
+                    toggleModal={secondToggleModal}
+                    secondToggleModal={firstToggleModal}
+                />
             </ScrollView>
         </ImageBackground>
     );

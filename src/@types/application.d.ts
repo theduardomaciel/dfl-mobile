@@ -52,3 +52,10 @@ export type Comment = {
     Report: Report;
     createdAt: string;
 }
+
+export type RegionType = {
+    latitude: number,
+    longitude: number,
+    latitudeDelta: number,
+    longitudeDelta: number,
+}

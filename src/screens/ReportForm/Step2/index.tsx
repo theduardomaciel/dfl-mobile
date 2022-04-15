@@ -194,7 +194,7 @@ export function ReportScreen2({ route, navigation }: any) {
                                 <TextButton
                                     title="Próximo passo"
                                     colors={[theme.colors.secondary1, theme.colors.secondary2]}
-                                    buttonStyle={{ height: 45, width: "90%", marginBottom: 0, marginTop: 20 }}
+                                    buttonStyle={{ height: 45, width: "90%", marginBottom: 15, marginTop: 20 }}
                                     onPress={() => {
                                         navigation.navigate("Step3", { data })
                                     }}

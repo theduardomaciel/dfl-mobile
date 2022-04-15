@@ -31,31 +31,33 @@ import { TextForm } from '../TextForm';
 import { TextButton } from '../TextButton';
 import { ModalBase } from '../ModalBase';
 import { LoadingScreen } from '../LoadingScreen';
-
-const MIN_USERNAME_CHARACTERS = 3;
-const MAX_USERNAME_CHARACTERS = 12
+import { MAX_USERNAME_CHARACTERS, MIN_USERNAME_CHARACTERS, verifyFormatting, verifyRange } from '../ProfilePickers/Username';
+import { api } from '../../utils/api';
+import { Profile } from '../../@types/application';
 
 export function ProfileIcon({ uri, openConfig }: Props) {
-    const { user, signOut } = useAuth();
+    const { user, updateUser, signOut } = useAuth();
 
     const [modalVisible, setModalVisible] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
 
     const [isChangeUsernameModalVisible, setChangeUsernameModalVisible] = useState(false);
     const [usernameText, setUserNameText] = useState("")
-    const changeUsername = () => {
+    const changeUsername = async () => {
         console.log("Alterando nome do usuário...")
         setIsLoading(true)
-        setTimeout(() => {
-            setIsLoading(false)
-        }, 2000);
         setChangeUsernameModalVisible(false)
+
+        const profileResponse = await api.post("/profile/update", { profile_id: user.profile.id, username: usernameText })
+        const updatedProfile = profileResponse.data as Profile;
+        if (updatedProfile) {
+            await updateUser(updatedProfile, "profile");
+            console.log(`Perfil do usuário criado com sucesso!`)
+        }
+
         setUserNameText("")
         setModalVisible(false)
     }
-
-    const verifyRange = usernameText.length > MAX_USERNAME_CHARACTERS || usernameText.length < MIN_USERNAME_CHARACTERS
-    const verifyFormatting = (usernameText.includes(" ") || usernameText.toLowerCase() !== usernameText)
 
     const ProfileComponents = <View style={{ flex: 1, width: "100%" }}>
         <TextForm
@@ -64,32 +66,16 @@ export function ProfileIcon({ uri, openConfig }: Props) {
             titleStyle={{ color: theme.colors.secondary1, fontFamily: theme.fonts.section400, fontSize: 14 }}
             textInputProps={{
                 autoCapitalize: "none",
+                maxLength: MAX_USERNAME_CHARACTERS,
                 placeholder: user.profile ? `@${user.profile.username}` : user.first_name + user.last_name,
-                /* onEndEditing: (text) => {
-                    const username = text.nativeEvent.text
-                    if (username.length > MAX_USERNAME_CHARACTERS || username.length < MIN_USERNAME_CHARACTERS) {
-                        setUserNameText("OUT_OF_RANGE")
-                    } else if (username.includes(" ") || username.toLocaleLowerCase() !== username) {
-                        setUserNameText("OUT_OF_FORMATTING")
-                    } else {
-                        setUserNameText(username)
-                    }
-                }, */
                 onChangeText: (text) => setUserNameText(text)
             }}
         />
-
-        {/* <Text style={[styles.modalSubtitle, { color: usernameText === "OUT_OF_FORMATTING" ? theme.colors.red_light : theme.colors.secondary2 }]}>
-            {`• Seu nome de usuário não pode conter letras maiúsculas ou espaços. ${usernameText === "OUT_OF_FORMATTING" ? "❌" : "✅"}`}
+        <Text style={[styles.modalSubtitle, { color: verifyFormatting(usernameText) ? theme.colors.red_light : theme.colors.secondary2 }]}>
+            {`• Seu nome de usuário não pode conter letras maiúsculas ou espaços. ${verifyFormatting(usernameText) ? "❌" : "✅"}`}
         </Text>
-        <Text style={[styles.modalSubtitle, { color: usernameText === "MAX_USERNAME_CHARACTERS" ? theme.colors.red_light : theme.colors.secondary2 }]}>
-            {`• Seu nome de usuário deve ter no mínimo ${MIN_USERNAME_CHARACTERS} e no máximo ${MAX_USERNAME_CHARACTERS} caracteres. ${usernameText === "OUT_OF_RANGE" ? "❌" : "✅"}`}
-        </Text> */}
-        <Text style={[styles.modalSubtitle, { color: verifyFormatting ? theme.colors.red_light : theme.colors.secondary2 }]}>
-            {`• Seu nome de usuário não pode conter letras maiúsculas ou espaços. ${verifyFormatting ? "❌" : "✅"}`}
-        </Text>
-        <Text style={[styles.modalSubtitle, { color: verifyRange ? theme.colors.red_light : theme.colors.secondary2 }]}>
-            {`• Seu nome de usuário deve ter no mínimo ${MIN_USERNAME_CHARACTERS} e no máximo ${MAX_USERNAME_CHARACTERS} caracteres. ${verifyRange ? "❌" : "✅"}`}
+        <Text style={[styles.modalSubtitle, { color: verifyRange(usernameText) ? theme.colors.red_light : theme.colors.secondary2 }]}>
+            {`• Seu nome de usuário deve ter no mínimo ${MIN_USERNAME_CHARACTERS} e no máximo ${MAX_USERNAME_CHARACTERS} caracteres. ${verifyRange(usernameText) ? "❌" : "✅"}`}
         </Text>
         <TextButton
             title='Alterar nome de usuário'
@@ -99,8 +85,8 @@ export function ProfileIcon({ uri, openConfig }: Props) {
                     setChangeUsernameModalVisible(true)
                 }
             }}
-            disabled={verifyFormatting || verifyRange === true ? true : false}
-            buttonStyle={{ backgroundColor: verifyFormatting || verifyRange === true ? theme.colors.red_light : theme.colors.primary1, height: 35, marginTop: 10, width: "100%" }}
+            disabled={verifyFormatting(usernameText) || verifyRange(usernameText) === true ? true : false}
+            buttonStyle={{ backgroundColor: verifyFormatting(usernameText) || verifyRange(usernameText) === true ? theme.colors.red_light : theme.colors.primary1, height: 35, marginTop: 10, width: "100%" }}
         />
     </View>
 
@@ -108,9 +94,15 @@ export function ProfileIcon({ uri, openConfig }: Props) {
     const [timer, setTimer] = useState(0)
     let counter = 5
 
-    const deleteAccount = () => {
+    const deleteAccount = async () => {
         console.log("Apagando conta do usuário...")
         setIsLoading(true)
+
+        const profileResponse = await api.post("/profile/update", { profile_id: user.profile.id, username: "", defaultCity: "" })
+        if (profileResponse) {
+            signOut()
+        }
+
         setDeleteModalVisible(false)
     }
 

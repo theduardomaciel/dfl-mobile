@@ -15,6 +15,7 @@ import { UpdateUserExperienceController } from "./controllers/UpdateUserExperien
 import { ReadProfileController } from "./controllers/ReadProfileController";
 import { ReadUserController } from "./controllers/ReadUserController";
 
+import { ReadProfilesWithFilterController } from "./controllers/ReadProfilesWithFilterController";
 import { ReadReportsWithFilterController } from "./controllers/ReadReportsWithFilterController";
 
 import { UploadImageController, DeleteImageController } from "./controllers/api_calls/ImageController"
@@ -36,6 +37,8 @@ router.post("/report/comments/create", ensureAuthenticated, new CreateCommentInR
 router.post("/report/comments/delete", ensureAuthenticated, new DeleteCommentInReportController().handle)
 
 router.post("/reports/search", ensureAuthenticated, new ReadReportsWithFilterController().handle)
+router.post("/profiles/search", ensureAuthenticated, new ReadProfilesWithFilterController().handle)
+
 
 // Seção de Perfil
 router.post("/profile", new ReadProfileController().handle);
