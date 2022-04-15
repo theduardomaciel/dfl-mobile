@@ -13,16 +13,15 @@
     [2] = país
 */
 
-import { User } from "../../@types/application";
+import { User, Report } from "../../@types/application";
 
-export function ListMarkersOnMap(user: User, scope: string, district?: string) {
-    const userReports = user.profile.reports;
-    if (userReports !== undefined) {
+export function ListMarkersOnMap(reports: Array<Report>, user: User, scope: string, district?: string) {
+    if (reports !== undefined) {
         let markersArray = []
         switch (scope) {
             case "district":
                 if (district) {
-                    userReports.forEach((report) => {
+                    reports.forEach((report) => {
                         const fullAddress = report.address.split(",");
                         if (fullAddress[2].replace(/ /g, '') === district) {
                             console.log("Um relatório compatível foi encontrado com o escopo de bairro.")
@@ -43,7 +42,7 @@ export function ListMarkersOnMap(user: User, scope: string, district?: string) {
                 return markersArray;
             case "city":
                 const defaultCity = user.profile.defaultCity.split(",")[0].replace(/ /g, '');
-                userReports.forEach((report) => {
+                reports.forEach((report) => {
                     const reportCity = report.address.split(",")[3].replace(/\s/g, '');
                     if (defaultCity === reportCity) {
                         console.log("Um relatório compatível foi encontrado com o escopo de cidade.")
@@ -61,7 +60,7 @@ export function ListMarkersOnMap(user: User, scope: string, district?: string) {
                 return markersArray;
             case "state":
                 const defaultState = user.profile.defaultCity.split(",")[1].split("-")[0].replace(/\s/g, '');
-                userReports.forEach((report) => {
+                reports.forEach((report) => {
                     const reportState = report.address.split(",")[4].replace(/\s/g, '');
                     console.log(defaultState, reportState)
                     if (reportState === defaultState) {
@@ -78,7 +77,7 @@ export function ListMarkersOnMap(user: User, scope: string, district?: string) {
                 return markersArray;
             case "country":
                 const defaultCountry = user.profile.defaultCity.split("-")[1].replace(/\s/g, '');
-                userReports.forEach((report) => {
+                reports.forEach((report) => {
                     const reportCounty = report.address.split(",")[5].replace(/\s/g, '');
                     if (reportCounty === defaultCountry) {
                         markersArray.push({

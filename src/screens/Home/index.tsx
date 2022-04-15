@@ -102,7 +102,7 @@ export function Home({ route, navigation }) {
     const [scopeText, setScopeText] = useState("em seu bairro")
     const [markers, setMarkers] = useState([]);
 
-    const [reportsInDistrict, setReportsInDistrict] = useState([])
+    const [reportsInDistrictAmount, setReportsInDistrictAmount] = useState(0)
     const getScopePicked = async (scope, newRegion?) => {
         if (newRegion) setRegion(newRegion);
         switch (scope) {
@@ -119,28 +119,35 @@ export function Home({ route, navigation }) {
         if (scope === "district") {
             const result = await Location.reverseGeocodeAsync({ latitude: region.latitude, longitude: region.longitude });
             const district = result[0].district
-            const markersArray = ListMarkersOnMap(user, scope, district)
-            setMarkers(markersArray)
 
-            console.log(district)
             const reportsInDistrictResponse = await api.post("/reports/search", {
                 // Condição 1: Local - Caso o usuário já tenha criado um perfil, utilizamos a cidade inserida (primeiro nome antes da vírgula), 
                 // caso contrário, utilizamos o Brasil inteiro como local de busca
-                searchCount: 1000,
                 location: district,
             })
-            const reportsGot = reportsInDistrictResponse.data as Array<Report>;
-            console.log(reportsGot)
-            setReportsInDistrict(reportsGot)
+            const reports = reportsInDistrictResponse.data as Array<Report>;
+
+            const markersArray = ListMarkersOnMap(reports, user, scope, district)
+            setMarkers(markersArray)
+
+            setReportsInDistrictAmount(reports.length)
         } else {
-            const markersArray = ListMarkersOnMap(user, scope)
+            const reportsResponse = await api.post("/reports/search", {
+                // Condição 1: Local - Caso o usuário já tenha criado um perfil, utilizamos a cidade inserida (primeiro nome antes da vírgula), 
+                // caso contrário, utilizamos o Brasil inteiro como local de busca
+            })
+            const reports = reportsResponse.data as Array<Report>;
+
+            const markersArray = ListMarkersOnMap(reports, user, scope)
             setMarkers(markersArray)
         }
     }
 
     useEffect(() => {
         HasPermission()
-        getScopePicked("district");
+        setTimeout(() => {
+            getScopePicked("district");
+        }, 2500);
     }, []);
 
     const [isRefreshing, setIsRefreshing] = useState(false)
@@ -243,10 +250,10 @@ export function Home({ route, navigation }) {
                 </View>
                 <View style={[elements.subContainerGreen, theme.shadowProperties, { height: 256 }]}>
                     <Text style={[styles.info, { fontSize: 36 }]}>
-                        {reportsInDistrict.length === 1 ? `1 foco de lixo` : `${reportsInDistrict.length} focos de lixo`}
+                        {reportsInDistrictAmount === 1 ? `1 foco de lixo` : `${reportsInDistrictAmount} focos de lixo`}
                     </Text>
                     <Text style={styles.subtitle}>
-                        {reportsInDistrict.length === 1 ? `foi encontrado ${scopeText}` : `foram encontrados ${scopeText}`}
+                        {reportsInDistrictAmount === 1 ? `foi encontrado ${scopeText}` : `foram encontrados ${scopeText}`}
                     </Text>
                     <View style={styles.mapView}>
                         <MapView
