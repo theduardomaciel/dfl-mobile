@@ -134,7 +134,6 @@ export function ReportScreen2({ route, navigation }: any) {
                 <View style={defaultStyles.header}>
                     <Text style={defaultStyles.stepTitle}>2 | IMAGEM DO LOCAL</Text>
                     <AntDesign name="left" size={24} color={theme.colors.primary1} onPress={() => {
-                        console.log("Testando")
                         navigation.goBack()
                     }} />
                 </View>
@@ -160,7 +159,7 @@ export function ReportScreen2({ route, navigation }: any) {
                 )}
 
                 <BottomBar
-                    viewStyle={{ marginBottom: 35 }}
+                    viewStyle={{ marginBottom: 25, height: 65 }}
                     element={
                         <TouchableOpacity disabled={isLoading} style={styles.bottomBar} onPress={takePicture}>
                             {isLoading ? <ActivityIndicator size="large" color={theme.colors.text1} /> :
@@ -195,7 +194,7 @@ export function ReportScreen2({ route, navigation }: any) {
                                 <TextButton
                                     title="Próximo passo"
                                     colors={[theme.colors.secondary1, theme.colors.secondary2]}
-                                    buttonStyle={{ height: 45, width: "90%", marginBottom: 20, marginTop: 20 }}
+                                    buttonStyle={{ height: 45, width: "90%", marginBottom: 0, marginTop: 20 }}
                                     onPress={() => {
                                         navigation.navigate("Step3", { data })
                                     }}

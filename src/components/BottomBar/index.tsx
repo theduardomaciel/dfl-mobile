@@ -21,7 +21,7 @@ export function BottomBar({ info, element, viewStyle, ...rest }: Props) {
     return (
         <View style={viewStyle ? [viewStyle, styles.container] : styles.container} {...rest}>
             {
-                info ? <Text style={styles.info}> {info} </Text> : null
+                info ? <Text style={styles.info}>{info}</Text> : null
             }
             {element}
         </View>

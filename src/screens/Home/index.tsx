@@ -17,7 +17,7 @@ import { ModalBase } from "../../components/ModalBase";
 import { LEVELS_DATA } from "../../utils/data/levels";
 
 import * as Location from "expo-location";
-import FocusAwareStatusBar from "../../utils/FocusAwareStatusBar";
+import FocusAwareStatusBar from "../../utils/functions/FocusAwareStatusBar";
 
 import changeNavigationBarColor, {
     hideNavigationBar,

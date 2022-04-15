@@ -18,9 +18,13 @@ import { styles } from "./styles";
 import { Entypo } from '@expo/vector-icons';
 
 import { useAuth } from "../../hooks/useAuth";
+
 import { ListMarkersOnMap } from "../../utils/functions/ListMarkersOnMap";
 import { CITIES_DATA } from "../../utils/data/cities";
-import FocusAwareStatusBar from "../../utils/FocusAwareStatusBar";
+
+import FocusAwareStatusBar from "../../utils/functions/FocusAwareStatusBar";
+
+import * as Location from 'expo-location';
 
 const Marcadores = [
     {
@@ -75,7 +79,9 @@ export function Community() {
     let mapReference: any;
     const getScopePicked = (scope, newRegion) => {
         setRegion(newRegion)
-        setMarkers(ListMarkersOnMap(user, scope))
+        Location.reverseGeocodeAsync({ latitude: region.latitude, longitude: region.longitude }).then((result) => {
+            setMarkers(ListMarkersOnMap(user, scope, result[0].district))
+        })
     }
 
     const [isCityModalVisible, setCityModalVisible] = useState(false);

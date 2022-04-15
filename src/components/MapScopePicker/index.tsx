@@ -56,10 +56,13 @@ export function MapScopePicker({ actualRegion, changedScope, biggerScope }: Cust
             >
                 <Picker.Item label="Bairro" value="district" color={theme.colors.secondary1} fontFamily={theme.fonts.title700} />
                 <Picker.Item label="Cidade" value="city" color={theme.colors.secondary1} fontFamily={theme.fonts.title700} />
-                <Picker.Item label="Estado" value="state" color={theme.colors.secondary1} fontFamily={theme.fonts.title700} />
                 {
-                    biggerScope ? <Picker.Item label="País" value="country" color={theme.colors.secondary1} fontFamily={theme.fonts.title700} />
-                        : null
+                    biggerScope &&
+                    <>
+                        <Picker.Item label="Estado" value="state" color={theme.colors.secondary1} fontFamily={theme.fonts.title700} />
+                        <Picker.Item label="País" value="country" color={theme.colors.secondary1} fontFamily={theme.fonts.title700} />
+
+                    </>
                 }
             </Picker>
         </View>

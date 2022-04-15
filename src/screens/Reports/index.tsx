@@ -30,7 +30,7 @@ import { PanGestureHandler } from "react-native-gesture-handler";
 import { CommentsModal } from "./Comments";
 import { Report } from "../../@types/application";
 import { LoadingScreen } from "../../components/LoadingScreen";
-import FocusAwareStatusBar from "../../utils/FocusAwareStatusBar";
+import FocusAwareStatusBar from "../../utils/functions/FocusAwareStatusBar";
 
 type PropTypes = {
     viewableItems: Array<ViewToken>;

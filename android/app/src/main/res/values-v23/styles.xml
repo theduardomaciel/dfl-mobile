@@ -4,6 +4,7 @@
     <item name="android:windowBackground">@drawable/splashscreen</item>
     <item name="android:windowLightStatusBar">true</item>
     <item name="android:statusBarColor">@color/splashscreen_statusbar_color</item>
+    <item name="android:navigationBarColor">@color/splashscreen_statusbar_color</item>
     <!-- Customize your splash screen theme here -->
   </style>
 </resources>

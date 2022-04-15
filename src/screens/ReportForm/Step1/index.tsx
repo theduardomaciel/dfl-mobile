@@ -20,8 +20,8 @@ async function getLocationAddress(latitude: number, longitude: number) {
             return getLocationAddress(latitude, longitude)
         }
         const address = fullAddress[0].street + ", "
-            + fullAddress[0].streetNumber + ", "
-            + fullAddress[0].postalCode + " - "
+            + fullAddress[0].postalCode + ", "
+            + fullAddress[0].district + ", "
             + fullAddress[0].subregion + ", "
             + fullAddress[0].region + ", "
             + fullAddress[0].country
@@ -103,14 +103,14 @@ export function ReportScreen1({ navigation }: any) {
                         initialRegion={region}
                     />
                 </View>
-                <BottomBar info={"Endereço: " + address} viewStyle={{ marginBottom: 25 }} />
+                <BottomBar info={"Endereço: " + address} viewStyle={{ height: 50 }} />
                 <TextButton
                     title="Próximo passo"
                     colors={[theme.colors.secondary1, theme.colors.secondary2]}
-                    buttonStyle={{ height: 45, width: "90%", marginTop: 20, marginBottom: 20 }}
+                    buttonStyle={{ height: 45, width: "90%", marginTop: 20, marginBottom: 25 }}
                     onPress={() => {
                         const data = cacheLocation()
-                        console.log(data)
+                        console.log("Dados cadastrados até o momento: ", data)
                         navigation.navigate("Step2", { data })
                     }}
                 />

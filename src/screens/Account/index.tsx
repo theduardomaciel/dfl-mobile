@@ -25,7 +25,7 @@ import TrashbinSvgWhite from "../../assets/trashbin_white.svg"
 import { useAuth } from "../../hooks/useAuth";
 
 import Toast from 'react-native-toast-message';
-import FocusAwareStatusBar from "../../utils/FocusAwareStatusBar";
+import FocusAwareStatusBar from "../../utils/functions/FocusAwareStatusBar";
 
 // Os dados em uma SectionList devem ser sempre organizados em: "Title" e "Data". 
 // Se esse nomes não estiverem escritos, um erro será retornado.
@@ -189,6 +189,11 @@ export function Account({ navigation, route }) {
     const [reportsData, setReportsData] = useState(null)
     async function LoadUserReports(profile) {
         const data = profile.reports;
+        data.sort((a, b) => {
+            const date1 = new Date(b.createdAt) as any;
+            const date2 = new Date(a.createdAt) as any;
+            return date1 - date2;
+        });
         const groups = data.reduce((groups, report) => {
             const date = report.createdAt.split('T')[0];
             const dateSplit = date.split('-')

@@ -111,7 +111,7 @@ export function ReportScreen3({ route, navigation }: any) {
     }, [navigation, isLoading])
 
     return (
-        <KeyboardAvoidingView style={defaultStyles.container}>
+        <KeyboardAvoidingView style={defaultStyles.container} behavior={"padding"}>
             <ScrollView showsVerticalScrollIndicator={false} style={defaultStyles.safeView}>
                 <View style={defaultStyles.header}>
                     <Text style={defaultStyles.stepTitle}>3 | INFORMAÇÕES</Text>
@@ -120,7 +120,7 @@ export function ReportScreen3({ route, navigation }: any) {
                 <Text style={defaultStyles.subtitle}>
                     Este passo é opcional, porém muito importante.
                 </Text>
-                <Text style={defaultStyles.title}>
+                <Text style={[defaultStyles.title, { marginBottom: 5 }]}>
                     Selecione as tags que possuem relação com a situação do foco de lixo.
                 </Text>
                 <TagsSelector onSelectTags={handleTags} />
@@ -135,13 +135,10 @@ export function ReportScreen3({ route, navigation }: any) {
                         Busque descrever como você acha que o problema pode ser resolvido.
                     </Text>
                 </View>
-                <View style={{}}>
-                    <TextInput
-                        multiline
-                        style={styles.textForm}
-                        onChangeText={setSuggestion}
-                    />
-                </View>
+                <TextInput
+                    style={styles.textForm}
+                    onChangeText={setSuggestion}
+                />
                 <BouncyCheckbox
                     size={30}
                     style={{ width: "92%", marginBottom: 15 }}
@@ -160,7 +157,7 @@ export function ReportScreen3({ route, navigation }: any) {
                     title="Enviar Relatório"
                     colors={[theme.colors.secondary1, theme.colors.secondary2]}
                     textStyle={{ fontSize: 18 }}
-                    buttonStyle={{ height: 55, width: "90%", }}
+                    buttonStyle={{ height: 55, width: "90%" }}
                     onPress={async () => {
                         data.tags = tags
                         data.hasTrashBins = hasTrashbin

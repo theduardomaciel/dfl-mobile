@@ -19,6 +19,6 @@ export const styles = StyleSheet.create({
         paddingVertical: 15,
         textAlignVertical: "top",
         marginBottom: 10,
-        minHeight: (Dimensions.get("window").height / 100) * 12
+        minHeight: (Dimensions.get("window").height / 100) * 13
     }
 });

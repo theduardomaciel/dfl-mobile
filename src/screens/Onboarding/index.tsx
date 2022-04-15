@@ -1,5 +1,5 @@
-import React, { useRef, useState, useCallback } from "react";
-import { View, FlatList, Animated, ViewToken, Pressable } from "react-native";
+import React, { useRef, useState, useCallback, useEffect } from "react";
+import { View, FlatList, Animated, ViewToken } from "react-native";
 
 import { onboarding_screens } from "../../utils/onboarding";
 import Logo from "../../assets/Logo.svg"
@@ -15,16 +15,24 @@ import { useAuth } from "../../hooks/useAuth"
 import { ModalBase } from "../../components/ModalBase";
 import { TextButton } from "../../components/TextButton";
 
-import * as Location from 'expo-location';
-
 type PropTypes = {
     viewableItems: Array<ViewToken>;
 }
+
+import changeNavigationBarColor, {
+    hideNavigationBar,
+    showNavigationBar,
+} from 'react-native-navigation-bar-color';
 
 import Google_G_Logo from "../../assets/Google__G__Logo.svg"
 
 export function Onboarding() {
     const { signIn, isSigningIn } = useAuth();
+
+    useEffect(() => {
+        changeNavigationBarColor(theme.colors.background, false, true);
+        showNavigationBar();
+    }, [])
 
     const [currentIndex, setCurrentIndex] = useState(0)
     const scrollX = useRef(new Animated.Value(0)).current;
