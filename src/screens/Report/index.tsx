@@ -95,7 +95,6 @@ export function ReportScreen({ navigation, route }) {
     const [isDeleteModalVisible, setDeleteModalVisible] = useState(false)
     const [isLoadingDelete, setIsLoadingDelete] = useState(false)
 
-    console.log(report)
     const deleteReport = async () => {
         setIsLoadingDelete(true)
         setDeleteModalVisible(false)
@@ -119,7 +118,6 @@ export function ReportScreen({ navigation, route }) {
         counter += 1
     }
 
-    console.log(report)
     const [isCommentsModalVisible, setCommentsModalVisible] = useState(false)
     return (
         <View style={styles.container}>
@@ -252,7 +250,6 @@ export function ReportScreen({ navigation, route }) {
                     icon={<MaterialIcons name="comment" size={28} color={theme.colors.text1} />}
                     buttonStyle={styles.commentButton}
                     onPress={() => {
-                        console.log(report)
                         setCommentsModalVisible(true)
                     }}
                 />
@@ -281,7 +278,7 @@ export function ReportScreen({ navigation, route }) {
                     closeFunction={() => {
                         setCommentsModalVisible(false)
                     }}
-                    report={report}
+                    report_id={report.id}
                 />
             }
             {

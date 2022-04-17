@@ -62,12 +62,15 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
 
     const [comments, setComments] = useState<Array<Comment> | null>(null)
     useEffect(() => {
+        setComments(null)
         async function GetComments() {
+            if (!report_id) return console.log("Um ID de relatório não foi fornecido.")
+            console.log("Obtendo comentários do relatório de ID: ", report_id)
             const commentsArray = await GetProfileComments(report_id)
             setComments(commentsArray)
         }
         GetComments()
-    }, [])
+    }, [report_id])
 
     const [isDeleteModalVisible, setDeleteModalVisible] = useState(false)
     const [isDeletingComment, setDeletingComment] = useState(false)
@@ -100,7 +103,6 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
         // Atualizando objeto do relatório no banco de dados
         const commentResponse = await api.post("/report/comments/create", {
             profile_id: user.profile.id,
-            profile_username: user.profile.username,
             report_id: report_id,
             content: commentText
         })
@@ -119,6 +121,7 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
 
     const renderComment = ({ item, index }) => {
         const createdAtText = CalculateCommentCreatedAt(item)
+        //console.log(item.profile)
         return (
             item.profile.id === user.profile.id ?
                 <Pressable style={{ flexDirection: "row", marginBottom: 10, width: "90%" }} onLongPress={() => {

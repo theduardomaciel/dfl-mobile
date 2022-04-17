@@ -5,7 +5,6 @@ class CreateCommentInReportController {
     async handle(request: Request, response: Response) {
         const {
             profile_id,
-            profile_username,
             report_id,
             content
         } = request.body;
@@ -14,7 +13,6 @@ class CreateCommentInReportController {
         const service = new CreateCommentInReportService();
         const result = await service.execute(
             profile_id,
-            profile_username,
             report_id,
             content
         )

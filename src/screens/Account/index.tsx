@@ -214,7 +214,6 @@ export function Account({ navigation, route }) {
     const [reportsAmountBars, setReportsAmountBars] = useState([])
 
     const showSuccessToast = () => {
-        console.log("mostrando")
         Toast.show({
             type: 'success',
             text1: 'Eba! Deu tudo certo!',
@@ -242,7 +241,7 @@ export function Account({ navigation, route }) {
     }
 
     useEffect(() => {
-        console.log("Verificando mudanças na tela de relatórios.", user.profile)
+        console.log("Verificando mudanças na tela de relatórios.")
         if (route.params?.status) {
             const status = route.params.status.split("_")[0]
             if (status === "error") {

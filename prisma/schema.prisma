@@ -68,17 +68,13 @@ model Report {
 }
 
 model Comment {
-    id          Int       @id @default(autoincrement())
-    content     String
-    createdAt   DateTime  @default(now())
-    subComments Comment[] @relation("CommentToComment")
+    id        Int      @id @default(autoincrement())
+    content   String
+    createdAt DateTime @default(now())
 
-    profile         Profile @relation(fields: [profileUsername], references: [username], onDelete: Cascade)
-    profileUsername String
+    profile    Profile @relation(fields: [profile_id], references: [id], onDelete: Cascade)
+    profile_id Int
 
-    Report   Report @relation(fields: [reportId], references: [id], onDelete: Cascade)
-    reportId Int
-
-    Comment   Comment? @relation("CommentToComment", fields: [commentId], references: [id], onDelete: Cascade)
-    commentId Int?
+    Report    Report @relation(fields: [report_id], references: [id], onDelete: Cascade)
+    report_id Int
 }

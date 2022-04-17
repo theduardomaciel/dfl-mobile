@@ -5,10 +5,10 @@ class ReadCommentsInReportService {
         try {
             const comments = await prismaClient.comment.findMany({
                 where: {
-                    reportId: report_id
+                    report_id: report_id
                 },
                 include: {
-                    profile: true
+                    profile: true,
                 }
             })
             return comments;
