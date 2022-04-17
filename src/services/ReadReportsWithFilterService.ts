@@ -35,7 +35,6 @@ class ReadReportsWithFilterService {
                 include: includeInfo && {
                     comments: {
                         include: {
-                            subComments: true,
                             profile: true
                         }
                     },

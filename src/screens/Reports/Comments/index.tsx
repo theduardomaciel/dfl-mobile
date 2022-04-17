@@ -40,9 +40,13 @@ function CalculateCommentCreatedAt(item) {
 }
 
 async function GetProfileComments(report_id) {
-    const profileCommentsResult = await api.post("/report/comments/read", { report_id: report_id })
-    const profileComments = profileCommentsResult.data as Array<Comment>
-    return profileComments
+    try {
+        const profileCommentsResult = await api.post("/report/comments/read", { report_id: report_id })
+        const profileComments = profileCommentsResult.data as Array<Comment>
+        return profileComments
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 type Props = {
