@@ -421,7 +421,7 @@ export function Reports({ route, navigation }) {
                     closeFunction={() => {
                         setCommentsModalVisible(false)
                     }}
-                    report={data[currentIndex]}
+                    report_id={data[currentIndex].id}
                 />
             }
             {

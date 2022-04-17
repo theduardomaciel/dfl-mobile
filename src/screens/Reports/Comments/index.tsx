@@ -17,12 +17,6 @@ import { api } from "../../../utils/api";
 import { ModalBase } from "../../../components/ModalBase";
 import { TextButton } from "../../../components/TextButton";
 
-type Props = {
-    isVisible: any;
-    closeFunction: () => void;
-    report: Report;
-}
-
 let actualComment = { id: 0, index: 0 }
 
 function CalculateCommentCreatedAt(item) {
@@ -45,18 +39,16 @@ function CalculateCommentCreatedAt(item) {
     return createdAtText;
 }
 
-export function CommentsModal({ isVisible, closeFunction, report }: Props) {
-    const [reportObject, setReportObject] = useState(report)
+type Props = {
+    isVisible: any;
+    closeFunction: () => void;
+    report_id: number;
+}
 
+export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
     const { user, updateReport } = useAuth();
 
-    /* const { frame } = initialWindowMetrics
-    const deviceWidth = Dimensions.get('window').width
-    const deviceHeight = Platform.OS === 'ios' ? Dimensions.get('window').height : frame.height */
-
-    useEffect(() => {
-        setReportObject(report)
-    }, [report])
+    const [comments, setComments] = useState<Array<Comment>>([])
 
     if (Platform.OS === 'android') {
         if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -67,23 +59,20 @@ export function CommentsModal({ isVisible, closeFunction, report }: Props) {
     const [isDeleteModalVisible, setDeleteModalVisible] = useState(false)
     const [isDeletingComment, setDeletingComment] = useState(false)
     const deleteComment = async () => {
-        console.log("Excluindo comentário do relatório.")
+        console.log(`Excluindo comentário de ID: ${actualComment.id} da array de comentários.`)
         setDeletingComment(true)
 
         // Atualizando objeto do relatório no banco de dados
         await api.post("/report/comments/delete", { comment_id: actualComment.id })
-        console.log("Comentário adicionado com sucesso no relatório.")
 
-        // Atualizando objeto do relatório localmente
-        let commentCopy = Object.assign(report.comments)
-        console.log(actualComment.index)
-        commentCopy.splice(actualComment.index, 1)
-        const updatedReport = await updateReport(report, commentCopy, "comments")
+        // Atualizando array de comentários localmente
+        let commentsCopy = Object.assign(comments)
+        commentsCopy.splice(actualComment.index, 1)
 
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-        setReportObject(updatedReport)
+        setComments(commentsCopy)
 
-        console.log("Relatório local atualizado com o comentário removido.")
+        console.log("Comentário removido com sucesso no relatório.")
         setDeleteModalVisible(false)
         setDeletingComment(false)
     }
@@ -99,22 +88,19 @@ export function CommentsModal({ isVisible, closeFunction, report }: Props) {
         const commentResponse = await api.post("/report/comments/create", {
             profile_id: user.profile.id,
             profile_username: user.profile.username,
-            report_id: report.id,
+            report_id: report_id,
             content: commentText
         })
         const comment = commentResponse.data as Comment;
-        console.log("Comentário adicionado com sucesso no relatório.", comment)
 
         // Atualizando objeto do relatório localmente
-        let commentCopy = Object.assign(report.comments)
-        commentCopy.push(comment)
-        const updatedReport = await updateReport(report, commentCopy, "comments")
+        let commentsCopy = Object.assign(comments)
+        commentsCopy.push(comment)
 
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-        setReportObject(updatedReport)
+        setComments(commentsCopy)
 
-        console.log("Relatório local atualizado com o comentário adicionado.")
-
+        console.log("Comentário adicionado com sucesso no relatório.", comment)
         setUploadingComment(false)
     }
 
@@ -254,12 +240,12 @@ export function CommentsModal({ isVisible, closeFunction, report }: Props) {
                     borderRadius: 5,
                     opacity: 0.5
                 }} />
-                <Text style={styles.title}>{`${reportObject.comments.length} comentário${reportObject.comments.length !== 1 ? 's' : ""}`}</Text>
-                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={reportObject.comments.length === 0 && { height: "100%" }} >
+                <Text style={styles.title}>{`${comments.length} comentário${comments.length !== 1 ? 's' : ""}`}</Text>
+                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={comments.length === 0 && { height: "100%" }} >
                     <View style={{ flex: 1 }} onStartShouldSetResponder={(): boolean => true}>
                         <FlatList
                             style={{ flex: 1 }}
-                            data={reportObject.comments.sort(function (x, y) {
+                            data={comments.sort(function (x, y) {
                                 const date1 = new Date(x.createdAt) as any;
                                 const date2 = new Date(y.createdAt) as any;
                                 return date2 - date1;
