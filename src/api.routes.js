@@ -9,6 +9,7 @@ import { DeleteReportController } from "./controllers/DeleteReportController";
 
 import { CreateCommentInReportController } from "./controllers/CreateCommentInReportController";
 import { DeleteCommentInReportController } from "./controllers/DeleteCommentInReportController";
+import { ReadCommentsInReportController } from "./controllers/ReadCommentsInReportController";
 
 import { UpdateUserExperienceController } from "./controllers/UpdateUserExperienceController";
 
@@ -35,6 +36,7 @@ router.post("/report/delete", ensureAuthenticated, new DeleteReportController().
 
 router.post("/report/comments/create", ensureAuthenticated, new CreateCommentInReportController().handle)
 router.post("/report/comments/delete", ensureAuthenticated, new DeleteCommentInReportController().handle)
+router.post("/report/comments/read", ensureAuthenticated, new ReadCommentsInReportController().handle)
 
 router.post("/reports/search", ensureAuthenticated, new ReadReportsWithFilterController().handle)
 router.post("/profiles/search", ensureAuthenticated, new ReadProfilesWithFilterController().handle)

@@ -39,6 +39,12 @@ function CalculateCommentCreatedAt(item) {
     return createdAtText;
 }
 
+async function GetProfileComments(report_id) {
+    const profileCommentsResult = await api.post("/report/comments/read", { report_id: report_id })
+    const profileComments = profileCommentsResult.data as Array<Comment>
+    return profileComments
+}
+
 type Props = {
     isVisible: any;
     closeFunction: () => void;
@@ -46,15 +52,22 @@ type Props = {
 }
 
 export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
-    const { user, updateReport } = useAuth();
-
-    const [comments, setComments] = useState<Array<Comment>>([])
+    const { user } = useAuth();
 
     if (Platform.OS === 'android') {
         if (UIManager.setLayoutAnimationEnabledExperimental) {
             UIManager.setLayoutAnimationEnabledExperimental(true);
         }
     }
+
+    const [comments, setComments] = useState<Array<Comment> | null>(null)
+    useEffect(() => {
+        async function GetComments() {
+            const commentsArray = await GetProfileComments(report_id)
+            setComments(commentsArray)
+        }
+        GetComments()
+    }, [])
 
     const [isDeleteModalVisible, setDeleteModalVisible] = useState(false)
     const [isDeletingComment, setDeletingComment] = useState(false)
@@ -162,31 +175,37 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
 
     const EmptyItem = () => {
         return (
-            <View style={{ alignItems: "center", justifyContent: "center", alignSelf: "center", flex: 1, backgroundColor: "transparent" }}>
-                <TrashBinSvg
-                    width={40}
-                    height={80}
-                />
-                <Text style={{
-                    fontFamily: theme.fonts.title700,
-                    color: theme.colors.secondary1,
-                    fontSize: 18,
-                    textAlign: "center",
-                }}>
-                    Está um pouco vazio aqui...
-                </Text>
-                <Text style={{
-                    fontFamily: theme.fonts.subtitle400,
-                    color: theme.colors.secondary1,
-                    fontSize: 16,
-                    textAlign: "center",
-                }}>
-                    {`Seja o primeiro a comentar para que seu\ncomentário apareça aqui!`}
-                </Text>
-            </View>
+            comments === null ?
+                <View style={{ alignItems: "center", justifyContent: "center", alignSelf: "center", flex: 1 }}>
+                    <ActivityIndicator size={"large"} color={theme.colors.secondary1} />
+                </View>
+                :
+                <View style={{ alignItems: "center", justifyContent: "center", alignSelf: "center", flex: 1 }}>
+                    <TrashBinSvg
+                        width={40}
+                        height={80}
+                    />
+                    <Text style={{
+                        fontFamily: theme.fonts.title700,
+                        color: theme.colors.secondary1,
+                        fontSize: 18,
+                        textAlign: "center",
+                    }}>
+                        Está um pouco vazio aqui...
+                    </Text>
+                    <Text style={{
+                        fontFamily: theme.fonts.subtitle400,
+                        color: theme.colors.secondary1,
+                        fontSize: 16,
+                        textAlign: "center",
+                    }}>
+                        {`Seja o primeiro a comentar para que seu\ncomentário apareça aqui!`}
+                    </Text>
+                </View>
         )
     }
 
+    const nullOrZero = comments === null ? true : comments.length === 0 ? true : false
     return (
         <Modal
             testID={'modal'}
@@ -240,12 +259,14 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
                     borderRadius: 5,
                     opacity: 0.5
                 }} />
-                <Text style={styles.title}>{`${comments.length} comentário${comments.length !== 1 ? 's' : ""}`}</Text>
-                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={comments.length === 0 && { height: "100%" }} >
+                {
+                    !nullOrZero && <Text style={styles.title}>{`${comments.length} comentário${comments.length !== 1 ? 's' : ""}`}</Text>
+                }
+                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={nullOrZero && { height: "100%" }} >
                     <View style={{ flex: 1 }} onStartShouldSetResponder={(): boolean => true}>
                         <FlatList
                             style={{ flex: 1 }}
-                            data={comments.sort(function (x, y) {
+                            data={comments !== null && comments.sort(function (x, y) {
                                 const date1 = new Date(x.createdAt) as any;
                                 const date2 = new Date(y.createdAt) as any;
                                 return date2 - date1;
@@ -260,18 +281,21 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
                     </View>
                 </ScrollView>
 
-                <TextForm
-                    customStyle={{ height: 40, width: "90%", marginTop: 15, marginBottom: 20 }}
-                    textInputProps={{
-                        placeholder: "Deixe um comentário",
-                        maxLength: 150,
-                        onChangeText: (text) => setCommentText(text),
-                    }}
-                    icon={uploadingComment ? <ActivityIndicator size={"small"} color={theme.colors.secondary1} /> : <MaterialIcons name="send" size={22} color={theme.colors.secondary1} />}
-                    onIconPress={shareComment}
-                    disabled={uploadingComment}
-                    fontStyle={{ fontSize: 13 }}
-                />
+                {
+                    !nullOrZero &&
+                    <TextForm
+                        customStyle={{ height: 40, width: "90%", marginTop: 15, marginBottom: 20 }}
+                        textInputProps={{
+                            placeholder: "Deixe um comentário",
+                            maxLength: 150,
+                            onChangeText: (text) => setCommentText(text),
+                        }}
+                        icon={uploadingComment ? <ActivityIndicator size={"small"} color={theme.colors.secondary1} /> : <MaterialIcons name="send" size={22} color={theme.colors.secondary1} />}
+                        onIconPress={shareComment}
+                        disabled={uploadingComment}
+                        fontStyle={{ fontSize: 13 }}
+                    />
+                }
             </KeyboardAvoidingView>
         </Modal>
     );
