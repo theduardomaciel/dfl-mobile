@@ -27,10 +27,6 @@ type ImageUploadResponse = {
 
 type ReportResponse = Profile
 
-import changeNavigationBarColor, {
-    hideNavigationBar,
-} from 'react-native-navigation-bar-color';
-
 export function ReportScreen3({ route, navigation }: any) {
     const { data } = route.params;
     const { user, updateUser } = useAuth();
@@ -104,8 +100,6 @@ export function ReportScreen3({ route, navigation }: any) {
     }
 
     useEffect(() => {
-        changeNavigationBarColor("black", false, true);
-        hideNavigationBar()
         navigation.addListener('beforeRemove', (event) => {
             if (isLoading) {
                 // Prevent default behavior of leaving the screen

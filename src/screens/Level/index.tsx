@@ -35,11 +35,8 @@ type PropTypes = {
     viewableItems: Array<ViewToken>;
 }
 
-import changeNavigationBarColor, {
-    showNavigationBar,
-} from 'react-native-navigation-bar-color';
-
 import { styles } from "../Account/styles";
+import { UpdateNavigationBar } from "../../utils/functions/UpdateNavigationBar";
 
 function GetReportsAmountByRating(profile) {
     const data = profile.reports;
@@ -56,9 +53,11 @@ function GetReportsAmountByRating(profile) {
 }
 
 function GetReportsRatingBars(profile) {
-    const reportsAmountByRating = GetReportsAmountByRating(profile)
+    const reportsAmountByRating = GetReportsAmountByRating(profile).slice(0, 5)
+    console.log(reportsAmountByRating)
 
     const max = Math.max(...reportsAmountByRating);
+    console.log(max)
 
     const TOP_DIFFERENCE = 30
     let bars = []
@@ -168,8 +167,7 @@ export function Level({ route, navigation }) {
     };
 
     useEffect(() => {
-        changeNavigationBarColor(theme.colors.background, false, true);
-        showNavigationBar()
+        UpdateNavigationBar(null, true, null)
         if (user.profile === undefined) {
             return navigation.goBack();
         }

@@ -12,6 +12,7 @@ export const styles = StyleSheet.create({
     header: {
         //backgroundColor: "green",
         width: "90%",
+        height: "10%",
         alignSelf: "center",
         alignItems: "flex-start",
         flexDirection: "row",
@@ -20,6 +21,7 @@ export const styles = StyleSheet.create({
         marginBottom: 15,
     },
     userInfoContainer: {
+        width: "75%",
         flexDirection: "column"
     },
     title: {
@@ -28,9 +30,9 @@ export const styles = StyleSheet.create({
         fontFamily: theme.fonts.subtitle500,
     },
     username: {
-        marginTop: -5,
+        marginTop: 0,
         fontFamily: theme.fonts.subtitle500,
-        fontSize: 16,
+        fontSize: 22,
         color: theme.colors.secondary1,
     },
 

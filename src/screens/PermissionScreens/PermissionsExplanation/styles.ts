@@ -36,7 +36,7 @@ export const styles = StyleSheet.create({
         //backgroundColor: "purple",
         fontFamily: theme.fonts.title400,
         color: theme.colors.secondary1,
-        fontSize: 16,
+        fontSize: 15,
     },
 
     line: {
@@ -44,8 +44,7 @@ export const styles = StyleSheet.create({
         marginBottom: 5,
         height: 1,
         alignSelf: "center",
-        width: "92.5%",
-        paddingHorizontal: 10,
+        width: "95%",
         backgroundColor: theme.colors.secondary1
     },
 

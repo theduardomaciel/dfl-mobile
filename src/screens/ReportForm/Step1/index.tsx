@@ -39,10 +39,6 @@ const initialRegion = {
     longitudeDelta: 35
 }
 
-import changeNavigationBarColor, {
-    showNavigationBar,
-} from 'react-native-navigation-bar-color';
-
 export function ReportScreen1({ navigation }: any) {
     const [region, setRegion] = useState(initialRegion);
     const [address, setAddress] = useState("");
@@ -55,11 +51,6 @@ export function ReportScreen1({ navigation }: any) {
         }
         return data;
     }
-
-    useEffect(() => {
-        changeNavigationBarColor(theme.colors.background, false, true);
-        showNavigationBar()
-    }, []);
 
     let mapReference: any;
     return (
@@ -107,9 +98,9 @@ export function ReportScreen1({ navigation }: any) {
                         initialRegion={region}
                     />
                 </View>
-                <BottomBar info={"Endereço: " + address} viewStyle={{ height: 50 }} />
+                <BottomBar info={"Endereço: " + address} viewStyle={{ height: 55 }} />
                 <TextButton
-                    title="Próximo passo"
+                    title={address === "" ? "Aguardando rede..." : "Próximo passo"}
                     colors={address === "" ? [theme.colors.gray_light, theme.colors.gray_dark] : [theme.colors.secondary1, theme.colors.secondary2]}
                     buttonStyle={{ height: 45, width: "90%", marginTop: 20, marginBottom: 25 }}
                     disabled={address === "" ? true : false}

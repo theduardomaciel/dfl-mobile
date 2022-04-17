@@ -83,7 +83,7 @@ export function Search({ route, navigation }) {
 
     async function GetResults(incrementResults?: boolean, newSearch?: string) {
         try {
-            const searchOject = newSearch ? newSearch : search
+            const searchOject = newSearch ? newSearch.replace(/ /g, '') : search.replace(/ /g, '')
             console.log("Iniciando pesquisa do usuário com o(s) termo(s): ", searchOject)
 
             const newResults = await api.post("/reports/search", {
@@ -93,6 +93,7 @@ export function Search({ route, navigation }) {
                 exclusionsId: results !== null ? results.map(report => report.id) : [],
                 // Condição 2: Usuário - Excluímos os relatórios criados pelo próprio usuário
                 //profileToExcludeId: user.profile.id
+                includeInfo: true
             }, { timeout: 10 * 1000, timeoutErrorMessage: "O tempo limite de espera do servidor foi atingido." })
 
             const moreReports = newResults.data as Array<Report>;

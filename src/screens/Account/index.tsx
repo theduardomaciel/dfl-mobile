@@ -68,49 +68,6 @@ function GetReportsAmountBars(profile) {
 
 // Os dados em uma SectionList devem ser sempre organizados em: "Title" e "Data". 
 // Se esse nomes não estiverem escritos, um erro será retornado.
-const EXAMPLE_REPORTS = [
-    {
-        title: "14/08",
-        data: [
-            {
-                id: "1312313",
-                address: "Feitosa, Maceió - AL",
-                suggestion: "O contato com o proprietário se mostra urgente devido à situação do local.",
-                image_url: "https://pbs.twimg.com/media/FJgrSipX0AIqJNk?format=png&name=240x240",
-                solved: true
-            },
-            {
-                id: "23426563",
-                address: "1094 Rua Luiz Rizzo",
-                suggestion: "",
-                image_url: "https://pbs.twimg.com/media/FJgrR-9XMAMxdb5?format=png&name=240x240",
-                solved: false
-            },
-            {
-                id: "1930257",
-                address: "234 Tv. Escritor Paulino Santiago",
-                suggestion: "",
-                image_url: "https://pbs.twimg.com/media/FJgrRhlWUAMUUfD?format=png&name=240x240",
-                solved: false
-            }
-        ]
-    }
-]
-
-const EXAMPLE_REPORTS2 = [
-    {
-        title: "18/09",
-        data: [
-            {
-                id: "1312313",
-                address: "Feitosa, Maceió - AL",
-                suggestion: "O contato com o proprietário se mostra urgente devido à situação do local.",
-                image_url: "https://pbs.twimg.com/media/FJgrSipX0AIqJNk?format=png&name=240x240",
-                solved: true
-            },
-        ]
-    }
-]
 
 const SectionHeader = ({ section }: any) => (
     <SectionTitle
@@ -171,14 +128,16 @@ export function Account({ navigation, route }) {
         return (
             <View style={styles.header}>
                 <View style={styles.userInfoContainer}>
-                    <Text style={styles.title}>
+                    <Text style={styles.title} numberOfLines={1} ellipsizeMode={"tail"}>
                         {user.first_name + " " + user.last_name}
                     </Text>
                     <Text style={styles.username}>
                         {user.profile ? user.profile.username : ""}
                     </Text>
                 </View>
-                <ProfileIcon uri={user.profile.image_url} openConfig />
+                <View style={{ width: "25%", alignItems: "flex-end" }}>
+                    <ProfileIcon uri={user.profile.image_url} openConfig />
+                </View>
             </View>
         )
     }

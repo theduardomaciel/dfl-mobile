@@ -176,8 +176,8 @@ export function ProfileIcon({ uri, openConfig }: Props) {
     );
 
     const renderItem = ({ item }) => (
-        item.components ? <AccordionOptions id={item.id} header={<Header item={item} />} accordionComponents={item.components} />
-            : <AccordionOptions id={item.id} header={<Header item={item} />} onPress={item.onPress} />
+        item.components ? <AccordionOptions id={item.id} customHeader={<Header item={item} />} accordionComponents={item.components} />
+            : <AccordionOptions id={item.id} customHeader={<Header item={item} />} onPress={item.onPress} />
     );
 
     const renderSeparator = () => (
@@ -214,7 +214,10 @@ export function ProfileIcon({ uri, openConfig }: Props) {
                             disabled={timer === 0 ? false : true}
                             buttonStyle={{ backgroundColor: timer !== 0 ? theme.colors.gray_light : theme.colors.red, marginTop: 10, paddingHorizontal: 15, paddingVertical: 7 }}
                         />
-                        <Text style={styles.title}>{timer}</Text>
+                        {
+                            timer > 0 &&
+                            <Text style={styles.title}>{timer}</Text>
+                        }
                     </View>
                 }
                 toggleModal={() => { setDeleteModalVisible(!isDeleteModalVisible) }}
@@ -222,10 +225,10 @@ export function ProfileIcon({ uri, openConfig }: Props) {
             <ModalBase
                 isVisible={isChangeUsernameModalVisible}
                 onBackdropPress={() => { setChangeUsernameModalVisible(!isChangeUsernameModalVisible) }}
-                title={"⚠️ Cuidado.\nVocê tem certeza?"}
+                title={"⚠️ Atenção! Você tem certeza?"}
                 showCloseButton
                 description={
-                    `${user.profile.username} -> ${usernameText}.\nEssa ação é irreversível, e seu nome só poderá ser alterado novamente daqui a:\n1 mês.`
+                    `Você está alterando seu nome de ${user.profile.username} para ${usernameText}.`
                 }
                 children={
                     <View style={{ alignItems: "center" }}>

@@ -20,10 +20,6 @@ type PropTypes = {
     viewableItems: Array<ViewToken>;
 }
 
-import changeNavigationBarColor, {
-    showNavigationBar,
-} from 'react-native-navigation-bar-color';
-
 const Bold = (props) => <Text style={{ fontWeight: 'bold' }}>{props.children}</Text>
 
 let BUTTON_COLORS = [theme.colors.primary1, theme.colors.primary1]
@@ -43,11 +39,6 @@ export function PermissionsRequest({ navigation }) {
             slidesRef.current.scrollToIndex({ index: index })
         }
     };
-
-    useEffect(() => {
-        changeNavigationBarColor(theme.colors.background, false, true);
-        showNavigationBar()
-    }, [])
 
     // Utilizamos o "callback" para que o valor do "state" seja atualizado apenas quando o usuário clicar no botão
     const onViewableItemsChanged = useCallback(({ viewableItems }: PropTypes) => {

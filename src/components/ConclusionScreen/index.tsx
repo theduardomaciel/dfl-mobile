@@ -19,6 +19,7 @@ import { useAuth } from '../../hooks/useAuth';
 
 import AnimatedNumbers from 'react-native-animated-numbers';
 import Confetti from "../Confetti/index"
+import { UpdateNavigationBar } from '../../utils/functions/UpdateNavigationBar';
 
 type Props = {
     // A ? faz com que o elemento não seja obrigatório
@@ -50,6 +51,7 @@ export function ConclusionScreen({ title, info, backButtonText, icon, gainedExpe
     });
 
     useEffect(() => {
+        UpdateNavigationBar(null, true, null)
         Animated.timing(barAnimation, {
             toValue: 1,
             duration: 3000,

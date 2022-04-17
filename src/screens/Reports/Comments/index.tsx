@@ -45,11 +45,6 @@ function CalculateCommentCreatedAt(item) {
     return createdAtText;
 }
 
-import changeNavigationBarColor, {
-    hideNavigationBar,
-    showNavigationBar,
-} from 'react-native-navigation-bar-color';
-
 export function CommentsModal({ isVisible, closeFunction, report }: Props) {
     const [reportObject, setReportObject] = useState(report)
 
@@ -229,7 +224,7 @@ export function CommentsModal({ isVisible, closeFunction, report }: Props) {
                             <ActivityIndicator size={"small"} color={theme.colors.primary1} />
                         </View>
                         :
-                        <View style={{ flex: 1, flexDirection: "row" }}>
+                        <View style={{ flexDirection: "row" }}>
                             <TextButton
                                 title="CANCELAR"
                                 buttonStyle={{ backgroundColor: theme.colors.red_light, paddingVertical: 10, paddingHorizontal: 15, marginRight: 10 }}
@@ -246,7 +241,10 @@ export function CommentsModal({ isVisible, closeFunction, report }: Props) {
                 }
                 toggleModal={() => { setDeleteModalVisible(!isDeleteModalVisible) }}
             />
-            <KeyboardAvoidingView behavior='padding' pointerEvents='box-none' style={[styles.container, { margin: 0, flex: 0.35, justifyContent: 'center' }]}>
+            <KeyboardAvoidingView
+                behavior='padding'
+                pointerEvents='box-none'
+                style={[styles.container, { margin: 0, flex: 0.45, justifyContent: 'center' }]}>
                 <View style={{
                     marginTop: 15,
                     marginBottom: 3,

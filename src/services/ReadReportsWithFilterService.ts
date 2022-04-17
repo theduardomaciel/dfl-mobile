@@ -1,20 +1,20 @@
 import prismaClient from "../prisma";
 
 class ReadReportsWithFilterService {
-    async execute(location, username, exclusionsId, profileToExcludeId, searchCount) {
+    async execute(location, username, exclusionsId, profileToExcludeId, searchCount, includeInfo) {
         try {
             const reports = await prismaClient.report.findMany({
                 where: {
                     OR: [
                         {
-                            address: {
+                            address: location && {
                                 contains: location,
                                 mode: "insensitive"
                             },
                         },
                         {
                             profile: {
-                                username: {
+                                username: username && {
                                     contains: username,
                                     mode: "insensitive"
                                 },
@@ -32,7 +32,7 @@ class ReadReportsWithFilterService {
                     ]
                 },
                 take: searchCount && searchCount,
-                include: {
+                include: includeInfo && {
                     comments: {
                         include: {
                             subComments: true,

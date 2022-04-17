@@ -19,19 +19,16 @@ type PropTypes = {
     viewableItems: Array<ViewToken>;
 }
 
-import changeNavigationBarColor, {
-    hideNavigationBar,
-    showNavigationBar,
-} from 'react-native-navigation-bar-color';
-
 import Google_G_Logo from "../../assets/Google__G__Logo.svg"
+
+import FocusAwareStatusBar from "../../utils/functions/FocusAwareStatusBar";
+import { UpdateNavigationBar } from "../../utils/functions/UpdateNavigationBar";
 
 export function Onboarding() {
     const { signIn, isSigningIn } = useAuth();
 
     useEffect(() => {
-        changeNavigationBarColor(theme.colors.background, false, true);
-        showNavigationBar();
+        UpdateNavigationBar(null, true, null)
     }, [])
 
     const [currentIndex, setCurrentIndex] = useState(0)
@@ -73,6 +70,7 @@ export function Onboarding() {
 
     return (
         <View style={styles.container}>
+            <FocusAwareStatusBar translucent barStyle="dark-content" />
             <Logo height={75} width={150} />
             <View style={{ flex: 0.75, marginTop: 48 }}>
                 <FlatList style={styles.list}

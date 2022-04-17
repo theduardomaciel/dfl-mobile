@@ -15,13 +15,10 @@ type Props = {
     explanation: React.ReactNode;
 }
 
-import changeNavigationBarColor, {
-    showNavigationBar,
-} from 'react-native-navigation-bar-color';
-
 import { MaterialIcons } from '@expo/vector-icons';
 import { AccordionOptions } from "../../../components/AccordionOptions";
 import { HintView, HintViewTextStyle } from "../../../components/HintView";
+import { UpdateNavigationBar } from "../../../utils/functions/UpdateNavigationBar";
 
 const Bold = (props) => <Text style={{ fontWeight: 'bold' }}>{props.children}</Text>
 
@@ -67,15 +64,8 @@ const PERMISSIONS = [
 ]
 
 export function PermissionsExplanation({ navigation }) {
-    const Header = () => (
-        <View style={{ flex: 1, alignItems: "flex-start" }}>
-            <MaterialIcons style={{ transform: [{ rotate: '-90deg' }] }} name="keyboard-arrow-down" size={32} color={theme.colors.secondary1} />
-        </View>
-    );
-
     useEffect(() => {
-        changeNavigationBarColor(theme.colors.background, false, true);
-        showNavigationBar()
+        UpdateNavigationBar("dark", false, "#ffffff00")
     }, [])
 
     function PermissionItem(itemMaster) {
@@ -96,7 +86,8 @@ export function PermissionsExplanation({ navigation }) {
                         flexDirection: "row",
                         justifyContent: "flex-start",
                     }}
-                    id={item.id} header={<Header />} accordionComponents={item.elements}
+                    id={item.id}
+                    accordionComponents={item.elements}
                 />
             </View>
         )
@@ -113,7 +104,7 @@ export function PermissionsExplanation({ navigation }) {
                 </Text>
                 <View style={styles.line} />
             </View>
-            <ScrollView>
+            <ScrollView style={{ marginBottom: 15 }}>
                 <PermissionItem item={PERMISSIONS[0]} />
                 <View style={[styles.line, { width: "70%", marginTop: 15, marginBottom: 0 }]} />
                 <PermissionItem item={PERMISSIONS[1]} />
@@ -121,7 +112,7 @@ export function PermissionsExplanation({ navigation }) {
             <TextButton
                 title="Continuar"
                 shadow
-                buttonStyle={{ height: 45, width: "90%", position: "absolute", bottom: 15 }}
+                buttonStyle={{ height: 45, width: "90%", marginBottom: 15 }}
                 colors={[theme.colors.primary1, theme.colors.secondary1]}
                 onPress={() => { navigation.navigate("PermissionsRequest") }} />
         </View>

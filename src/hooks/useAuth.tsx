@@ -136,7 +136,7 @@ function AuthProvider({ children }: AuthProviderProps) {
         if (updatedUser !== null) {
             await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(updatedUser));
             setUser(updatedUser);
-            console.log(user, "Objeto do usuário atualizado com sucesso!")
+            console.log("Objeto do usuário atualizado com sucesso!")
         } else {
             console.log("Erro ao atualizar objeto do usuário.")
         }

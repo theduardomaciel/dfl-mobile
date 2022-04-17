@@ -1,18 +1,26 @@
 import React, { useState } from 'react';
 
-import { Text, TouchableOpacity, TouchableOpacityProps, View, LayoutAnimation, Platform, UIManager } from 'react-native';
+import { TouchableOpacity, TouchableOpacityProps, View, LayoutAnimation, Platform, UIManager } from 'react-native';
+import { theme } from '../../global/styles/theme';
 
 import { styles } from './styles';
 
 type Props = TouchableOpacityProps & {
-    // A ? faz com que o elemento não seja obrigatório
-    header: React.ReactNode;
+    customHeader?: React.ReactNode;
     accordionComponents?: React.ReactNode;
     id: string;
 }
 
-export function AccordionOptions({ id, header, accordionComponents, ...rest }: Props) {
+import { MaterialIcons } from "@expo/vector-icons";
+
+export function AccordionOptions({ id, customHeader, accordionComponents, ...rest }: Props) {
     const [isExpanded, setIsExpanded] = useState(false)
+
+    const Header = () => (
+        <View style={{ flex: 1, alignItems: "flex-start" }}>
+            <MaterialIcons style={{ transform: [{ rotate: isExpanded ? '-90deg' : '0deg' }] }} name="keyboard-arrow-down" size={32} color={theme.colors.secondary1} />
+        </View>
+    );
 
     if (Platform.OS === 'android') {
         UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -23,14 +31,21 @@ export function AccordionOptions({ id, header, accordionComponents, ...rest }: P
         setIsExpanded(!isExpanded)
     }
     return (
-        <TouchableOpacity activeOpacity={0.7} style={id === "0" ? [styles.container, { marginTop: 35 }] : styles.container} onPress={toggleExpand} {...rest}>
+        <TouchableOpacity
+            activeOpacity={0.7}
+            style={id === "0" ? [styles.container, { marginTop: 35 }] : styles.container}
+            onPress={toggleExpand}
+            {...rest}
+        >
             {
                 isExpanded ?
                     <View style={{ flex: 1 }}>
-                        {header}
+                        {
+                            customHeader ? customHeader : <Header />
+                        }
                         {accordionComponents}
                     </View>
-                    : header
+                    : customHeader ? customHeader : <Header />
             }
         </TouchableOpacity>
     )

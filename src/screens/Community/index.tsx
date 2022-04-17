@@ -23,8 +23,6 @@ import { CITIES_DATA } from "../../utils/data/cities";
 
 import FocusAwareStatusBar from "../../utils/functions/FocusAwareStatusBar";
 
-import * as Location from 'expo-location';
-
 /* Marcadores = [
     {
         title: "Marcador 1",
@@ -39,6 +37,7 @@ import * as Location from 'expo-location';
 import { Profile, RegionType } from "../../@types/application";
 import { api } from "../../utils/api";
 
+const defaultServerCity = "Maceió, Alagoas - Brasil"
 let defaultCity = "Maceió, Alagoas - Brasil"
 
 export function Community() {
@@ -61,15 +60,8 @@ export function Community() {
     const [markers, setMarkers] = useState([])
     const getScopePicked = async (scope, newRegion?) => {
         if (newRegion) setRegion(newRegion);
-        if (scope === "district") {
-            const result = await Location.reverseGeocodeAsync({ latitude: region.latitude, longitude: region.longitude });
-            const markersArray = ListMarkersOnMap(user, scope, result[0].district)
-            setMarkers(markersArray)
-        } else {
-            console.log(scope)
-            const markersArray = ListMarkersOnMap(user, scope)
-            setMarkers(markersArray)
-        }
+        const markersArray = await ListMarkersOnMap(user, scope, newRegion ? newRegion : region)
+        setMarkers(markersArray)
     }
 
     const [profilesInCityAmount, setProfilesInCityAmount] = useState(0)
@@ -92,7 +84,6 @@ export function Community() {
         }
         CheckIfProfileIsCreated()
         GetProfilesInCityAmount()
-        getScopePicked("district")
     }, []);
 
     let mapReference: any;
@@ -106,9 +97,7 @@ export function Community() {
     const [alreadyLoaded, setAlreadyLoaded] = useState(false)
 
     const getCityPicked = async (scope, newRegion?) => {
-        console.log(scope, newRegion)
         defaultCity = scope;
-        console.log(defaultCity)
     }
 
     const [isCityModalVisible, setCityModalVisible] = useState(false);
@@ -119,12 +108,15 @@ export function Community() {
     const [updatingProfile, setUpdatingProfile] = useState(false)
     async function UpdateDefaultCity() {
         setUpdatingProfile(true)
-        const profileResponse = await api.post("/profile/update", { profile_id: user.profile.id, defaultCity: defaultCity })
+        const profileResponse = await api.post("/profile/update", {
+            profile_id: user.profile.id,
+            defaultCity: defaultCity === null ? defaultServerCity : defaultCity
+        })
         const updatedProfile = profileResponse.data as Profile;
         if (updatedProfile) {
             await updateUser(updatedProfile, "profile");
-            console.log(`Perfil do usuário criado com sucesso!`)
         }
+        defaultCity = null
         setCityModalVisible(false)
         setUpdatingProfile(false)
     }
@@ -179,6 +171,7 @@ export function Community() {
                                 if (mapReference !== undefined) {
                                     mapReference.animateToRegion(newRegion, 2000)
                                 }
+                                getScopePicked("district", newRegion)
                             }
                         }}
                     >
@@ -209,13 +202,13 @@ export function Community() {
                     }
                 />
 
-                <SectionTitle title="Enquetes" info="disponível em breve" hasLine viewStyle={{ marginTop: 25 }} />
+                <SectionTitle title="Enquetes" info="disponíveis em breve" hasLine viewStyle={{ marginTop: 25 }} />
                 <View style={[elements.subContainerWhite, { height: 25 }]}>
 
                 </View>
 
                 {
-                    user.profile.defaultCity === "Maceió, Alagoas - Brasil" ?
+                    CITY_DATA ?
                         <>
                             <SectionTitle title="Contato" hasLine viewStyle={{ marginTop: 25 }} />
                             <SectionTitle title={`Órgão Responsável (${CITY_DATA.name})`} fontStyle={{ fontSize: 18 }} viewStyle={{ marginBottom: 5 }} />
@@ -240,13 +233,10 @@ export function Community() {
                                 </View>
                                 <Image style={{ width: "35%", borderTopRightRadius: 15, borderBottomRightRadius: 15, height: "100%" }} source={{ uri: CITY_DATA.contact.image }} />
                             </View>
-                            <Text style={{ textAlign: "center", color: theme.colors.secondary1, marginTop: 35, paddingHorizontal: 15, marginBottom: 55 }}>
-                                {`Está dando um trabalhão programar todo o app.\nMas desde já, lhe agradeço. Por tudo. ❣️`}
-                            </Text>
                         </>
                         : null
                 }
-                <View style={{ height: 55 }} />
+                <View style={{ height: 135 }} />
 
                 <ProfileModal
                     isVisible={isFirstModalVisible}

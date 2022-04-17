@@ -12,7 +12,7 @@ import { defaultStyles } from '../defaultStyles';
 import { TextInput } from 'react-native-gesture-handler';
 
 export const MIN_USERNAME_CHARACTERS = 3;
-export const MAX_USERNAME_CHARACTERS = 12
+export const MAX_USERNAME_CHARACTERS = 16
 
 export function verifyRange(usernameText) {
     return usernameText.length > MAX_USERNAME_CHARACTERS || usernameText.length < MIN_USERNAME_CHARACTERS

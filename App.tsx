@@ -1,23 +1,24 @@
 import * as Svg from "react-native-svg";
 import 'react-native-gesture-handler'
 
-import React from "react";
+import React, { useState } from "react";
 import { StatusBar } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 
 import Toast, { BaseToast, ErrorToast, InfoToast } from 'react-native-toast-message';
 
-import { useFonts } from "expo-font";
-import AppLoading from "expo-app-loading";
+import * as Font from "expo-font";
 
 import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold, Inter_900Black } from "@expo-google-fonts/inter"
 import { Roboto_400Regular, Roboto_500Medium, Roboto_700Bold, Roboto_900Black } from "@expo-google-fonts/roboto"
 import { Alatsi_400Regular } from "@expo-google-fonts/alatsi"
 
 import Routes from "./src/routes";
-import { AuthProvider } from "./src/hooks/useAuth"
+import { AuthProvider, useAuth } from "./src/hooks/useAuth"
 import { theme } from "./src/global/styles/theme";
 import { TAB_BAR_HEIGHT } from "./src/components/TabBar";
+import AppLoading from "expo-app-loading";
+import { UpdateNavigationBar } from "./src/utils/functions/UpdateNavigationBar";
 
 export const toastConfig = {
     /*
@@ -74,7 +75,10 @@ export const toastConfig = {
 };
 
 export default function App() {
-    const [fontsLoaded] = useFonts({
+    const [isReady, setIsReady] = useState(false)
+    const { isSigningIn } = useAuth();
+
+    const [fontsLoaded] = Font.useFonts({
         Inter_400Regular,
         Inter_500Medium,
         Inter_600SemiBold,
@@ -86,9 +90,22 @@ export default function App() {
         Roboto_700Bold,
         Alatsi_400Regular
     });
-    if (!fontsLoaded) {
-        return <AppLoading />
+
+    async function LoadApp() {
+        UpdateNavigationBar("dark", true, null)
     }
+
+    if (!isReady || !fontsLoaded || isSigningIn) {
+        return (
+            <AppLoading
+                startAsync={LoadApp}
+                onFinish={() => setIsReady(true)}
+                onError={console.warn}
+                autoHideSplash
+            />
+        );
+    }
+
     return (
         <AuthProvider>
             <NavigationContainer>

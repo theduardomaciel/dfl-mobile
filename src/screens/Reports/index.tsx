@@ -39,8 +39,6 @@ import { useFocusEffect } from '@react-navigation/native';
 
 let lastIndex = 0;
 
-import { hideNavigationBar } from 'react-native-navigation-bar-color';
-
 export function GetRatingsAverage(actualReport) {
     //console.log("Atualizando rating do relatório atual.")
     const ratings = [actualReport.note1, actualReport.note2, actualReport.note3, actualReport.note4, actualReport.note5]
@@ -66,6 +64,7 @@ export function Reports({ route, navigation }) {
                 location: user.profile.defaultCity ? user.profile.defaultCity.split(",")[0] : "Brasil",
                 // Condição 2: Novos - Excluímos os relatórios já adicionados em buscas anteriores
                 exclusionsId: data.map(report => report.id),
+                includeInfo: true,
                 // Condição 3: Usuário - Excluímos os relatórios criados pelo próprio usuário
                 //profileToExcludeId: user.profile.id
             })
@@ -97,15 +96,13 @@ export function Reports({ route, navigation }) {
 
     const [isTabBarVisible, setTabBarVisible] = useState(false)
     useEffect(() => {
-        setTimeout(() => {
-            backgroundDrivers[0].addListener((value) => {
-                if (value.value === 1) {
-                    setTabBarVisible(true)
-                } else {
-                    setTabBarVisible(false)
-                }
-            })
-        }, 500);
+        backgroundDrivers[0].addListener((value) => {
+            if (value.value === 1) {
+                setTabBarVisible(true)
+            } else {
+                setTabBarVisible(false)
+            }
+        })
     }, [])
 
     const shouldLoadData = data && data.length === 0
@@ -422,7 +419,6 @@ export function Reports({ route, navigation }) {
                 <CommentsModal
                     isVisible={isCommentsModalVisible}
                     closeFunction={() => {
-                        hideNavigationBar()
                         setCommentsModalVisible(false)
                     }}
                     report={data[currentIndex]}
