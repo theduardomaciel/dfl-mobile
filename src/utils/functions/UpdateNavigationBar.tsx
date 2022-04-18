@@ -6,7 +6,7 @@ import changeNavigationBarColor, {
 const defaultProps = {
     buttonStyle: true,
     visibility: false,
-    backgroundColor: "#ffffff00"
+    backgroundColor: "transparent"
 }
 
 export async function UpdateNavigationBar(buttonStyle: "dark" | "light", visibility: boolean, backgroundColor: string) {

@@ -65,7 +65,7 @@ const PERMISSIONS = [
 
 export function PermissionsExplanation({ navigation }) {
     useEffect(() => {
-        UpdateNavigationBar("dark", false, "#ffffff00")
+        UpdateNavigationBar("dark", false, "transparent")
     }, [])
 
     function PermissionItem(itemMaster) {

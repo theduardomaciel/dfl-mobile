@@ -1,7 +1,7 @@
 import * as Svg from "react-native-svg";
 import 'react-native-gesture-handler'
 
-import React, { useCallback, useEffect, useState } from "react";
+import React from "react";
 import { StatusBar } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 
@@ -77,7 +77,6 @@ export const toastConfig = {
 };
 
 export default function App() {
-
     const { isSigningIn } = useAuth();
 
     const [fontsLoaded] = Font.useFonts({
@@ -92,6 +91,7 @@ export default function App() {
         Roboto_700Bold,
         Alatsi_400Regular
     });
+
     if (!fontsLoaded || isSigningIn === true) {
         return <AppLoading />
     }
