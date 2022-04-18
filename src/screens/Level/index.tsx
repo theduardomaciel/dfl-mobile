@@ -211,7 +211,7 @@ export function Level({ route, navigation }) {
                 <Text style={levelStyles.levelDescription}>
                     {`${LEVELS_DATA[USER_LEVEL + 1].exp - USER_EXP}xp para o próximo nível`}
                 </Text>
-                <Image source={require("../../assets/level_placeholder.png")} />
+                <Image source={require("../../assets/placeholders/level_placeholder.png")} />
             </LinearGradient>
             <TextButton
                 title="Compartilhar meu nível"

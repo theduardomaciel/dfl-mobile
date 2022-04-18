@@ -35,6 +35,17 @@ import { MAX_USERNAME_CHARACTERS, MIN_USERNAME_CHARACTERS, verifyFormatting, ver
 import { api } from '../../utils/api';
 import { Profile } from '../../@types/application';
 
+async function CheckIfUsernameIsAvailable(username) {
+    const usersInLocationResults = await api.post("/profiles/search", {
+        username: username
+    })
+    const profiles = usersInLocationResults.data as Array<Profile>;
+    if (profiles.length > 0) {
+        // Uma conta já possui o nome de usuário fornecido, retornando falso.
+        return false
+    } else return true;
+}
+
 export function ProfileIcon({ uri, openConfig }: Props) {
     const { user, updateUser, signOut } = useAuth();
 
@@ -52,13 +63,14 @@ export function ProfileIcon({ uri, openConfig }: Props) {
         const updatedProfile = profileResponse.data as Profile;
         if (updatedProfile) {
             await updateUser(updatedProfile, "profile");
-            console.log(`Perfil do usuário criado com sucesso!`)
+            console.log(`Nome de perfil do usuário atualizado com sucesso!`)
         }
 
         setUserNameText("")
         setModalVisible(false)
     }
 
+    const [canChangeUsername, setCanChangeUsername] = useState(false)
     const ProfileComponents = <View style={{ flex: 1, width: "100%" }}>
         <TextForm
             title='Nome de Usuário'
@@ -79,9 +91,13 @@ export function ProfileIcon({ uri, openConfig }: Props) {
         </Text>
         <TextButton
             title='Alterar nome de usuário'
-            onPress={() => {
+            onPress={async () => {
                 console.log(usernameText)
                 if (usernameText.length > 0) {
+                    setIsLoading(true)
+                    const canChange = await CheckIfUsernameIsAvailable(usernameText)
+                    setCanChangeUsername(canChange)
+                    setIsLoading(false)
                     setChangeUsernameModalVisible(true)
                 }
             }}
@@ -225,22 +241,31 @@ export function ProfileIcon({ uri, openConfig }: Props) {
             <ModalBase
                 isVisible={isChangeUsernameModalVisible}
                 onBackdropPress={() => { setChangeUsernameModalVisible(!isChangeUsernameModalVisible) }}
-                title={"⚠️ Atenção! Você tem certeza?"}
+                title={canChangeUsername ? "⚠️ Atenção! Você tem certeza?" : "Ops! Alguém foi mais rápido..."}
                 showCloseButton
                 description={
-                    `Você está alterando seu nome de ${user.profile.username} para ${usernameText}.`
+                    canChangeUsername ? `Você está alterando seu nome de ${user.profile.username} para ${usernameText}.` : `O nome de usuário ${usernameText} já está sendo utilizado por outra pessoa.\n\nQue tal tentar outro?`
                 }
                 children={
                     <View style={{ alignItems: "center" }}>
-                        <TextButton
-                            title='ALTERAR NOME'
-                            icon={<Ionicons name="at" size={24} color={theme.colors.text1} />}
-                            onPress={changeUsername}
-                            buttonStyle={{ backgroundColor: theme.colors.primary2, marginTop: 10, paddingHorizontal: 15, paddingVertical: 7 }}
-                        />
+                        {
+                            canChangeUsername ?
+                                <TextButton
+                                    title='ALTERAR NOME'
+                                    icon={<Ionicons name="at" size={24} color={theme.colors.text1} />}
+                                    onPress={changeUsername}
+                                    buttonStyle={{ backgroundColor: theme.colors.primary2, marginTop: 10, paddingHorizontal: 15, paddingVertical: 7 }}
+                                />
+                                :
+                                <TextButton
+                                    title='VOLTAR'
+                                    onPress={() => setChangeUsernameModalVisible(!isChangeUsernameModalVisible)}
+                                    buttonStyle={{ backgroundColor: theme.colors.primary2, marginTop: 10, paddingHorizontal: 15, paddingVertical: 7 }}
+                                />
+                        }
                     </View>
                 }
-                toggleModal={() => { setDeleteModalVisible(!isDeleteModalVisible) }}
+                toggleModal={() => setChangeUsernameModalVisible(!isChangeUsernameModalVisible)}
             />
             <View style={styles.logo}>
                 <Image

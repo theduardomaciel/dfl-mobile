@@ -115,7 +115,7 @@ export function ConclusionScreen({ title, info, backButtonText, icon, gainedExpe
     </View>
 
     return (
-        <ImageBackground source={require("../../assets/background_placeholder.png")} style={styles.container}>
+        <ImageBackground source={require("../../assets/placeholders/background_placeholder.png")} style={styles.container}>
             <Text style={styles.title}>
                 {title}
             </Text>

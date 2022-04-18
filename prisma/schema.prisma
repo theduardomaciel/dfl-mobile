@@ -59,6 +59,7 @@ model Report {
     note5 Int @default(0)
 
     resolved Boolean @default(false)
+    approved Boolean @default(false)
 
     profile    Profile? @relation(fields: [profile_id], references: [id], onDelete: SetNull)
     profile_id Int?
@@ -75,6 +76,8 @@ model Comment {
     profile    Profile @relation(fields: [profile_id], references: [id], onDelete: Cascade)
     profile_id Int
 
-    Report    Report @relation(fields: [report_id], references: [id], onDelete: Cascade)
+    report    Report @relation(fields: [report_id], references: [id], onDelete: Cascade)
     report_id Int
+
+    @@map("comments")
 }

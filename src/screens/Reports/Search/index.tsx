@@ -17,12 +17,12 @@ import { elements } from "../../../global/styles/elements";
 import { theme } from "../../../global/styles/theme";
 
 import { MaterialIcons } from "@expo/vector-icons"
-import TrashBinSvg from "../../../assets/trashbin_2.svg"
+import TrashBinSvg from "../../../assets/icons/trashbin_green.svg"
 
 import { useAuth } from "../../../hooks/useAuth";
 import { styles } from "./styles";
 
-import TrashBinSVG from "../../../assets/trashbin_white.svg"
+import TrashBinSVG from "../../../assets/icons/trashbin_white.svg"
 
 import { styles as defaultStyles } from "../styles";
 import { TextForm } from "../../../components/TextForm";

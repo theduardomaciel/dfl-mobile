@@ -137,7 +137,7 @@ export function NewLevel({ route, navigation }) {
     LayoutAnimation.configureNext(LayoutAnimation.create(500, 'easeOut', "scaleXY"));
 
     return (
-        <ImageBackground source={require("../../assets/background_placeholder.png")} style={styles.container}>
+        <ImageBackground source={require("../../assets/placeholders/background_placeholder.png")} style={styles.container}>
             <FocusAwareStatusBar translucent barStyle="dark-content" />
             <View style={{ alignItems: "center" }}>
                 <Text style={[styles.title, { fontSize: 24, marginTop: 100 }]}>

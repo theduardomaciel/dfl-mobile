@@ -11,6 +11,7 @@ class ReadCommentsInReportService {
                     profile: true,
                 }
             })
+            console.log(`Comentários do relatório de ID: ${report_id} foram encontrados! (${comments.length})`)
             return comments;
         } catch (error) {
             console.log(error)

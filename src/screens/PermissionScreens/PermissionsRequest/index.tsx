@@ -186,8 +186,8 @@ export function PermissionsRequest({ navigation }) {
                         info={`Tudo está configurado.\nAgora é sua vez de tornar sua cidade cada vez mais limpa!`}
                         backButtonText="Ir para o app"
                         onPress={() => {
-                            navigation.navigate('Main')
                             setModalVisible(false)
+                            navigation.navigate('Main')
                         }}
                     />
                 </Modal>

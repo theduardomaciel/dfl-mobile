@@ -18,7 +18,7 @@ import { ModalBase } from "../../components/ModalBase";
 import { TagsSelector } from "../../components/TagsSelector";
 import { LoadingScreen } from "../../components/LoadingScreen";
 
-import TrashBinSVG from "../../assets/trashbin_white.svg"
+import TrashBinSVG from "../../assets/icons/trashbin_white.svg"
 
 import { useAuth } from "../../hooks/useAuth";
 import { api } from "../../utils/api";

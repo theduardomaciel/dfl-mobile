@@ -9,13 +9,17 @@ class CreateCommentInReportService {
         try {
             const comment = await prismaClient.comment.create({
                 data: {
-                    Report: {
-                        connect: { id: report_id },
-                    },
                     profile: {
-                        connect: { id: profile_id }
+                        connect: {
+                            id: profile_id
+                        }
                     },
-                    content: content,
+                    report: {
+                        connect: {
+                            id: report_id
+                        }
+                    },
+                    content: content
                 },
                 include: {
                     profile: true

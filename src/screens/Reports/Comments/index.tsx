@@ -6,7 +6,7 @@ import { initialWindowMetrics } from 'react-native-safe-area-context'
 import { styles } from "./styles";
 import { theme } from "../../../global/styles/theme";
 
-import TrashBinSvg from "../../../assets/trashbin_2.svg"
+import TrashBinSvg from "../../../assets/icons/trashbin_green.svg"
 import Modal from "react-native-modal"
 import { TextForm } from "../../../components/TextForm";
 
@@ -39,11 +39,11 @@ function CalculateCommentCreatedAt(item) {
     return createdAtText;
 }
 
-async function GetProfileComments(report_id) {
+async function GetReportComments(report_id) {
     try {
-        const profileCommentsResult = await api.post("/report/comments/read", { report_id: report_id })
-        const profileComments = profileCommentsResult.data as Array<Comment>
-        return profileComments
+        const reportCommentsResult = await api.post("/report/comments/read", { report_id: report_id })
+        const reportComments = reportCommentsResult.data as Array<Comment>
+        return reportComments
     } catch (error) {
         console.log(error)
     }
@@ -54,6 +54,8 @@ type Props = {
     closeFunction: () => void;
     report_id: number;
 }
+
+let last_report_id = 0
 
 export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
     const { user } = useAuth();
@@ -66,15 +68,21 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
 
     const [comments, setComments] = useState<Array<Comment> | null>(null)
     useEffect(() => {
-        setComments(null)
-        async function GetComments() {
-            if (!report_id) return console.log("Um ID de relatório não foi fornecido.")
-            console.log("Obtendo comentários do relatório de ID: ", report_id)
-            const commentsArray = await GetProfileComments(report_id)
-            setComments(commentsArray)
+        // Estou fazendo com que os comentários sejam carregados novamente a cada abertura do modal de comentários para teste,
+        // entretanto, isso não é necessário.
+        if (isVisible === true) {
+            // Caso o modal de relatórios atual seja diferente do anterior, limpamos os resultados
+            if (last_report_id !== report_id) setComments(null);
+            async function GetComments() {
+                if (!report_id) return console.log("Um ID de relatório não foi fornecido.")
+                console.log("Obtendo comentários do relatório de ID: ", report_id)
+                const commentsArray = await GetReportComments(report_id)
+                setComments(commentsArray)
+                last_report_id = report_id
+            }
+            GetComments()
         }
-        GetComments()
-    }, [report_id])
+    }, [isVisible])
 
     const [isDeleteModalVisible, setDeleteModalVisible] = useState(false)
     const [isDeletingComment, setDeletingComment] = useState(false)
@@ -125,7 +133,6 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
 
     const renderComment = ({ item, index }) => {
         const createdAtText = CalculateCommentCreatedAt(item)
-        //console.log(item.profile)
         return (
             item.profile.id === user.profile.id ?
                 <Pressable style={{ flexDirection: "row", marginBottom: 10, width: "90%" }} onLongPress={() => {
@@ -289,7 +296,7 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
                 </ScrollView>
 
                 {
-                    !nullOrZero &&
+                    comments !== null &&
                     <TextForm
                         customStyle={{ height: 40, width: "90%", marginTop: 15, marginBottom: 20 }}
                         textInputProps={{

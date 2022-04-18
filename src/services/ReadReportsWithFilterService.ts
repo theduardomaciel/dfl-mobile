@@ -56,7 +56,7 @@ class ReadReportsWithFilterService {
             SELECT *
             FROM   reports
             WHERE  lower(f_unaccent(address)) = lower(f_unaccent(${location}));` */
-            console.log(reports, `Obtivemos os ${searchCount && searchCount} primeiros relatórios com os filtros determinados.`)
+            console.log(reports, searchCount ? `Obtivemos os ${searchCount} primeiros relatórios com os filtros determinados.` : `Obtivemos os relatórios com os filtros determinados.`)
             return reports;
         } catch (error) {
             console.log(error)

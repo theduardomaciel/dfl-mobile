@@ -32,7 +32,7 @@ export const onboarding_screens = [
     {
         id: "5",
         title: "Fique ativo com uma comunidade.",
-        description: "Estar junto a outras pessoas é o melhor incentivo para ajudar ao próximo.Debata com outras pessoas acerca do lixo descartado incorretamente em sua região.",
+        description: `Estar junto a outras pessoas é o melhor incentivo para ajudar ao próximo. Debata com outras pessoas acerca do lixo descartado incorretamente em sua região.`,
         icon: onboarding_5,
     }
 ]

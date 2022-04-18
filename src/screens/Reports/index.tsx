@@ -8,7 +8,7 @@ import { SELECTOR_WIDTH, styles } from "./styles";
 import Toast from 'react-native-toast-message';
 import Share from 'react-native-share';
 
-import TrashBinSVG from "../../assets/trashbin_white.svg"
+import TrashBinSVG from "../../assets/icons/trashbin_white.svg"
 
 import { MaterialIcons } from "@expo/vector-icons"
 import { backgroundDrivers, TAB_BAR_HEIGHT, TAB_BAR_HEIGHT_LONG } from "../../components/TabBar";

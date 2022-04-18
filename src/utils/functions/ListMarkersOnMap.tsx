@@ -31,14 +31,21 @@ async function GetReportsInLocation(location: string) {
 export async function ListMarkersOnMap(user: User, scope: string, userRegion: RegionType) {
     let markersArray = []
 
-    const defaultCountry = user.profile.defaultCity.split("-")[1].replace(/\s/g, '')
+    const defaultCountry = user.profile.defaultCity !== null ? user.profile.defaultCity.split("-")[1].replace(/\s/g, '') : "Brasil"
 
     if (reports === null) {
         reports = JSON.parse(await AsyncStorage.getItem(REPORTS_STORAGE));
-        GetReportsInLocation(defaultCountry).then(async onlineReports => {
-            await AsyncStorage.setItem(REPORTS_STORAGE, JSON.stringify(onlineReports));
+        // Caso os relatórios não tenham sido previamente carregados, requisitamos os dados ao servidor e só depois listamos os marcadores no mapa
+        if (reports === null) {
+            const onlineReports = await GetReportsInLocation(defaultCountry)
             reports = onlineReports
-        })
+            await AsyncStorage.setItem(REPORTS_STORAGE, JSON.stringify(onlineReports));
+        } else {
+            GetReportsInLocation(defaultCountry).then(async onlineReports => {
+                await AsyncStorage.setItem(REPORTS_STORAGE, JSON.stringify(onlineReports));
+                reports = onlineReports
+            })
+        }
     }
 
     switch (scope) {
@@ -47,6 +54,7 @@ export async function ListMarkersOnMap(user: User, scope: string, userRegion: Re
             const district = result[0].district.replace(/ /g, '');
             reports.forEach((report) => {
                 const reportDistrict = report.address.split(",")[2].replace(/ /g, '');
+                console.log(reportDistrict, district)
                 if (reportDistrict === district) {
                     markersArray.push({
                         title: report.address,

@@ -67,8 +67,6 @@ export function Community() {
     const [profilesInCityAmount, setProfilesInCityAmount] = useState(0)
     async function GetProfilesInCityAmount() {
         const usersInLocationResults = await api.post("/profiles/search", {
-            // Condição 1: Local - Caso o usuário já tenha criado um perfil, utilizamos a cidade inserida (primeiro nome antes da vírgula), 
-            // caso contrário, utilizamos o Brasil inteiro como local de busca
             location: user.profile.defaultCity.split(",")[0],
         })
         const profiles = usersInLocationResults.data as Array<Profile>;
@@ -124,7 +122,7 @@ export function Community() {
     const CITY_DATA = CITIES_DATA[user.profile.defaultCity]
 
     return (
-        <ImageBackground source={require("../../assets/background_placeholder.png")} style={styles.container}>
+        <ImageBackground source={require("../../assets/placeholders/background_placeholder.png")} style={styles.container}>
             <FocusAwareStatusBar translucent barStyle="dark-content" />
             <ModalBase
                 title="Alterar cidade padrão"

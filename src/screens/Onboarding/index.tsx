@@ -19,7 +19,7 @@ type PropTypes = {
     viewableItems: Array<ViewToken>;
 }
 
-import Google_G_Logo from "../../assets/Google__G__Logo.svg"
+import Google_Logo from "../../assets/entreprises/google_logo.svg"
 
 import FocusAwareStatusBar from "../../utils/functions/FocusAwareStatusBar";
 import { UpdateNavigationBar } from "../../utils/functions/UpdateNavigationBar";
@@ -104,7 +104,7 @@ export function Onboarding() {
                 <Paginator data={onboarding_screens} scrollX={scrollX} scrollTo={scrollTo} />
                 <TextButton
                     title="Continuar com Google"
-                    icon={<Google_G_Logo width={24} height={24} />}
+                    icon={<Google_Logo width={24} height={24} />}
                     iconStyle={{ marginRight: 24, }}
                     textStyle={{ color: "#444", fontSize: 16 }}
                     buttonStyle={{ paddingLeft: 16, paddingRight: 16, height: 50, backgroundColor: "#FFFFFF" }}

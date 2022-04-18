@@ -19,8 +19,8 @@ import { theme } from "../../global/styles/theme";
 
 import { styles } from "./styles";
 
-import TrashbinSvg from "../../assets/trashbin_2.svg"
-import TrashbinSvgWhite from "../../assets/trashbin_white.svg"
+import TrashbinSvg from "../../assets/icons/trashbin_green.svg"
+import TrashbinSvgWhite from "../../assets/icons/trashbin_white.svg"
 
 import { useAuth } from "../../hooks/useAuth";
 
@@ -87,7 +87,7 @@ const EMPTY = []
 
 const EmptyItem = ({ item, color, fontSize }: any) => {
     return (
-        <View style={[styles.container, { alignItems: "center", justifyContent: "center", alignSelf: "center", backgroundColor: "transparent" }]}>
+        <View style={[styles.container, { alignItems: "center", justifyContent: "center" }]}>
             {
                 color ?
                     <TrashbinSvgWhite
@@ -132,7 +132,7 @@ export function Account({ navigation, route }) {
                         {user.first_name + " " + user.last_name}
                     </Text>
                     <Text style={styles.username}>
-                        {user.profile ? user.profile.username : ""}
+                        {user.profile.username ? user.profile.username : ""}
                     </Text>
                 </View>
                 <View style={{ width: "25%", alignItems: "flex-end" }}>
@@ -276,10 +276,10 @@ export function Account({ navigation, route }) {
     const userCreatedAtSplit = user.createdAt.split("-")
     const userCreatedAt = userCreatedAtSplit[2].slice(0, 2) + "/" + userCreatedAtSplit[1] + "/" + userCreatedAtSplit[0]
 
-    const userReportsSolvedAmount = [...user.profile.reports].filter(report => report.resolved === true).length
+    const userReportsSolvedAmount = user.profile.reports ? [...user.profile.reports].filter(report => report.resolved === true).length : 0
 
     return (
-        <ImageBackground source={require("../../assets/background_placeholder.png")} style={styles.container}>
+        <ImageBackground source={require("../../assets/placeholders/background_placeholder.png")} style={styles.container}>
             <FocusAwareStatusBar translucent barStyle="dark-content" />
             <Header />
             <ScrollView
@@ -309,7 +309,7 @@ export function Account({ navigation, route }) {
                             nestedScrollEnabled={true}
                             showsVerticalScrollIndicator={false}
                             /* Não colocar { flex: 1 } no contentContainerStyle que trava o scroll */
-                            contentContainerStyle={{ justifyContent: reportsData === null ? "center" : "flex-start" }}
+                            contentContainerStyle={{ height: "100%" }}
                             style={[elements.subContainerWhite, { height: 375, marginBottom: 25 }]}
                             // Configurações dos elementos do Relatório
                             //sections={[...EXAMPLE_REPORTS, ...EXAMPLE_REPORTS2]}

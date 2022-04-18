@@ -88,7 +88,6 @@ function AuthProvider({ children }: AuthProviderProps) {
                 setIsSigningIn(false)
                 return "O usuário não foi encontrado."
             }
-            setIsSigningIn(false)
         } catch (error) {
             if (error.code === statusCodes.SIGN_IN_CANCELLED) {
                 console.log("Usuário cancelou o processo de login.");

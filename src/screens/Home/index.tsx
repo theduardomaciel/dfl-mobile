@@ -139,7 +139,7 @@ export function Home({ route, navigation }) {
     const userReportsSolvedInMonthAmount = [...userReports].filter(report => new Date(report.createdAt).getMonth() === new Date().getMonth() && report.resolved === true).length
 
     return (
-        <ImageBackground source={require("../../assets/background_placeholder.png")} style={styles.container}>
+        <ImageBackground source={require("../../assets/placeholders/background_placeholder.png")} style={styles.container}>
             <FocusAwareStatusBar translucent barStyle="dark-content" />
             <View style={styles.header}>
                 <View style={styles.greetingsView}>

@@ -14,4 +14,4 @@ app.use(router)
 // 4000
 
 // Caso 'cê esteja rodando o servidor localmente (pelo PC), troca a porta pra 4000
-app.listen(process.env.PORT || 5000, () => { console.log(`🚀 O servidor está rodando na porta ${process.env.PORT}`) })
+app.listen(4000, () => { console.log(`🚀 O servidor está rodando na porta ${process.env.PORT}`) })

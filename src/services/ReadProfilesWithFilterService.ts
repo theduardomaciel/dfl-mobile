@@ -27,7 +27,7 @@ class ReadProfilesWithFilterService {
                 },
                 take: searchCount && searchCount,
             })
-            console.log(reports, `Obtivemos os ${searchCount && searchCount} primeiros usuários com os filtros determinados.`)
+            console.log(reports, searchCount ? `Obtivemos os ${searchCount} primeiros perfis com os filtros determinados.` : `Obtivemos os perfis com os filtros determinados.`)
             return reports;
         } catch (error) {
             console.log(error)
