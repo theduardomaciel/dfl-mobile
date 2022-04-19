@@ -36,6 +36,7 @@ import FocusAwareStatusBar from "../../utils/functions/FocusAwareStatusBar";
 
 import { Profile, RegionType } from "../../@types/application";
 import { api } from "../../utils/api";
+import { UpdateNavigationBar } from "../../utils/functions/UpdateNavigationBar";
 
 const defaultServerCity = "Maceió, Alagoas - Brasil"
 let defaultCity = "Maceió, Alagoas - Brasil"
@@ -74,6 +75,7 @@ export function Community() {
     }
 
     useEffect(() => {
+        UpdateNavigationBar(null, false, "black")
         function CheckIfProfileIsCreated() {
             if (user.profile.defaultCity === null || user.profile.defaultCity === "") {
                 console.log("Usuário não possui perfil. Exibindo modal para criação.")

@@ -230,7 +230,6 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
             style={styles.view}
             propagateSwipe
             avoidKeyboard
-            statusBarTranslucent // tirando isso, o teclado funciona de boa
         >
             <ModalBase
                 isVisible={isDeleteModalVisible}
@@ -263,20 +262,30 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
             <KeyboardAvoidingView
                 behavior='padding'
                 pointerEvents='box-none'
-                style={[styles.container, { margin: 0, flex: 0.45, justifyContent: 'center' }]}>
+                style={[styles.container, { margin: 0, flex: 0.45, justifyContent: 'center' }]}
+            >
                 <View style={{
-                    marginTop: 15,
-                    marginBottom: 3,
-                    backgroundColor: theme.colors.primary1,
-                    width: "25%",
-                    height: 3,
-                    borderRadius: 5,
-                    opacity: 0.5
-                }} />
-                {
-                    !nullOrZero && <Text style={styles.title}>{`${comments.length} comentário${comments.length !== 1 ? 's' : ""}`}</Text>
-                }
-                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={nullOrZero && { height: "100%" }} >
+                    height: "13%", width: "100%", alignItems: "center",
+                    //backgroundColor: "red"
+                }}>
+                    <View style={{
+                        marginTop: 15,
+                        marginBottom: 3,
+                        backgroundColor: theme.colors.primary1,
+                        width: "25%",
+                        height: 3,
+                        borderRadius: 5,
+                        opacity: 0.5
+                    }} />
+                    {
+                        !nullOrZero && <Text style={styles.title}>{`${comments.length} comentário${comments.length !== 1 ? 's' : ""}`}</Text>
+                    }
+                </View>
+                <ScrollView
+                    showsVerticalScrollIndicator={false}
+                    nestedScrollEnabled={true}
+                    contentContainerStyle={nullOrZero && { height: "100%" }}
+                >
                     <View style={{ flex: 1 }} onStartShouldSetResponder={(): boolean => true}>
                         <FlatList
                             style={{ flex: 1 }}
@@ -290,13 +299,14 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
                             keyExtractor={item => item.id}
                             ListEmptyComponent={EmptyItem}
                             showsVerticalScrollIndicator={false}
+                            nestedScrollEnabled={true}
                             windowSize={10}
                         />
                     </View>
                 </ScrollView>
 
                 {
-                    comments !== null &&
+                    comments !== null && user.profile &&
                     <TextForm
                         customStyle={{ height: 40, width: "90%", marginTop: 15, marginBottom: 20 }}
                         textInputProps={{

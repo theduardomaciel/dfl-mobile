@@ -25,6 +25,7 @@ import { api } from "../../utils/api";
 import { Profile, Report } from "../../@types/application";
 import { GetRatingsAverage } from "../Reports";
 import { CommentsModal } from "../Reports/Comments";
+import { UpdateNavigationBar } from "../../utils/functions/UpdateNavigationBar";
 
 type TagsType = {
     id: string;
@@ -54,6 +55,7 @@ export function ReportScreen({ navigation, route }) {
     const [tags, setTags] = useState(Array)
 
     useEffect(() => {
+        UpdateNavigationBar(null, true, null)
         for (const [index, tagGroup] of Object.entries(tagGroups)) {
             for (const [key, tag] of Object.entries(tagGroup)) {
                 if (tag.checked) {

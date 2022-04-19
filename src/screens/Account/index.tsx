@@ -308,8 +308,7 @@ export function Account({ navigation, route }) {
                         <SectionList
                             nestedScrollEnabled={true}
                             showsVerticalScrollIndicator={false}
-                            /* Não colocar { flex: 1 } no contentContainerStyle que trava o scroll */
-                            contentContainerStyle={{ height: "100%" }}
+                            /* Não colocar { flex: 1 } ou { height: "100%" } no contentContainerStyle que trava o scroll */
                             style={[elements.subContainerWhite, { height: 375, marginBottom: 25 }]}
                             // Configurações dos elementos do Relatório
                             //sections={[...EXAMPLE_REPORTS, ...EXAMPLE_REPORTS2]}

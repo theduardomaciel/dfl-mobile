@@ -12,6 +12,8 @@ import { FadeInView } from '../global/animations/fadeInView'
 import { theme } from '../global/styles/theme'
 import { backgroundDrivers, buttonDrivers, TabBar } from '../components/TabBar'
 
+import { UpdateNavigationBar } from "../utils/functions/UpdateNavigationBar";
+
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 const Tab = createBottomTabNavigator();
 
@@ -113,6 +115,7 @@ export function MainScreen() {
                 listeners={({ navigation }) => ({
                     tabPress: (event) => {
                         event.preventDefault();
+                        UpdateNavigationBar(null, true, null)
                         navigation.navigate('Step1')
                     }
                 })}

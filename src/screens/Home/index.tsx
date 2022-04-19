@@ -78,7 +78,7 @@ export function Home({ route, navigation }) {
 
     useFocusEffect(
         useCallback(() => {
-            UpdateNavigationBar(null, false, null)
+            UpdateNavigationBar(null, false, "black")
             if (route.params?.errorMessage) {
                 console.log("Error Message: ", route.params?.errorMessage)
                 setErrorMessage(route.params?.errorMessage)
