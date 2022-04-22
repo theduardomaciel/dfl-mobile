@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Dimensions, FlatList, Image, KeyboardAvoidingView, LayoutAnimation, Platform, Pressable, ScrollView, Text, UIManager, View, ViewToken } from "react-native";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, FlatList, Image, KeyboardAvoidingView, LayoutAnimation, Platform, Pressable, ScrollView, StatusBar, Text, UIManager, View, ViewToken } from "react-native";
 
 import { initialWindowMetrics } from 'react-native-safe-area-context'
 
@@ -16,6 +16,7 @@ import { Comment, Report } from "../../../@types/application";
 import { api } from "../../../utils/api";
 import { ModalBase } from "../../../components/ModalBase";
 import { TextButton } from "../../../components/TextButton";
+import { UpdateNavigationBar } from "../../../utils/functions/UpdateNavigationBar";
 
 let actualComment = { id: 0, index: 0 }
 
@@ -222,14 +223,15 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
     const nullOrZero = comments === null ? true : comments.length === 0 ? true : false
     return (
         <Modal
-            testID={'modal'}
             isVisible={isVisible}
             onSwipeComplete={closeFunction}
             onBackdropPress={closeFunction}
             swipeDirection={['down']}
             style={styles.view}
-            propagateSwipe
-            avoidKeyboard
+            hardwareAccelerated
+            propagateSwipe={true}
+            statusBarTranslucent
+            avoidKeyboard={true}
         >
             <ModalBase
                 isVisible={isDeleteModalVisible}
@@ -259,14 +261,15 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
                 }
                 toggleModal={() => { setDeleteModalVisible(!isDeleteModalVisible) }}
             />
+            {/* <View style={[styles.container, { margin: 0, flex: 0.45, justifyContent: 'center' }]}> */}
             <KeyboardAvoidingView
                 behavior='padding'
                 pointerEvents='box-none'
-                style={[styles.container, { margin: 0, flex: 0.45, justifyContent: 'center' }]}
+                style={[styles.container, { margin: 0, flex: 0.5, justifyContent: 'center' }]}
             >
                 <View style={{
                     height: "13%", width: "100%", alignItems: "center",
-                    //backgroundColor: "red"
+                    backgroundColor: "red"
                 }}>
                     <View style={{
                         marginTop: 15,
@@ -321,6 +324,7 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
                     />
                 }
             </KeyboardAvoidingView>
+            {/* </View> */}
         </Modal>
     );
 }

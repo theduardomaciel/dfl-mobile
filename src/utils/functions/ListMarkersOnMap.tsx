@@ -22,10 +22,14 @@ const REPORTS_STORAGE = "@dfl:reports";
 
 let reports = null;
 async function GetReportsInLocation(location: string) {
-    const reportsResponse = await api.post("/reports/search", {
-        location: location
-    })
-    return reportsResponse.data as Array<Report>;
+    try {
+        const reportsResponse = await api.post("/reports/search", {
+            location: location
+        })
+        return reportsResponse.data as Array<Report>;
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 export async function ListMarkersOnMap(user: User, scope: string, userRegion: RegionType) {
@@ -33,17 +37,21 @@ export async function ListMarkersOnMap(user: User, scope: string, userRegion: Re
 
     const defaultCountry = user.profile.defaultCity !== null ? user.profile.defaultCity.split("-")[1].replace(/\s/g, '') : "Brasil"
 
-    if (reports === null) {
+    if (reports === null || reports === undefined) {
         reports = JSON.parse(await AsyncStorage.getItem(REPORTS_STORAGE));
         // Caso os relatórios não tenham sido previamente carregados, requisitamos os dados ao servidor e só depois listamos os marcadores no mapa
-        if (reports === null) {
+        if (reports === null || reports === undefined) {
             const onlineReports = await GetReportsInLocation(defaultCountry)
-            reports = onlineReports
-            await AsyncStorage.setItem(REPORTS_STORAGE, JSON.stringify(onlineReports));
-        } else {
-            GetReportsInLocation(defaultCountry).then(async onlineReports => {
-                await AsyncStorage.setItem(REPORTS_STORAGE, JSON.stringify(onlineReports));
+            if (onlineReports) {
                 reports = onlineReports
+                await AsyncStorage.setItem(REPORTS_STORAGE, JSON.stringify(onlineReports));
+            }
+        } else {
+            GetReportsInLocation(defaultCountry).then(async response => {
+                if (response) {
+                    reports = response
+                    await AsyncStorage.setItem(REPORTS_STORAGE, JSON.stringify(response));
+                }
             })
         }
     }

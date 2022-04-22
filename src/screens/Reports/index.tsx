@@ -36,6 +36,8 @@ type PropTypes = {
     viewableItems: Array<ViewToken>;
 }
 import { useFocusEffect } from '@react-navigation/native';
+import { ModalBase } from "../../components/ModalBase";
+import { TextButton } from "../../components/TextButton";
 
 let lastIndex = 0;
 
@@ -47,11 +49,13 @@ export function GetRatingsAverage(actualReport) {
 }
 
 export function Reports({ route, navigation }) {
-    const { user, updateUser } = useAuth();
+    const { user, updateUser, signOut } = useAuth();
 
     if (user === null) return (
         <View style={{ flex: 1 }} />
     );
+
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     const [isLoading, setIsLoading] = useState(false)
     const [data, setData] = useState<Array<Report>>([])
@@ -82,6 +86,7 @@ export function Reports({ route, navigation }) {
             }
         } catch (error) {
             console.log("Não foi possível conectar-se ao servidor para obter relatórios próximos ao usuário.", error)
+            setErrorModalVisible(true)
         }
     }
 
@@ -364,7 +369,7 @@ export function Reports({ route, navigation }) {
                 isTabBarVisible &&
                 <View style={styles.tabBar}>
                     <Text style={[styles.title, { marginBottom: 5 }]}>
-                        @{data.length > 0 && data[currentIndex].profile !== null ? data[currentIndex].profile.username : "carregando..."}
+                        @{data.length > 0 && data[currentIndex].profile !== null ? data[currentIndex].profile.username : ""}
                     </Text>
                     <View style={{ flexDirection: "row" }}>
                         <MaterialIcons name="place" size={18} color={theme.colors.text1} style={{ marginRight: 5 }} />
@@ -422,6 +427,27 @@ export function Reports({ route, navigation }) {
                         setCommentsModalVisible(false)
                     }}
                     report_id={data[currentIndex].id}
+                />
+            }
+            {
+                <ModalBase
+                    title="Eita! Parece que você não está mais autenticado!"
+                    description={`Ocorreu um problema por nossa parte e seu dispositivo acabou perdendo a conexão com sua conta.\nPrecisamos que você entre novamente para poder continuar a usar o aplicativo.`}
+                    style={{ height: "40%" }}
+                    children={
+                        <TextButton
+                            title="AUTENTICAR"
+                            buttonStyle={{ paddingHorizontal: 20, paddingVertical: 10 }}
+                            onPress={async () => {
+                                setErrorModalVisible(false)
+                                setIsLoading(true)
+                                await signOut()
+                            }}
+                        />
+                    }
+                    onBackdropPress={() => { }}
+                    toggleModal={() => setErrorModalVisible(!errorModalVisible)}
+                    isVisible={errorModalVisible}
                 />
             }
             {

@@ -28,7 +28,7 @@ export function Onboarding() {
     const { signIn, isSigningIn } = useAuth();
 
     useEffect(() => {
-        UpdateNavigationBar(null, true, null)
+        UpdateNavigationBar("dark", true, theme.colors.background)
     }, [])
 
     const [currentIndex, setCurrentIndex] = useState(0)
@@ -51,7 +51,6 @@ export function Onboarding() {
     const viewabilityConfigCallbackPairs = useRef([{ viewabilityConfig, onViewableItemsChanged }])
 
     const [errorModalVisible, setErrorModalVisible] = useState(false);
-    //const [errorModalInfo, setErrorModalInfo] = useState([])
     const errorModalInfo = [
         `Não foi possível autenticar.`,
         `Nossos servidores devem estar passando por problemas no momento :( \n Tente novamente mais tarde.`
@@ -61,16 +60,12 @@ export function Onboarding() {
         const errorMessage = await signIn()
         if (errorMessage !== "cancelled" as any && errorMessage !== "success" as any) {
             setErrorModalVisible(true)
-            /* setErrorModalInfo([
-                `Não foi possível autenticar.`,
-                `Nossos servidores devem estar passando por problemas no momento :( \n Tente novamente mais tarde.`
-            ]) */
         }
     }
 
     return (
         <View style={styles.container}>
-            <FocusAwareStatusBar translucent barStyle="dark-content" />
+            <FocusAwareStatusBar backgroundColor={theme.colors.background} barStyle="dark-content" />
             <Logo height={75} width={150} />
             <View style={{ flex: 0.75, marginTop: 48 }}>
                 <FlatList style={styles.list}
