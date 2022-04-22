@@ -220,7 +220,7 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
         )
     }
 
-    const nullOrZero = comments === null ? true : comments.length === 0 ? true : false
+    const nullOrZero = comments === null || comments === undefined ? true : comments.length === 0 ? true : false
     return (
         <Modal
             isVisible={isVisible}
@@ -230,7 +230,6 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
             style={styles.view}
             hardwareAccelerated
             propagateSwipe={true}
-            statusBarTranslucent
             avoidKeyboard={true}
         >
             <ModalBase
@@ -263,7 +262,7 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
             />
             {/* <View style={[styles.container, { margin: 0, flex: 0.45, justifyContent: 'center' }]}> */}
             <KeyboardAvoidingView
-                behavior='padding'
+                behavior='height'
                 pointerEvents='box-none'
                 style={[styles.container, { margin: 0, flex: 0.5, justifyContent: 'center' }]}
             >

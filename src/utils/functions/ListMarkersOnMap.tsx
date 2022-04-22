@@ -56,6 +56,8 @@ export async function ListMarkersOnMap(user: User, scope: string, userRegion: Re
         }
     }
 
+    if (reports === null || reports === undefined) return;
+
     switch (scope) {
         case "district":
             const result = await Location.reverseGeocodeAsync({ latitude: userRegion.latitude, longitude: userRegion.longitude });
