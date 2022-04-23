@@ -13,55 +13,25 @@
     [2] = país
 */
 
-import { User, Report, RegionType } from "../../@types/application";
-import * as Location from 'expo-location';
-import { api } from "../api";
+import { Region, User } from "../../@types/application";
 
-import AsyncStorage from '@react-native-async-storage/async-storage'
-const REPORTS_STORAGE = "@dfl:reports";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-let reports = null;
-async function GetReportsInLocation(location: string) {
-    try {
-        const reportsResponse = await api.post("/reports/search", {
-            location: location
-        })
-        return reportsResponse.data as Array<Report>;
-    } catch (error) {
-        console.log(error)
-    }
-}
+import {
+    LOCATION_STORAGE, REPORTS_STORAGE,
+} from "../../hooks/useAuth";
 
-export async function ListMarkersOnMap(user: User, scope: string, userRegion: RegionType) {
-    let markersArray = []
+import * as Location from "expo-location";
+import { LocationGeocodedAddress } from "expo-location";
 
-    const defaultCountry = user.profile.defaultCity !== null ? user.profile.defaultCity.split("-")[1].replace(/\s/g, '') : "Brasil"
-
-    if (reports === null || reports === undefined) {
-        reports = JSON.parse(await AsyncStorage.getItem(REPORTS_STORAGE));
-        // Caso os relatórios não tenham sido previamente carregados, requisitamos os dados ao servidor e só depois listamos os marcadores no mapa
-        if (reports === null || reports === undefined) {
-            const onlineReports = await GetReportsInLocation(defaultCountry)
-            if (onlineReports) {
-                reports = onlineReports
-                await AsyncStorage.setItem(REPORTS_STORAGE, JSON.stringify(onlineReports));
-            }
-        } else {
-            GetReportsInLocation(defaultCountry).then(async response => {
-                if (response) {
-                    reports = response
-                    await AsyncStorage.setItem(REPORTS_STORAGE, JSON.stringify(response));
-                }
-            })
-        }
-    }
-
-    if (reports === null || reports === undefined) return;
-
+export async function ListMarkersOnMap(scope: string, userRegion: Region) {
+    const markersArray = []
+    const reports = JSON.parse(await AsyncStorage.getItem(REPORTS_STORAGE));
+    const userLocation = userRegion ? await Location.reverseGeocodeAsync({ latitude: userRegion.latitude, longitude: userRegion.longitude }) :
+        JSON.parse(await AsyncStorage.getItem(LOCATION_STORAGE));
     switch (scope) {
         case "district":
-            const result = await Location.reverseGeocodeAsync({ latitude: userRegion.latitude, longitude: userRegion.longitude });
-            const district = result[0].district.replace(/ /g, '');
+            const district = userLocation.district
             reports.forEach((report) => {
                 const reportDistrict = report.address.split(",")[2].replace(/ /g, '');
                 console.log(reportDistrict, district)
@@ -78,10 +48,10 @@ export async function ListMarkersOnMap(user: User, scope: string, userRegion: Re
             })
             return markersArray;
         case "city":
-            const defaultCity = user.profile.defaultCity.split(",")[0].replace(/ /g, '');
+            const city = userLocation.city ? userLocation.city : userLocation.region
             reports.forEach((report) => {
                 const reportCity = report.address.split(",")[3].replace(/\s/g, '');
-                if (defaultCity === reportCity) {
+                if (city === reportCity) {
                     markersArray.push({
                         title: report.address,
                         description: report.suggestion,
@@ -94,10 +64,10 @@ export async function ListMarkersOnMap(user: User, scope: string, userRegion: Re
             })
             return markersArray;
         case "state":
-            const defaultState = user.profile.defaultCity.split(",")[1].split("-")[0].replace(/\s/g, '');
+            const state = userLocation.region;
             reports.forEach((report) => {
                 const reportState = report.address.split(",")[4].replace(/\s/g, '');
-                if (defaultState === reportState) {
+                if (state === reportState) {
                     markersArray.push({
                         title: report.address,
                         description: report.suggestion,
@@ -110,6 +80,7 @@ export async function ListMarkersOnMap(user: User, scope: string, userRegion: Re
             })
             return markersArray;
         case "country":
+            const country = userLocation.country;
             reports.forEach((report) => {
                 markersArray.push({
                     title: report.address,

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState } from "react";
 
 import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
 
@@ -13,19 +13,23 @@ GoogleSignin.configure({
 });
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
+
 import { api } from "../utils/api";
 import { Report, User } from "../@types/application";
 
 const SCOPE = "read:user";
+
 const USER_STORAGE = "@dfl:user";
 const TOKEN_STORAGE = "@dfl:token";
+export const REPORTS_STORAGE = "@dfl:reports";
+export const LOCATION_STORAGE = "@dfl:location";
 
 type AuthContextData = {
     user: User | null;
     isSigningIn: boolean;
-    creatingAccount: boolean;
     signIn: () => Promise<void>;
     signOut: () => Promise<void>;
+    loadUserStorageData: () => Promise<void>;
     updateUser: (updatedObject?, updatedElementKey?) => Promise<void>;
     updateReport: (actualObject?, updatedObject?, updatedElementKey?) => Promise<Report>;
 }
@@ -107,7 +111,7 @@ function AuthProvider({ children }: AuthProviderProps) {
     }
 
     async function signOut() {
-        console.log("Deslogando usuário de sua conta.")
+        console.log("Des-logando usuário de sua conta.")
         try {
             await GoogleSignin.signOut();
             await AsyncStorage.removeItem(USER_STORAGE);
@@ -156,22 +160,19 @@ function AuthProvider({ children }: AuthProviderProps) {
         }
     }
 
-    useEffect(() => {
-        async function loadUserStorageData() {
-            const userStorage = await AsyncStorage.getItem(USER_STORAGE);
-            const parsedUser = JSON.parse(userStorage)
-            const tokenStorage = await AsyncStorage.getItem(TOKEN_STORAGE);
+    async function loadUserStorageData() {
+        const userStorage = await AsyncStorage.getItem(USER_STORAGE);
+        const parsedUser = JSON.parse(userStorage)
+        const tokenStorage = await AsyncStorage.getItem(TOKEN_STORAGE);
 
-            if (userStorage && tokenStorage) {
-                api.defaults.headers.common['Authorization'] = `Bearer ${tokenStorage}`;
-                setUser(parsedUser);
-                console.log("Usuário logado com sucesso!", tokenStorage)
-            }
-
-            setIsSigningIn(false);
+        if (userStorage && tokenStorage) {
+            api.defaults.headers.common['Authorization'] = `Bearer ${tokenStorage}`;
+            setUser(parsedUser);
+            console.log("Usuário logado com sucesso!", tokenStorage)
         }
-        loadUserStorageData();
-    }, []);
+
+        return setIsSigningIn(false);
+    }
 
     return (
         <AuthContext.Provider value={{
@@ -179,8 +180,8 @@ function AuthProvider({ children }: AuthProviderProps) {
             signOut,
             updateUser,
             updateReport,
+            loadUserStorageData,
             user,
-            creatingAccount,
             isSigningIn
         }}>
             {children}

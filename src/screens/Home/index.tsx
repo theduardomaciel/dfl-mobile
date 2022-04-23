@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { View, Text, ScrollView, Image, RefreshControl, Platform, Pressable, ImageBackground } from "react-native";
+import { View, Text, ScrollView, Image, RefreshControl, Pressable, ImageBackground } from "react-native";
 import { MapScopePicker } from "../../components/MapScopePicker";
 
 import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
-import { check, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 import { ProfileIcon } from "../../components/ProfileIcon";
 import { elements } from "../../global/styles/elements";
@@ -12,6 +11,8 @@ import { theme } from "../../global/styles/theme";
 import { styles } from "./styles";
 
 import { useAuth } from "../../hooks/useAuth";
+import { Region } from "../../@types/application";
+
 import { ListMarkersOnMap } from "../../utils/functions/ListMarkersOnMap";
 import { ModalBase } from "../../components/ModalBase";
 import { LEVELS_DATA } from "../../utils/data/levels";
@@ -21,10 +22,11 @@ import { MaterialIcons } from '@expo/vector-icons';
 import * as Location from "expo-location"
 
 import FocusAwareStatusBar from "../../utils/functions/FocusAwareStatusBar";
-
-import { useFocusEffect } from '@react-navigation/native';
 import { UpdateNavigationBar } from "../../utils/functions/UpdateNavigationBar";
-import { RegionType } from "../../@types/application";
+import { permissionsToCheck } from "../../utils/permissionsToCheck";
+
+import { check, RESULTS } from 'react-native-permissions';
+import { useFocusEffect } from '@react-navigation/native';
 
 function GetGreeting() {
     const hour = new Date().getHours();
@@ -53,25 +55,7 @@ export function Home({ route, navigation }) {
         setErrorModalVisible(typeof errorMessage === "string" ? true : false)
     }, [errorMessage])
 
-    const { user, creatingAccount, updateUser, signOut } = useAuth();
-
-    async function HasPermission() {
-        let permissionToCheck;
-        if (Platform.OS === "android") {
-            permissionToCheck = PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION
-        } else if (Platform.OS === "ios") {
-            permissionToCheck = PERMISSIONS.IOS.LOCATION_WHEN_IN_USE
-        }
-        check(permissionToCheck)
-            .then((result) => {
-                if (result !== RESULTS.GRANTED) {
-                    creatingAccount ?
-                        navigation.navigate("PermissionsExplanation")
-                        : navigation.navigate("PermissionsRequest")
-                    return false
-                }
-            });
-    }
+    const { user, updateUser, signOut } = useAuth();
 
     let mapReference: any;
     const [alreadyLoaded, setAlreadyLoaded] = useState(false)
@@ -84,11 +68,14 @@ export function Home({ route, navigation }) {
                 setErrorMessage(route.params?.errorMessage)
                 setErrorModalVisible(true)
             }
-            HasPermission()
+            check(permissionsToCheck)
+                .then(async (result) => {
+                    if (result !== RESULTS.GRANTED) return navigation.navigate("PermissionsRequest");
+                });
         }, [navigation])
     );
 
-    const [region, setRegion] = useState(initialRegion as RegionType);
+    const [region, setRegion] = useState(initialRegion as Region);
     const [scopeText, setScopeText] = useState("em seu bairro")
     const [markers, setMarkers] = useState([]);
 
@@ -106,7 +93,7 @@ export function Home({ route, navigation }) {
                 setScopeText("em seu estado")
                 break;
         }
-        const markersArray = await ListMarkersOnMap(user, scope, newRegion ? newRegion : region)
+        const markersArray = await ListMarkersOnMap(scope, newRegion)
         setMarkers(markersArray)
         setReportsInScopeAmount(markersArray.length)
     }
@@ -235,9 +222,8 @@ export function Home({ route, navigation }) {
                                         latitudeDelta: 0.05,
                                         longitudeDelta: 0.05
                                     }
-                                    setRegion(newRegion as RegionType);
+                                    setRegion(newRegion as Region);
                                     mapReference.animateToRegion(newRegion, 2000)
-                                    markers.length === 0 && getScopePicked("district", newRegion);
                                 }
                             }}
                         >

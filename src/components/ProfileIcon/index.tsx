@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 
 import {
@@ -31,7 +31,7 @@ import { TextForm } from '../TextForm';
 import { TextButton } from '../TextButton';
 import { ModalBase } from '../ModalBase';
 import { LoadingScreen } from '../LoadingScreen';
-import { MAX_USERNAME_CHARACTERS, MIN_USERNAME_CHARACTERS, verifyFormatting, verifyRange } from '../ProfilePickers/Username';
+import { MAX_USERNAME_CHARACTERS, MIN_USERNAME_CHARACTERS, verifyFormatting, verifyRange } from '../ProfileModal/Username';
 import { api } from '../../utils/api';
 import { Profile } from '../../@types/application';
 

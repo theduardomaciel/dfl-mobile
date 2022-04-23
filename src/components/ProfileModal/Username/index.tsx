@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from 'react';
+import React from 'react';
 
 import {
     View,
@@ -7,7 +7,7 @@ import {
 
 import { theme } from '../../../global/styles/theme';
 import { styles } from './styles';
-import { defaultStyles } from '../defaultStyles';
+import { defaultStyles } from '../pickerDefaultStyles';
 
 import { TextInput } from 'react-native-gesture-handler';
 

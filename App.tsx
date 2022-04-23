@@ -1,26 +1,35 @@
 import * as Svg from "react-native-svg";
 import 'react-native-gesture-handler'
 
-import React from "react";
+import React, { useEffect } from "react";
 import { StatusBar } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 
 import Toast, { BaseToast, ErrorToast, InfoToast } from 'react-native-toast-message';
-
-import * as Font from "expo-font";
-import AppLoading from "expo-app-loading";
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold, Inter_900Black } from "@expo-google-fonts/inter"
 import { Roboto_400Regular, Roboto_500Medium, Roboto_700Bold, Roboto_900Black } from "@expo-google-fonts/roboto"
 import { Alatsi_400Regular } from "@expo-google-fonts/alatsi"
 
+const fontsToLoad = {
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
+    Inter_900Black,
+    Roboto_400Regular,
+    Roboto_500Medium,
+    Roboto_900Black,
+    Roboto_700Bold,
+    Alatsi_400Regular
+}
+
 import Routes from "./src/routes";
-import { AuthProvider, useAuth } from "./src/hooks/useAuth"
+import { AuthProvider } from "./src/hooks/useAuth"
 
 import { theme } from "./src/global/styles/theme";
 import { TAB_BAR_HEIGHT } from "./src/components/TabBar";
-
-import { UpdateNavigationBar } from "./src/utils/functions/UpdateNavigationBar";
 
 export const toastConfig = {
     /*
@@ -76,25 +85,23 @@ export const toastConfig = {
     ),
 };
 
+import * as Font from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
+
 export default function App() {
-    const { isSigningIn } = useAuth();
-
-    const [fontsLoaded] = Font.useFonts({
-        Inter_400Regular,
-        Inter_500Medium,
-        Inter_600SemiBold,
-        Inter_700Bold,
-        Inter_900Black,
-        Roboto_400Regular,
-        Roboto_500Medium,
-        Roboto_900Black,
-        Roboto_700Bold,
-        Alatsi_400Regular
-    });
-
-    if (!fontsLoaded || isSigningIn === true) {
-        return <AppLoading />
-    }
+    useEffect(() => {
+        async function prepare() {
+            try {
+                // Keep the splash screen visible while we fetch resources
+                await SplashScreen.preventAutoHideAsync();
+                // Pre-load fonts, make any API calls you need to do here
+                await Font.loadAsync(fontsToLoad);
+            } catch (error) {
+                console.warn(error);
+            }
+        }
+        prepare();
+    }, []);
 
     return (
         <AuthProvider>

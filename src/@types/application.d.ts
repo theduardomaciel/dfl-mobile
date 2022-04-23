@@ -53,7 +53,7 @@ export type Comment = {
     createdAt: string;
 }
 
-export type RegionType = {
+export type Region = {
     latitude: number,
     longitude: number,
     latitudeDelta: number,
