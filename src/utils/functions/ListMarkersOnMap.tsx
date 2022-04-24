@@ -13,7 +13,7 @@
     [2] = país
 */
 
-import { Region, User } from "../../@types/application";
+import { Region, Report, User } from "../../@types/application";
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -25,71 +25,58 @@ import * as Location from "expo-location";
 import { LocationGeocodedAddress } from "expo-location";
 
 export async function ListMarkersOnMap(scope: string, userRegion: Region) {
+
     const markersArray = []
-    const reports = JSON.parse(await AsyncStorage.getItem(REPORTS_STORAGE));
-    const userLocation = userRegion ? await Location.reverseGeocodeAsync({ latitude: userRegion.latitude, longitude: userRegion.longitude }) :
-        JSON.parse(await AsyncStorage.getItem(LOCATION_STORAGE));
+    const reportsUnparsed = await AsyncStorage.getItem(REPORTS_STORAGE);
+    const reports = await JSON.parse(reportsUnparsed) as Array<Report>
+
+    let userLocation;
+    if (userRegion) {
+        const onlineResult = await Location.reverseGeocodeAsync({ latitude: userRegion.latitude, longitude: userRegion.longitude })
+        userLocation = onlineResult[0]
+        console.log("Coordenadas foram fornecidas. O seguinte endereço foi encontrado: ", userLocation)
+    } else {
+        userLocation = JSON.parse(await AsyncStorage.getItem(LOCATION_STORAGE));
+        console.log("Utilizando a localização armazenada. O seguinte endereço foi encontrado: ", userLocation)
+    }
+    if (!userLocation) {
+        console.log("Não foi possível obter o endereço do usuário.");
+        return ["error"]
+    }
+
     switch (scope) {
         case "district":
-            const district = userLocation.district
+            const district = userLocation.district.replace(/ /g, '')
             reports.forEach((report) => {
                 const reportDistrict = report.address.split(",")[2].replace(/ /g, '');
                 console.log(reportDistrict, district)
                 if (reportDistrict === district) {
-                    markersArray.push({
-                        title: report.address,
-                        description: report.suggestion,
-                        coordinates: {
-                            latitude: typeof report.coordinates[0] !== "number" ? parseFloat(report.coordinates[0]) : report.coordinates[0],
-                            longitude: typeof report.coordinates[1] !== "number" ? parseFloat(report.coordinates[1]) : report.coordinates[0],
-                        }
-                    })
+                    markersArray.push(report)
                 }
             })
+            console.log(markersArray)
             return markersArray;
         case "city":
-            const city = userLocation.city ? userLocation.city : userLocation.region
+            const city = userLocation.city ? userLocation.city.replace(/ /g, '') : userLocation.subregion.replace(/ /g, '')
             reports.forEach((report) => {
                 const reportCity = report.address.split(",")[3].replace(/\s/g, '');
                 if (city === reportCity) {
-                    markersArray.push({
-                        title: report.address,
-                        description: report.suggestion,
-                        coordinates: {
-                            latitude: typeof report.coordinates[0] !== "number" ? parseFloat(report.coordinates[0]) : report.coordinates[0],
-                            longitude: typeof report.coordinates[1] !== "number" ? parseFloat(report.coordinates[1]) : report.coordinates[0],
-                        }
-                    })
+                    markersArray.push(report)
                 }
             })
             return markersArray;
         case "state":
-            const state = userLocation.region;
+            const state = userLocation.region.replace(/ /g, '')
             reports.forEach((report) => {
                 const reportState = report.address.split(",")[4].replace(/\s/g, '');
                 if (state === reportState) {
-                    markersArray.push({
-                        title: report.address,
-                        description: report.suggestion,
-                        coordinates: {
-                            latitude: typeof report.coordinates[0] !== "number" ? parseFloat(report.coordinates[0]) : report.coordinates[0],
-                            longitude: typeof report.coordinates[1] !== "number" ? parseFloat(report.coordinates[1]) : report.coordinates[0],
-                        }
-                    })
+                    markersArray.push(report)
                 }
             })
             return markersArray;
         case "country":
-            const country = userLocation.country;
             reports.forEach((report) => {
-                markersArray.push({
-                    title: report.address,
-                    description: report.suggestion,
-                    coordinates: {
-                        latitude: typeof report.coordinates[0] !== "number" ? parseFloat(report.coordinates[0]) : report.coordinates[0],
-                        longitude: typeof report.coordinates[1] !== "number" ? parseFloat(report.coordinates[1]) : report.coordinates[0],
-                    }
-                })
+                markersArray.push(report)
             })
             return markersArray;
     }

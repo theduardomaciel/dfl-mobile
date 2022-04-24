@@ -66,6 +66,17 @@ export const styles = StyleSheet.create({
         alignItems: "center"
     },
 
+    configIconContainer: {
+        height: 35,
+        width: 35,
+        borderRadius: 35 / 2,
+        backgroundColor: theme.colors.primary4,
+        position: "absolute",
+        bottom: -15,
+        alignItems: "center",
+        justifyContent: "center"
+    },
+
     //ConfigOptions
     columnContainer: {
         flexDirection: "column",

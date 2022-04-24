@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, Image, ImageBackground, Dimensions } from "react-native";
+import { View, Text, ImageBackground } from "react-native";
 
-import MapView, { PROVIDER_GOOGLE, Marker, Geojson } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE, Marker, Geojson, Callout } from "react-native-maps";
 
 import { ProfileModal } from "../../components/ProfileModal";
 import { MapScopePicker } from "../../components/MapScopePicker";
@@ -9,7 +9,9 @@ import { MapScopePicker } from "../../components/MapScopePicker";
 import { elements } from "../../global/styles/elements";
 import { theme } from "../../global/styles/theme";
 import { styles } from "./styles";
+import { triangleSize } from "./Callouts/calloutStyles";
 
+const GarbageBagIcon = require("../../assets/icons/garbage_bag.png")
 import { Entypo, MaterialIcons } from "@expo/vector-icons"
 
 import { useAuth } from "../../hooks/useAuth";
@@ -17,21 +19,11 @@ import { useAuth } from "../../hooks/useAuth";
 import { ListMarkersOnMap } from "../../utils/functions/ListMarkersOnMap";
 import FocusAwareStatusBar from "../../utils/functions/FocusAwareStatusBar";
 
-/* Marcadores = [
-    {
-        title: "Marcador 1",
-        description: "Coiso",
-        coordinates: {
-            latitude: 39.09802,
-            longitude: 43.14820
-        }
-    },
-] */
-
-import { Profile, Region } from "../../@types/application";
+import { Region } from "../../@types/application";
 import { api } from "../../utils/api";
 import { UpdateNavigationBar } from "../../utils/functions/UpdateNavigationBar";
 import { TextForm } from "../../components/TextForm";
+import { FocusCallout } from "./Callouts/FocusCallout";
 
 let loadedUserLocation = false;
 
@@ -52,14 +44,15 @@ export function Community({ navigation }) {
         setSecondModalVisible(!isSecondModalVisible)
     }
 
-    const [markers, setMarkers] = useState([])
+    const [reports, setReports] = useState([])
     const getScopePicked = async (scope, newRegion?) => {
         if (newRegion) setRegion(newRegion);
-        const markersArray = await ListMarkersOnMap(scope, newRegion ? newRegion : region)
-        setMarkers(markersArray)
+        const markersArray = await ListMarkersOnMap(scope, newRegion)
+        setReports(markersArray)
     }
 
     useEffect(() => {
+        getScopePicked("city")
         UpdateNavigationBar(null, false, "black")
         function CheckIfProfileIsCreated() {
             if (user.profile.defaultCity === null || user.profile.defaultCity === "") {
@@ -94,6 +87,9 @@ export function Community({ navigation }) {
                     mapPadding={{
                         bottom: 0, top: 125, left: 15, right: 15
                     }}
+                    loadingEnabled
+                    loadingIndicatorColor={theme.colors.primary1}
+                    loadingBackgroundColor={theme.colors.background}
                     region={region}
                     onUserLocationChange={locationChangedResult => {
                         if (!loadedUserLocation) {
@@ -113,14 +109,23 @@ export function Community({ navigation }) {
                     }}
                 >
                     {
-                        markers ?
-                            markers.map((marker, index) => (
+                        reports ?
+                            reports.map((report, index) => (
                                 <Marker
                                     key={index}
-                                    coordinate={marker.coordinates}
-                                    title={marker.title}
-                                    description={marker.description}
-                                />
+                                    image={GarbageBagIcon}
+                                    coordinate={{
+                                        latitude: parseFloat(report.coordinates[0]),
+                                        longitude: parseFloat(report.coordinates[1])
+                                        //latitude: typeof report.coordinates[0] !== "number" ?  : report.coordinates[0],
+                                        //longitude: typeof report.coordinates[0] !== "number" ? parseFloat(report.coordinates[1]) : report.coordinates[1]
+                                    }}
+                                    calloutAnchor={{ x: 5.5, y: -0.15 }}
+                                >
+                                    <Callout tooltip>
+                                        <FocusCallout report={report} />
+                                    </Callout>
+                                </Marker>
                             ))
                             : null
                     }
@@ -130,7 +135,6 @@ export function Community({ navigation }) {
                         fillColor="#ffffff80"
                         strokeWidth={5}
                     /> */}
-
                 </MapView>
             </View>
             <View style={styles.header}>
@@ -139,6 +143,7 @@ export function Community({ navigation }) {
                 </Text>
                 <TextForm
                     customStyle={styles.searchBar}
+                    shadow
                     textInputProps={{
                         placeholder: `Pesquisar relatos (ex.: bairro, cidade, estado)`,
                         placeholderTextColor: theme.colors.gray_light,
@@ -167,6 +172,6 @@ export function Community({ navigation }) {
                 toggleModal={secondToggleModal}
                 secondToggleModal={firstToggleModal}
             />
-        </ImageBackground>
+        </ImageBackground >
     );
 }

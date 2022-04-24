@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Image, KeyboardAvoidingView, LayoutAnimation, Platform, Pressable, ScrollView, StatusBar, Text, UIManager, View, ViewToken } from "react-native";
 
-import { initialWindowMetrics } from 'react-native-safe-area-context'
-
 import { styles } from "./styles";
 import { theme } from "../../../global/styles/theme";
 
-import TrashBinSvg from "../../../assets/icons/trashbin_green.svg"
+import TrashBinSvg from "../../../assets/icons/trashbin.svg"
 import Modal from "react-native-modal"
 import { TextForm } from "../../../components/TextForm";
 
@@ -16,7 +14,6 @@ import { Comment, Report } from "../../../@types/application";
 import { api } from "../../../utils/api";
 import { ModalBase } from "../../../components/ModalBase";
 import { TextButton } from "../../../components/TextButton";
-import { UpdateNavigationBar } from "../../../utils/functions/UpdateNavigationBar";
 
 let actualComment = { id: 0, index: 0 }
 
@@ -197,6 +194,7 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
                 :
                 <View style={{ alignItems: "center", justifyContent: "center", alignSelf: "center", flex: 1 }}>
                     <TrashBinSvg
+                        fill={theme.colors.secondary1}
                         width={40}
                         height={80}
                     />

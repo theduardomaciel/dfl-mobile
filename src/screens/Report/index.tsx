@@ -18,7 +18,7 @@ import { ModalBase } from "../../components/ModalBase";
 import { TagsSelector } from "../../components/TagsSelector";
 import { LoadingScreen } from "../../components/LoadingScreen";
 
-import TrashBinSVG from "../../assets/icons/trashbin_white.svg"
+import TrashBinSVG from "../../assets/icons/trashbin.svg"
 
 import { useAuth } from "../../hooks/useAuth";
 import { api } from "../../utils/api";
@@ -256,7 +256,7 @@ export function ReportScreen({ navigation, route }) {
                     }}
                 />
                 <View style={styles.ratingView}>
-                    <TrashBinSVG height={28} width={28} />
+                    <TrashBinSVG height={28} width={28} fill={theme.colors.text1} />
                     <Text style={{ fontSize: 18, color: theme.colors.text1, fontFamily: theme.fonts.title600, textAlignVertical: "center", flex: 0.65 }}>{GetRatingsAverage(report)}</Text>
                 </View>
             </View>

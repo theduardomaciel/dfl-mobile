@@ -1,7 +1,5 @@
 import React, { useRef, useState, useCallback, useEffect } from "react";
-import { View, FlatList, Animated, ViewToken } from "react-native";
-
-import * as Location from "expo-location"
+import { View, FlatList, Animated, ViewToken, StatusBar } from "react-native";
 
 import { onboarding_screens } from "../../utils/onboarding";
 import Logo from "../../assets/Logo.svg"
@@ -11,11 +9,10 @@ import { theme } from "../../global/styles/theme";
 
 import { OnboardingItem } from "../../components/OnboardingItem";
 import { Paginator } from "../../components/Paginator";
-
-import { REPORTS_STORAGE, useAuth } from "../../hooks/useAuth"
-
 import { ModalBase } from "../../components/ModalBase";
 import { TextButton } from "../../components/TextButton";
+
+import { useAuth } from "../../hooks/useAuth"
 
 type PropTypes = {
     viewableItems: Array<ViewToken>;
@@ -25,38 +22,15 @@ import Google_Logo from "../../assets/enterprises/google_logo.svg"
 
 import FocusAwareStatusBar from "../../utils/functions/FocusAwareStatusBar";
 import { UpdateNavigationBar } from "../../utils/functions/UpdateNavigationBar";
-import { permissionsToCheck } from "../../utils/permissionsToCheck";
-import { GetReportsInLocation } from "../../utils/functions/GetReportsInLocation";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import * as SplashScreen from "expo-splash-screen";
-import { check, RESULTS } from 'react-native-permissions';
 
 export function Onboarding({ navigation }) {
-    const { signIn, isSigningIn, loadUserStorageData, user, signOut } = useAuth();
+    const { signIn, isSigningIn } = useAuth();
 
     useEffect(() => {
         UpdateNavigationBar("dark", true, theme.colors.background)
-        check(permissionsToCheck)
-            .then(async (result) => {
-                if (result !== RESULTS.GRANTED) return navigation.navigate("PermissionsRequest");
-                const userLocation = await Location.getCurrentPositionAsync()
-                console.log(userLocation)
-                if (userLocation) {
-                    const result = await Location.reverseGeocodeAsync({ latitude: userLocation.coords.latitude, longitude: userLocation.coords.longitude });
-                    const state = result[0].city ? result[0].city.replace(/ /g, '') : result[0].region.replace(/ /g, '');
-                    try {
-                        const reports = GetReportsInLocation(state)
-                        await AsyncStorage.setItem(REPORTS_STORAGE, JSON.stringify(reports));
-                    } catch (error) {
-                        return user && signOut
-                    }
-                }
-                // Load user data from async storage
-                await loadUserStorageData();
-
-                await SplashScreen.hideAsync();
-            });
+        StatusBar.setBarStyle("dark-content")
     }, [])
 
     const [currentIndex, setCurrentIndex] = useState(0)
@@ -85,15 +59,18 @@ export function Onboarding({ navigation }) {
     ]
 
     const loginProcess = async () => {
-        const errorMessage = await signIn()
-        if (errorMessage !== "cancelled" as any && errorMessage !== "success" as any) {
+        const loginResult = await signIn()
+
+        if (loginResult === "permission_lack") {
+            navigation.navigate("PermissionsExplanation")
+        } else if (loginResult !== "cancelled" as any && loginResult !== "success" as any) {
             setErrorModalVisible(true)
         }
     }
 
     return (
         <View style={styles.container}>
-            <FocusAwareStatusBar backgroundColor={theme.colors.background} barStyle="dark-content" />
+            <FocusAwareStatusBar translucent barStyle="dark-content" animated={true} />
             <Logo height={75} width={150} />
             <View style={{ flex: 0.75, marginTop: 48 }}>
                 <FlatList style={styles.list}

@@ -9,5 +9,6 @@ export async function GetReportsInLocation(location: string) {
         return reportsResponse.data as Array<Report>;
     } catch (error) {
         console.log(error)
+        return error
     }
 }

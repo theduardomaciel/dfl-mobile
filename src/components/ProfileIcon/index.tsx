@@ -25,6 +25,7 @@ type Props = {
     openConfig?: boolean;
 }
 
+import GearIcon from "../../assets/icons/gear_icon.svg"
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 import { TextForm } from '../TextForm';
@@ -319,6 +320,12 @@ export function ProfileIcon({ uri, openConfig }: Props) {
                     isLoading ? <LoadingScreen /> : null
                 }
             </Modal>
+            {
+                openConfig &&
+                <View style={styles.configIconContainer}>
+                    <GearIcon width={24} height={24} fill={theme.colors.secondary1} />
+                </View>
+            }
         </TouchableOpacity>
     );
 }

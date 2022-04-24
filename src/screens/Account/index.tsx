@@ -19,8 +19,7 @@ import { theme } from "../../global/styles/theme";
 
 import { styles } from "./styles";
 
-import TrashbinSvg from "../../assets/icons/trashbin_green.svg"
-import TrashbinSvgWhite from "../../assets/icons/trashbin_white.svg"
+import TrashbinSvg from "../../assets/icons/trashbin.svg"
 
 import { useAuth } from "../../hooks/useAuth";
 
@@ -90,11 +89,13 @@ const EmptyItem = ({ item, color, fontSize }: any) => {
         <View style={[styles.container, { alignItems: "center", justifyContent: "center" }]}>
             {
                 color ?
-                    <TrashbinSvgWhite
+                    <TrashbinSvg
+                        fill={theme.colors.text1}
                         width={25}
                         height={45}
                     /> :
                     <TrashbinSvg
+                        fill={theme.colors.secondary1}
                         width={50}
                         height={90}
                     />

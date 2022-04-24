@@ -22,10 +22,10 @@ import { createStackNavigator } from '@react-navigation/stack';
 const Stack = createStackNavigator();
 
 export default function Routes() {
-    const { user } = useAuth();
+    const { user, hasAppPermissions } = useAuth();
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-            {user ? (
+            {user && hasAppPermissions ? (
                 <Stack.Group>
                     <Stack.Screen
                         name="Main"

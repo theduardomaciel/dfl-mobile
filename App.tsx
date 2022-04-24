@@ -6,7 +6,9 @@ import { StatusBar } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 
 import Toast, { BaseToast, ErrorToast, InfoToast } from 'react-native-toast-message';
-import AsyncStorage from '@react-native-async-storage/async-storage'
+
+import AppLoading from "expo-app-loading";
+import * as Font from "expo-font";
 
 import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold, Inter_900Black } from "@expo-google-fonts/inter"
 import { Roboto_400Regular, Roboto_500Medium, Roboto_700Bold, Roboto_900Black } from "@expo-google-fonts/roboto"
@@ -85,7 +87,6 @@ export const toastConfig = {
     ),
 };
 
-import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 
 export default function App() {
@@ -95,13 +96,28 @@ export default function App() {
                 // Keep the splash screen visible while we fetch resources
                 await SplashScreen.preventAutoHideAsync();
                 // Pre-load fonts, make any API calls you need to do here
-                await Font.loadAsync(fontsToLoad);
             } catch (error) {
                 console.warn(error);
             }
         }
         prepare();
     }, []);
+
+    const [fontsLoaded] = Font.useFonts({
+        Inter_400Regular,
+        Inter_500Medium,
+        Inter_600SemiBold,
+        Inter_700Bold,
+        Inter_900Black,
+        Roboto_400Regular,
+        Roboto_500Medium,
+        Roboto_900Black,
+        Roboto_700Bold,
+        Alatsi_400Regular
+    });
+    /* if (!fontsLoaded) {
+        return <AppLoading />
+    } */
 
     return (
         <AuthProvider>

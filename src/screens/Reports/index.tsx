@@ -8,7 +8,7 @@ import { SELECTOR_WIDTH, styles } from "./styles";
 import Toast from 'react-native-toast-message';
 import Share from 'react-native-share';
 
-import TrashBinSVG from "../../assets/icons/trashbin_white.svg"
+import TrashBinSVG from "../../assets/icons/trashbin.svg"
 
 import { MaterialIcons } from "@expo/vector-icons"
 import { backgroundDrivers, TAB_BAR_HEIGHT, TAB_BAR_HEIGHT_LONG } from "../../components/TabBar";
@@ -386,7 +386,7 @@ export function Reports({ route, navigation }) {
                         <View style={styles.actionButton}>
                             <View style={[styles.buttonCircle, { width: 65, height: 65 }]} />
                             <View style={[styles.buttonCircle, { width: 50, height: 50, opacity: 1 }]} />
-                            <TrashBinSVG height={28} width={28} />
+                            <TrashBinSVG height={28} width={28} fill={theme.colors.text1} />
                             <Text style={[styles.ratingViewerText]}>{GetRatingsAverage(data[currentIndex])}</Text>
                         </View>
                         <Pressable style={styles.actionButton} onPress={() => {

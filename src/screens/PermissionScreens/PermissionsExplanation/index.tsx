@@ -114,7 +114,7 @@ export function PermissionsExplanation({ navigation }) {
                 shadow
                 buttonStyle={{ height: 45, width: "90%", marginBottom: 15 }}
                 colors={[theme.colors.primary1, theme.colors.secondary1]}
-                onPress={() => { navigation.navigate("PermissionsRequest") }} />
+                onPress={() => { navigation.navigate("PermissionsRequest", { update: true }) }} />
         </View>
     );
 }

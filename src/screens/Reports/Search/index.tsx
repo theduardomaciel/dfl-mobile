@@ -17,12 +17,10 @@ import { elements } from "../../../global/styles/elements";
 import { theme } from "../../../global/styles/theme";
 
 import { MaterialIcons } from "@expo/vector-icons"
-import TrashBinSvg from "../../../assets/icons/trashbin_green.svg"
+import TrashBinSvg from "../../../assets/icons/trashbin.svg"
 
 import { useAuth } from "../../../hooks/useAuth";
 import { styles } from "./styles";
-
-import TrashBinSVG from "../../../assets/icons/trashbin_white.svg"
 
 import { styles as defaultStyles } from "../styles";
 import { TextForm } from "../../../components/TextForm";
@@ -140,7 +138,7 @@ export function Search({ route, navigation }) {
                 <View style={styles.preview}>
                     <Image source={{ uri: report.image_url }} style={{ flex: 1 }} />
                     <View style={styles.previewRatingView}>
-                        <TrashBinSVG height={28} width={28} />
+                        <TrashBinSvg height={28} width={28} fill={theme.colors.text1} />
                         <Text style={[styles.previewSubTitle, { color: theme.colors.text1 }, theme.shadowPropertiesLow]}>{GetRatingsAverage(item)}</Text>
                     </View>
                 </View>
@@ -169,6 +167,7 @@ export function Search({ route, navigation }) {
             results === null &&
             <View style={{ alignItems: "center", justifyContent: "center", alignSelf: "center", height: Dimensions.get("window").height - 125 }}>
                 <TrashBinSvg
+                    fill={theme.colors.secondary1}
                     width={40}
                     height={80}
                 />

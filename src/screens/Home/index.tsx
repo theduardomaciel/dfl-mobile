@@ -2,7 +2,9 @@ import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, ScrollView, Image, RefreshControl, Pressable, ImageBackground } from "react-native";
 import { MapScopePicker } from "../../components/MapScopePicker";
 
-import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE, Marker, Callout } from "react-native-maps";
+
+const GarbageBagIcon = require("../../assets/icons/garbage_bag.png")
 
 import { ProfileIcon } from "../../components/ProfileIcon";
 import { elements } from "../../global/styles/elements";
@@ -23,14 +25,14 @@ import * as Location from "expo-location"
 
 import FocusAwareStatusBar from "../../utils/functions/FocusAwareStatusBar";
 import { UpdateNavigationBar } from "../../utils/functions/UpdateNavigationBar";
-import { permissionsToCheck } from "../../utils/permissionsToCheck";
+import { locationPermission } from "../../utils/permissionsToCheck";
 
 import { check, RESULTS } from 'react-native-permissions';
 import { useFocusEffect } from '@react-navigation/native';
 
 function GetGreeting() {
     const hour = new Date().getHours();
-    if (hour >= 0 && hour < 12) {
+    if (hour >= 4 && hour < 12) {
         return "Bom dia,";
     } else if (hour >= 12 && hour < 18) {
         return "Boa tarde,";
@@ -46,12 +48,19 @@ const initialRegion = {
     longitudeDelta: 35
 }
 
-export function Home({ route, navigation }) {
+import * as SplashScreen from "expo-splash-screen";
+import { FocusCallout } from "../Community/Callouts/FocusCallout";
 
+export function Home({ route, navigation }) {
     const [errorMessage, setErrorMessage] = useState(route.params?.errorMessage);
     const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     useEffect(() => {
+        async function LoadMarkersOnMap() {
+            await getScopePicked("district")
+            SplashScreen.hideAsync();
+        }
+        LoadMarkersOnMap()
         setErrorModalVisible(typeof errorMessage === "string" ? true : false)
     }, [errorMessage])
 
@@ -68,8 +77,9 @@ export function Home({ route, navigation }) {
                 setErrorMessage(route.params?.errorMessage)
                 setErrorModalVisible(true)
             }
-            check(permissionsToCheck)
+            check(locationPermission)
                 .then(async (result) => {
+                    console.log(result)
                     if (result !== RESULTS.GRANTED) return navigation.navigate("PermissionsRequest");
                 });
         }, [navigation])
@@ -77,7 +87,7 @@ export function Home({ route, navigation }) {
 
     const [region, setRegion] = useState(initialRegion as Region);
     const [scopeText, setScopeText] = useState("em seu bairro")
-    const [markers, setMarkers] = useState([]);
+    const [reports, setReports] = useState([]);
 
     const [reportsInScopeAmount, setReportsInScopeAmount] = useState(0)
     const getScopePicked = async (scope, newRegion?) => {
@@ -94,8 +104,13 @@ export function Home({ route, navigation }) {
                 break;
         }
         const markersArray = await ListMarkersOnMap(scope, newRegion)
-        setMarkers(markersArray)
-        setReportsInScopeAmount(markersArray.length)
+        if (markersArray[0] === "error") {
+            signOut();
+            return;
+        } else {
+            await setReports(markersArray)
+            await setReportsInScopeAmount(markersArray.length)
+        }
     }
 
     const [isRefreshing, setIsRefreshing] = useState(false)
@@ -211,6 +226,9 @@ export function Home({ route, navigation }) {
                             ref={ref => mapReference = ref}
                             showsMyLocationButton={true}
                             region={region}
+                            loadingEnabled
+                            loadingIndicatorColor={theme.colors.primary1}
+                            loadingBackgroundColor={theme.colors.background}
                             onUserLocationChange={locationChangedResult => {
                                 if (!alreadyLoaded) {
                                     setAlreadyLoaded(true)
@@ -228,14 +246,21 @@ export function Home({ route, navigation }) {
                             }}
                         >
                             {
-                                markers ?
-                                    markers.map((marker, index) => (
+                                reports ?
+                                    reports.map((report, index) => (
                                         <Marker
                                             key={index}
-                                            coordinate={marker.coordinates}
-                                            title={marker.title}
-                                            description={marker.description}
-                                        />
+                                            image={GarbageBagIcon}
+                                            coordinate={{
+                                                latitude: parseFloat(report.coordinates[0]),
+                                                longitude: parseFloat(report.coordinates[1])
+                                            }}
+                                            calloutAnchor={{ x: 5.5, y: -0.15 }}
+                                        >
+                                            <Callout tooltip>
+                                                <FocusCallout report={report} />
+                                            </Callout>
+                                        </Marker>
                                     ))
                                     : null
                             }

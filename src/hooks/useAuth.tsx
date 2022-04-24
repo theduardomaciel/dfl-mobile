@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, SetStateAction } from "react";
 
 import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
 
@@ -13,6 +13,7 @@ GoogleSignin.configure({
 });
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import * as SplashScreen from "expo-splash-screen";
 
 import { api } from "../utils/api";
 import { Report, User } from "../@types/application";
@@ -27,9 +28,11 @@ export const LOCATION_STORAGE = "@dfl:location";
 type AuthContextData = {
     user: User | null;
     isSigningIn: boolean;
-    signIn: () => Promise<void>;
+    hasAppPermissions: boolean;
+    setHasAppPermissions: (state: boolean) => Promise<void>;
+    signIn: () => Promise<string>;
     signOut: () => Promise<void>;
-    loadUserStorageData: () => Promise<void>;
+    updateReports: () => Promise<boolean | string>;
     updateUser: (updatedObject?, updatedElementKey?) => Promise<void>;
     updateReport: (actualObject?, updatedObject?, updatedElementKey?) => Promise<Report>;
 }
@@ -45,14 +48,49 @@ type AuthResponse = {
 
 export const AuthContext = createContext({} as AuthContextData)
 
+import * as Location from "expo-location"
+
+import { check, RESULTS } from 'react-native-permissions';
+
+import { locationPermission } from "../utils/permissionsToCheck";
+import { GetReportsInLocation } from "../utils/functions/GetReportsInLocation";
+
 function AuthProvider({ children }: AuthProviderProps) {
     const [isSigningIn, setIsSigningIn] = useState(true)
+    const [hasAppPermissions, setHasAppPermissionsState] = useState(true)
     const [user, setUser] = useState<User | null>(null)
-    const [creatingAccount, setCreatingAccount] = useState(false)
+
+    async function updateReports() {
+        console.log("Atualizando relatórios do usuários no escopo de cidade.")
+        const result = await check(locationPermission)
+        if (result === RESULTS.GRANTED) {
+            setHasAppPermissionsState(true)
+        } else {
+            return false
+        }
+
+        const userLocation = await Location.getCurrentPositionAsync()
+        console.log(userLocation)
+        if (userLocation) {
+            const result = await Location.reverseGeocodeAsync({ latitude: userLocation.coords.latitude, longitude: userLocation.coords.longitude });
+            const location = result[0]
+            const state = location.city ? location.city.replace(/ /g, '') : location.region.replace(/ /g, '');
+            console.log(location)
+            try {
+                const reports = await GetReportsInLocation(state)
+                await AsyncStorage.setItem(REPORTS_STORAGE, JSON.stringify(reports))
+                await AsyncStorage.setItem(LOCATION_STORAGE, JSON.stringify(location))
+                return true
+            } catch (error) {
+                console.log(error)
+                return "error"
+            }
+        }
+    }
 
     async function signIn() {
-        setCreatingAccount(true)
         setIsSigningIn(true)
+        setHasAppPermissions(false)
         await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
         try {
             const userInfo = await GoogleSignin.signIn();
@@ -81,16 +119,22 @@ function AuthProvider({ children }: AuthProviderProps) {
 
                     setUser(responseUser);
                     console.log(`Usuário autenticou-se no aplicativo com sucesso!`);
-                    return "success"
+
+                    const reportsResponse = await updateReports()
+                    if (reportsResponse === true) {
+                        return "success"
+                    } else {
+                        return "permission_lack"
+                    }
                 } catch (error) {
-                    console.log(error)
                     setIsSigningIn(false)
-                    return error
+                    console.log(error)
+                    return "error"
                 }
             } else {
-                console.log("O usuário não foi encontrado.")
+                console.log("[Error]: Os dados da conta do Google fornecida não foram encontrados.")
                 setIsSigningIn(false)
-                return "O usuário não foi encontrado."
+                return "error"
             }
         } catch (error) {
             if (error.code === statusCodes.SIGN_IN_CANCELLED) {
@@ -99,13 +143,16 @@ function AuthProvider({ children }: AuthProviderProps) {
                 return "cancelled"
             } else if (error.code === statusCodes.IN_PROGRESS) {
                 setIsSigningIn(false)
-                return console.log("Um processo de login já está em execução.");
+                console.log("Um processo de login já está em execução.");
+                return "error"
             } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
                 setIsSigningIn(false)
-                return console.log("Os serviços da Google Play estão desatualizados ou indisponíveis.");
+                console.log("Os serviços da Google Play estão desatualizados ou indisponíveis.");
+                return "error"
             } else {
                 setIsSigningIn(false)
-                return console.log(error)
+                console.log(error)
+                return "error"
             }
         }
     }
@@ -169,20 +216,32 @@ function AuthProvider({ children }: AuthProviderProps) {
             api.defaults.headers.common['Authorization'] = `Bearer ${tokenStorage}`;
             setUser(parsedUser);
             console.log("Usuário logado com sucesso!", tokenStorage)
+        } else {
+            // O usuário não está logado, podemos exibir a tela de onboarding
+            SplashScreen.hideAsync();
         }
+        setIsSigningIn(false);
+    }
 
-        return setIsSigningIn(false);
+    useEffect(() => {
+        loadUserStorageData()
+    }, [])
+
+    async function setHasAppPermissions(state: boolean) {
+        await setHasAppPermissionsState(state)
     }
 
     return (
         <AuthContext.Provider value={{
             signIn,
             signOut,
+            updateReports,
             updateUser,
             updateReport,
-            loadUserStorageData,
+            hasAppPermissions,
+            setHasAppPermissions,
             user,
-            isSigningIn
+            isSigningIn,
         }}>
             {children}
         </AuthContext.Provider>

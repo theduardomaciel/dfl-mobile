@@ -51,7 +51,7 @@ export function ConclusionScreen({ title, info, backButtonText, icon, gainedExpe
     });
 
     useEffect(() => {
-        UpdateNavigationBar(null, true, null)
+        UpdateNavigationBar("dark", true, "transparent")
         Animated.timing(barAnimation, {
             toValue: 1,
             duration: 3000,

@@ -1,5 +1,5 @@
 import React, { useRef, useState, useCallback, useEffect } from "react";
-import { Text, View, FlatList, Animated, ViewToken, Linking, Platform, Modal, PermissionsAndroid } from "react-native";
+import { Text, View, FlatList, Animated, ViewToken, Linking, Platform, Modal, PermissionsAndroid, StatusBar } from "react-native";
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 import { permissions_screens } from "../../../utils/permissions"
@@ -15,6 +15,9 @@ import { ModalBase } from "../../../components/ModalBase";
 import { TextButton } from "../../../components/TextButton";
 import { HintView, HintViewTextStyle } from "../../../components/HintView";
 import { ConclusionScreen } from "../../../components/ConclusionScreen";
+import { LoadingScreen } from "../../../components/LoadingScreen";
+import { useAuth } from "../../../hooks/useAuth";
+import { UpdateNavigationBar } from "../../../utils/functions/UpdateNavigationBar";
 
 type PropTypes = {
     viewableItems: Array<ViewToken>;
@@ -27,7 +30,11 @@ let BUTTONS_TEXTS = ["Permitir acesso à localização", "Permitir acesso à câ
 
 let CameraPermission = false;
 let LocationPermission = false
-export function PermissionsRequest({ navigation }) {
+export function PermissionsRequest({ navigation, route }) {
+    const hasToUpdate = route.params?.update as boolean;
+
+    const { updateReports } = useAuth();
+
     const [currentIndex, setCurrentIndex] = useState(0)
     const scrollX = useRef(new Animated.Value(0)).current;
     const slidesRef = useRef(null);
@@ -58,15 +65,30 @@ export function PermissionsRequest({ navigation }) {
         />
     )
 
+    const [isLoading, setLoading] = useState(false)
     const [isModalVisible, setModalVisible] = useState(false);
+
+    async function PrepareApp() {
+        setLoading(true)
+        UpdateNavigationBar("dark", false, "transparent")
+        StatusBar.setBarStyle("dark-content")
+
+        if (hasToUpdate) {
+            console.log("Atualizando relatórios de maneira geral.")
+            await updateReports()
+        }
+
+        setLoading(false)
+        setModalVisible(true)
+    }
 
     function CameraGranted() {
         console.log("A permissão para uso da câmera foi garantida.")
         CameraPermission = true
         BUTTONS_TEXTS[1] = "Continuar"
         if (CameraPermission && LocationPermission) {
-            console.log("As duas permissões já foram concedidas, proseguindo...")
-            setModalVisible(true)
+            console.log("As duas permissões já foram concedidas, prosseguindo...")
+            PrepareApp()
         } else {
             scrollTo(0)
             setCurrentIndex(0)
@@ -77,20 +99,13 @@ export function PermissionsRequest({ navigation }) {
         LocationPermission = true
         BUTTONS_TEXTS[0] = "Continuar"
         if (CameraPermission && LocationPermission) {
-            console.log("As duas permissões já foram concedidas, proseguindo...")
-            setModalVisible(true)
+            console.log("As duas permissões já foram concedidas, prosseguindo...")
+            PrepareApp()
         } else {
             scrollTo(1)
             setCurrentIndex(1)
         }
     }
-
-    /* {
-        title: "Permissão Necessária",
-        message:
-            "O acesso à câmera é um elemento fundamental para o funcionamento do aplicativo. ",
-        buttonPositive: "Continuar"
-    }, */
 
     async function RequestCameraPermission() {
         let permissionToCheck;
@@ -198,6 +213,9 @@ export function PermissionsRequest({ navigation }) {
                 <TextButton buttonStyle={{ backgroundColor: BUTTON_COLORS[currentIndex], paddingHorizontal: 20, paddingVertical: 15 }} title={BUTTONS_TEXTS[currentIndex]} onPress={FUNCTIONS[currentIndex]} />
                 {/* <Text style={styles.info}>Negar a permissão tornará impossível utilizar o aplicativo.</Text> */}
             </View>
+            {
+                isLoading && <LoadingScreen />
+            }
         </View>
     );
 }
