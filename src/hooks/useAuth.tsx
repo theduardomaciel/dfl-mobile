@@ -77,7 +77,7 @@ function AuthProvider({ children }: AuthProviderProps) {
             const state = location.city ? location.city.replace(/ /g, '') : location.region.replace(/ /g, '');
             console.log(location)
             try {
-                const reports = await GetReportsInLocation(state)
+                const reports = await GetReportsInLocation(state, true)
                 await AsyncStorage.setItem(REPORTS_STORAGE, JSON.stringify(reports))
                 await AsyncStorage.setItem(LOCATION_STORAGE, JSON.stringify(location))
                 return true

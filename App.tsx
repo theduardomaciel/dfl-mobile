@@ -8,6 +8,9 @@ import { NavigationContainer } from "@react-navigation/native";
 import Toast, { BaseToast, ErrorToast, InfoToast } from 'react-native-toast-message';
 
 import AppLoading from "expo-app-loading";
+
+import { Host } from 'react-native-portalize';
+
 import * as Font from "expo-font";
 
 import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold, Inter_900Black } from "@expo-google-fonts/inter"
@@ -121,20 +124,22 @@ export default function App() {
 
     return (
         <AuthProvider>
-            <NavigationContainer>
-                <StatusBar
-                    barStyle="dark-content"
-                    backgroundColor="transparent"
-                    translucent
+            <Host>
+                <NavigationContainer>
+                    <StatusBar
+                        barStyle="dark-content"
+                        backgroundColor="transparent"
+                        translucent
+                    />
+                    <Routes />
+                </NavigationContainer>
+                <Toast
+                    config={toastConfig}
+                    visibilityTime={3000}
+                    position='bottom'
+                    bottomOffset={50 + TAB_BAR_HEIGHT}
                 />
-                <Routes />
-            </NavigationContainer>
-            <Toast
-                config={toastConfig}
-                visibilityTime={3000}
-                position='bottom'
-                bottomOffset={50 + TAB_BAR_HEIGHT}
-            />
+            </Host>
         </AuthProvider>
     )
 }

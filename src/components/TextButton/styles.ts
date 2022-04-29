@@ -20,6 +20,6 @@ export const styles = StyleSheet.create({
     title: {
         color: theme.colors.text1,
         fontSize: 16,
-        fontFamily: theme.fonts.subtitle500
+        fontFamily: theme.fonts.subtitle500,
     },
 });

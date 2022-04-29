@@ -35,7 +35,7 @@ export const styles = StyleSheet.create({
     },
     calloutSubContainer: {
         flexDirection: "row",
-        alignItems: "flex-end"
+        alignItems: "flex-end",
     },
     calloutTitle: {
         fontFamily: theme.fonts.title500,

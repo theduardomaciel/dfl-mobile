@@ -1,31 +1,70 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, ImageBackground } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import { View, Text, ImageBackground, Dimensions } from "react-native";
 
-import MapView, { PROVIDER_GOOGLE, Marker, Geojson, Callout } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE, Marker, Geojson, Callout, Camera, LatLng } from "react-native-maps";
 
 import { ProfileModal } from "../../components/ProfileModal";
 import { MapScopePicker } from "../../components/MapScopePicker";
 
-import { elements } from "../../global/styles/elements";
 import { theme } from "../../global/styles/theme";
 import { styles } from "./styles";
-import { triangleSize } from "./Callouts/calloutStyles";
 
 const GarbageBagIcon = require("../../assets/icons/garbage_bag.png")
-import { Entypo, MaterialIcons } from "@expo/vector-icons"
+import { MaterialIcons } from "@expo/vector-icons"
 
 import { useAuth } from "../../hooks/useAuth";
 
 import { ListMarkersOnMap } from "../../utils/functions/ListMarkersOnMap";
 import FocusAwareStatusBar from "../../utils/functions/FocusAwareStatusBar";
 
-import { Region } from "../../@types/application";
+import { Region, Report } from "../../@types/application";
+
 import { api } from "../../utils/api";
 import { UpdateNavigationBar } from "../../utils/functions/UpdateNavigationBar";
-import { TextForm } from "../../components/TextForm";
-import { FocusCallout } from "./Callouts/FocusCallout";
 
+import { TextForm } from "../../components/TextForm";
+import { TagSection } from "../../components/TagsSelector";
+
+import { RectButton } from "react-native-gesture-handler";
+import { Modalize } from "react-native-modalize";
+
+import { FocusCallout } from "./Callouts/FocusCallout";
+import { FocusModal } from "./Modals/FocusModal";
+
+const dimensions = Dimensions.get("screen")
 let loadedUserLocation = false;
+
+const placeholder_report = {
+    profile: {
+        username: "",
+        profile_image: "https://github.com/theduardomaciel.png",
+        id: 1,
+        image_url: "https://github.com/theduardomaciel.png",
+        level: 0,
+        experience: 0,
+        reports: [],
+        ratings: "",
+    },
+    id: 1,
+    createdAt: "Thu Apr 28 2022 16:58:17 GMT-0300 (Horário Padrão de Brasília)",
+    address: "",
+    coordinates: ['', ''],
+    image_url: "https://github.com/theduardomaciel.png",
+    image_deleteHash: "",
+    tags: "",
+    suggestion: "",
+    hasTrashBins: false,
+    profile_id: 1,
+
+    note1: 0,
+    note2: 0,
+    note3: 0,
+    note4: 0,
+    note5: 0,
+
+    resolved: false,
+    comments: [],
+}
 
 export function Community({ navigation }) {
     const { user } = useAuth();
@@ -55,7 +94,7 @@ export function Community({ navigation }) {
         getScopePicked("city")
         UpdateNavigationBar(null, false, "black")
         function CheckIfProfileIsCreated() {
-            if (user.profile.defaultCity === null || user.profile.defaultCity === "") {
+            if (user.profile.username == "") {
                 console.log("Usuário não possui perfil. Exibindo modal para criação.")
                 setFirstModalVisible(true)
             }
@@ -63,13 +102,42 @@ export function Community({ navigation }) {
         CheckIfProfileIsCreated()
     }, []);
 
-    let mapReference: any;
     const [region, setRegion] = useState({
         latitude: -14.2400732,
         longitude: -53.1805017,
         latitudeDelta: 35,
         longitudeDelta: 35
     } as Region);
+
+    const [filters, setFilters] = useState({});
+    const handleFilters = (section, tags) => {
+        const tagsCopy = filters;
+        tagsCopy[section] = tags;
+        setFilters(tagsCopy)
+    }
+
+    const [actualMarker, setActualMarker] = useState<Report>(placeholder_report);
+
+    const mapRef = useRef<MapView>(null);
+    const markerRef = useRef<Marker>(null);
+    const modalizeRef = useRef<Modalize>(null);
+
+    interface Camera {
+        center: LatLng;
+        zoom: number;
+    }
+
+    useEffect(() => {
+        onOpen()
+    }, [actualMarker]);
+
+
+    const onOpen = () => {
+        modalizeRef.current?.open();
+    };
+    const onClose = () => {
+        modalizeRef.current?.close();
+    };
 
     return (
         <ImageBackground source={require("../../assets/placeholders/background_placeholder.png")} style={styles.container}>
@@ -78,20 +146,20 @@ export function Community({ navigation }) {
             <View style={styles.container}>
                 <MapView
                     style={{ height: "100%", width: "100%" }}
-                    ref={mapReference}
+                    ref={mapRef}
                     provider={PROVIDER_GOOGLE}
                     showsUserLocation={true}
                     showsMyLocationButton={true}
                     minZoomLevel={10}
                     maxZoomLevel={17}
                     mapPadding={{
-                        bottom: 0, top: 125, left: 15, right: 15
+                        bottom: 0, top: 175, left: 15, right: 15
                     }}
                     loadingEnabled
                     loadingIndicatorColor={theme.colors.primary1}
                     loadingBackgroundColor={theme.colors.background}
                     region={region}
-                    onUserLocationChange={locationChangedResult => {
+                    onUserLocationChange={async locationChangedResult => {
                         if (!loadedUserLocation) {
                             const coords = locationChangedResult.nativeEvent.coordinate
                             const newRegion = {
@@ -101,9 +169,15 @@ export function Community({ navigation }) {
                                 longitudeDelta: 0.05
                             }
                             setRegion(newRegion);
-                            if (mapReference !== undefined) {
-                                mapReference.animateToRegion(newRegion, 2000)
+                            const initialCamera = {
+                                center: {
+                                    latitude: newRegion.latitude,
+                                    longitude: newRegion.longitude,
+                                },
+                                zoom: 14
                             }
+                            console.log("Atualizando câmera para o local do usuário.")
+                            mapRef.current?.setCamera(initialCamera)
                             loadedUserLocation = true
                         }
                     }}
@@ -113,6 +187,7 @@ export function Community({ navigation }) {
                             reports.map((report, index) => (
                                 <Marker
                                     key={index}
+                                    ref={markerRef}
                                     image={GarbageBagIcon}
                                     coordinate={{
                                         latitude: parseFloat(report.coordinates[0]),
@@ -120,11 +195,32 @@ export function Community({ navigation }) {
                                         //latitude: typeof report.coordinates[0] !== "number" ?  : report.coordinates[0],
                                         //longitude: typeof report.coordinates[0] !== "number" ? parseFloat(report.coordinates[1]) : report.coordinates[1]
                                     }}
+                                    onPress={async () => {
+                                        console.log("Alterando relatório atual e abrindo modal.")
+                                        //console.log("Antes: ", actualMarker)
+                                        if (report !== actualMarker) {
+                                            await setActualMarker(report)
+                                        } else {
+                                            onOpen()
+                                        }
+                                        setTimeout(async () => {
+                                            const camera = await mapRef.current?.getCamera() as Camera;
+                                            camera.center = {
+                                                latitude: parseFloat(report.coordinates[0]) - 0.005,
+                                                longitude: parseFloat(report.coordinates[1])
+                                            }
+                                            camera.zoom = 15.75
+                                            mapRef.current?.animateCamera(camera, { duration: 1000 })
+                                        }, 150);
+                                    }}
                                     calloutAnchor={{ x: 5.5, y: -0.15 }}
                                 >
-                                    <Callout tooltip>
-                                        <FocusCallout report={report} />
-                                    </Callout>
+                                    {
+                                        region !== undefined &&
+                                        <Callout tooltip>
+                                            <FocusCallout report={report} region={region} />
+                                        </Callout>
+                                    }
                                 </Marker>
                             ))
                             : null
@@ -138,9 +234,14 @@ export function Community({ navigation }) {
                 </MapView>
             </View>
             <View style={styles.header}>
-                <Text style={styles.title}>
-                    Comunidade
-                </Text>
+                <View style={styles.subHeader}>
+                    <Text style={styles.title}>
+                        Comunidade
+                    </Text>
+                    <RectButton style={styles.reloadButton} onPress={onOpen}>
+                        <MaterialIcons name="refresh" color={theme.colors.secondary1} size={32} />
+                    </RectButton>
+                </View>
                 <TextForm
                     customStyle={styles.searchBar}
                     shadow
@@ -152,9 +253,16 @@ export function Community({ navigation }) {
                     }}
                     icon={<MaterialIcons name="search" size={24} color={theme.colors.secondary1} />}
                 />
+                <View style={styles.filterContainer}>
+                    <View style={styles.filterView}>
+                        <MaterialIcons name="filter-alt" color={theme.colors.text1} size={24} />
+                        <Text style={styles.subtitle}>Filtros</Text>
+                    </View>
+                    <TagSection height={35} section="filter" tags={['Focos de Lixo', 'Ecopontos', 'Lixeiras']} onSelectTags={handleFilters} />
+                </View>
             </View>
 
-            <View style={{ position: "absolute", bottom: 50, right: 15 }}>
+            <View style={{ position: "absolute", bottom: 65, right: 15 }}>
                 <MapScopePicker changedScope={getScopePicked} actualRegion={region} biggerScope />
             </View>
             <ProfileModal
@@ -171,6 +279,13 @@ export function Community({ navigation }) {
                 isVisible={isSecondModalVisible}
                 toggleModal={secondToggleModal}
                 secondToggleModal={firstToggleModal}
+            />
+            <FocusModal
+                modalizeRef={modalizeRef}
+                markerRef={markerRef}
+                mapRef={mapRef}
+                report={actualMarker}
+                user={user}
             />
         </ImageBackground >
     );

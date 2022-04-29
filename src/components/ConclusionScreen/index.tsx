@@ -2,15 +2,14 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import {
     Animated,
-    Image,
     ImageBackground,
     Text,
     View,
 } from 'react-native';
+
 import { TextButton } from '../TextButton';
 
 import { theme } from '../../global/styles/theme';
-
 import { styles } from './styles';
 import { levelStyles } from '../../screens/Level/styles';
 
@@ -18,7 +17,6 @@ import { LEVELS_DATA } from '../../utils/data/levels';
 import { useAuth } from '../../hooks/useAuth';
 
 import AnimatedNumbers from 'react-native-animated-numbers';
-import Confetti from "../Confetti/index"
 import { UpdateNavigationBar } from '../../utils/functions/UpdateNavigationBar';
 
 type Props = {
@@ -34,7 +32,7 @@ type Props = {
 export function ConclusionScreen({ title, info, backButtonText, icon, gainedExperience, onPress }: Props) {
     const { user } = useAuth();
 
-    // [0] = quanto xp o usuário ganhou | [1] = porcentagem da xp que o usuário ganhou | [2] = quanto xp ele precisa pra subir de nível
+    // [0] = quanto xp o usuário ganhou | [1] = porcentagem da xp que o usuário ganhou | [2] = quanto de xp ele precisa pra subir de nível
     const [number0, setNumber0] = useState(0);
     const [number1, setNumber1] = useState(0);
     const [number2, setNumber2] = useState(0);

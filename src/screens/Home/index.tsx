@@ -258,7 +258,7 @@ export function Home({ route, navigation }) {
                                             calloutAnchor={{ x: 5.5, y: -0.15 }}
                                         >
                                             <Callout tooltip>
-                                                <FocusCallout report={report} />
+                                                <FocusCallout report={report} region={region} />
                                             </Callout>
                                         </Marker>
                                     ))

@@ -27,7 +27,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { PanGestureHandler } from "react-native-gesture-handler";
 
-import { CommentsModal } from "./Comments";
+import { CommentsModal } from "./Comments/Modal";
 import { Report } from "../../@types/application";
 import { LoadingScreen } from "../../components/LoadingScreen";
 import FocusAwareStatusBar from "../../utils/functions/FocusAwareStatusBar";
@@ -41,11 +41,41 @@ import { TextButton } from "../../components/TextButton";
 
 let lastIndex = 0;
 
-export function GetRatingsAverage(actualReport) {
+export function GetRatingsAverage(actualReport: Report) {
     //console.log("Atualizando rating do relatório atual.")
     const ratings = [actualReport.note1, actualReport.note2, actualReport.note3, actualReport.note4, actualReport.note5]
     const sum = ratings.reduce((a, b) => a + b, 0)
     return sum / 5
+}
+
+export const shareReport = async (setIsLoading: React.Dispatch<React.SetStateAction<boolean>>, report: Report) => {
+    setIsLoading(true)
+    FileSystem.downloadAsync(
+        report.image_url,
+        FileSystem.documentDirectory + 'report_image'
+    )
+        .then(async ({ uri }) => {
+            console.log('Finished downloading to ', uri);
+            const base64 = await FileSystem.readAsStringAsync(uri, { encoding: 'base64' });
+            const base64Data = `data:image/png;base64,` + base64;
+            Share.open({
+                url: base64Data,
+                message: `Olha esse foco de lixo que vi em *${report.address}*!\nEncontrei ele pelo aplicativo *DFL - Detector de Focos de Lixo*, que envia relatórios de focos de lixo relatados pela comunidade para a prefeitura.\n*Que tal baixar e avaliar nesse foco pra que ele seja resolvido mais rápido?*`,
+                title: `Olha esse foco de lixo que tá em ${report.address}!`
+            })
+                .then((response) => {
+                    console.log(response);
+                    setIsLoading(false)
+                })
+                .catch((error) => {
+                    error && console.log(error, "Houve uma ocorrência ao compartilhar a imagem baixada.");
+                    setIsLoading(false)
+                });
+            FileSystem.deleteAsync(uri, { idempotent: true }) // idempotent faz com que a imagem seja apagada mesmo que ela já exista no dispositivo
+        })
+        .catch(error => {
+            console.error(error, "Houve um erro ao baixar a imagem.");
+        });
 }
 
 export function Reports({ route, navigation }) {
@@ -54,6 +84,87 @@ export function Reports({ route, navigation }) {
     if (user === null) return (
         <View style={{ flex: 1 }} />
     );
+
+    const offset = useSharedValue(62);
+    const ratingSelectorAnimatedStyle = useAnimatedStyle(() => {
+        return {
+            transform: [
+                {
+                    translateX: offset.value,
+                },
+            ],
+        };
+    });
+
+    const ratingPosition = useSharedValue(350)
+    const ratingContainerAnimatedStyles = useAnimatedStyle(() => {
+        return {
+            transform: [
+                {
+                    translateX: withTiming(ratingPosition.value, {
+                        duration: 500,
+                        easing: Easing.out(Easing.exp),
+                    }),
+                },
+            ],
+        };
+    });
+
+    const onGestureBegin = () => {
+        console.log("O gesto de avaliação iniciou.")
+        offset.value = 62
+        ratingPosition.value = 0
+    }
+
+    const onGestureEnded = () => {
+        console.log("O gesto de avaliação terminou.")
+        offset.value = 62
+        ratingPosition.value = 350
+    }
+
+    const INITIAL_OFFSET = 15
+    const POSITION_OFFSET = SELECTOR_WIDTH / 5
+    const POSITIONS = [
+        INITIAL_OFFSET,
+        INITIAL_OFFSET + POSITION_OFFSET,
+        INITIAL_OFFSET + POSITION_OFFSET * 2,
+        INITIAL_OFFSET + POSITION_OFFSET * 3,
+        INITIAL_OFFSET + POSITION_OFFSET * 4
+    ]
+
+    const _onPanGestureEvent = (event, setRating) => {
+        //O único problema do uso do translationX é que caso o usuário queria trocar seu rating, a animação terá que começar do início
+        const nativeEvent = event.nativeEvent;
+        const POSITION_X = nativeEvent.translationX // Quanta distância foi percorrida desde o início da animação
+        const DISTANCE = (-POSITION_OFFSET / 2) - 15
+
+        const ANIMATION_CONFIG = {
+            damping: 7,
+            stiffness: 85,
+            mass: 0.25,
+        }
+        if (POSITION_X < DISTANCE && POSITION_X > DISTANCE * 2) {
+            //console.log("Dedo está no 2")
+            offset.value = withSpring(-POSITIONS[1] / 2 - 15, ANIMATION_CONFIG)
+            setRating(2)
+        } else if (POSITION_X < DISTANCE * 2 && POSITION_X > DISTANCE * 3) {
+            //console.log("Dedo está no 3")
+            offset.value = withSpring(-POSITIONS[2] + 15, ANIMATION_CONFIG)
+            setRating(3)
+        } else if (POSITION_X < DISTANCE * 3 && POSITION_X > DISTANCE * 4) {
+            //console.log("Dedo está no 4")
+            offset.value = withSpring(-POSITIONS[3] + 15, ANIMATION_CONFIG)
+            setRating(4)
+        } else if (POSITION_X < DISTANCE * 4) {
+            //console.log("Dedo está no 5")
+            offset.value = withSpring(-POSITIONS[4] + 15, ANIMATION_CONFIG)
+            setRating(5)
+        } else {
+            //console.log("Dedo está no 1")
+            offset.value = withSpring(0, ANIMATION_CONFIG)
+            setRating(1)
+        }
+    }
 
     const [errorModalVisible, setErrorModalVisible] = useState(false);
 
@@ -65,7 +176,7 @@ export function Reports({ route, navigation }) {
             const moreReportsResponse = await api.post("/reports/search", {
                 // Condição 1: Local - Caso o usuário já tenha criado um perfil, utilizamos a cidade inserida (primeiro nome antes da vírgula), 
                 // caso contrário, utilizamos o Brasil inteiro como local de busca
-                location: user.profile.defaultCity ? user.profile.defaultCity.split(",")[0] : "Brasil",
+                location: "Brasil",
                 // Condição 2: Novos - Excluímos os relatórios já adicionados em buscas anteriores
                 exclusionsId: data.map(report => report.id),
                 includeInfo: true,
@@ -196,90 +307,15 @@ export function Reports({ route, navigation }) {
         return (
             <View style={{ height: IMAGE_HEIGHT }}>
                 {/* backgroundColor: index % 2 == 0 ? "blue" : "green", */}
-                <Image style={{ flex: 1, resizeMode: "cover" }} source={{ uri: item.image_url }} />
+                <Image
+                    style={{
+                        flex: 1,
+                        resizeMode: "cover"
+                    }}
+                    source={{ uri: item.image_url }}
+                />
             </View>
         )
-    }
-
-    const offset = useSharedValue(62);
-    const ratingSelectorAnimatedStyle = useAnimatedStyle(() => {
-        return {
-            transform: [
-                {
-                    translateX: offset.value,
-                },
-            ],
-        };
-    });
-
-    const ratingPosition = useSharedValue(350)
-    const ratingContainerAnimatedStyles = useAnimatedStyle(() => {
-        return {
-            transform: [
-                {
-                    translateX: withTiming(ratingPosition.value, {
-                        duration: 500,
-                        easing: Easing.out(Easing.exp),
-                    }),
-                },
-            ],
-        };
-    });
-
-    const onGestureBegin = () => {
-        console.log("O gesto de avaliação iniciou.")
-        offset.value = 62
-        ratingPosition.value = 0
-    }
-
-    const onGestureEnded = () => {
-        console.log("O gesto de avaliação terminou.")
-        offset.value = 62
-        ratingPosition.value = 350
-    }
-
-    const INITIAL_OFFSET = 15
-    const POSITION_OFFSET = SELECTOR_WIDTH / 5
-    const POSITIONS = [
-        INITIAL_OFFSET,
-        INITIAL_OFFSET + POSITION_OFFSET,
-        INITIAL_OFFSET + POSITION_OFFSET * 2,
-        INITIAL_OFFSET + POSITION_OFFSET * 3,
-        INITIAL_OFFSET + POSITION_OFFSET * 4
-    ]
-
-    const _onPanGestureEvent = (event) => {
-        //O único problema do uso do translationX é que caso o usuário queria trocar seu rating, a animação terá que começar do início
-        const nativeEvent = event.nativeEvent;
-        const POSITION_X = nativeEvent.translationX // Quanta distância foi percorrida desde o início da animação
-        const DISTANCE = (-POSITION_OFFSET / 2) - 15
-
-        const ANIMATION_CONFIG = {
-            damping: 7,
-            stiffness: 85,
-            mass: 0.25,
-        }
-        if (POSITION_X < DISTANCE && POSITION_X > DISTANCE * 2) {
-            //console.log("Dedo está no 2")
-            offset.value = withSpring(-POSITIONS[1] / 2 - 15, ANIMATION_CONFIG)
-            setRating(2)
-        } else if (POSITION_X < DISTANCE * 2 && POSITION_X > DISTANCE * 3) {
-            //console.log("Dedo está no 3")
-            offset.value = withSpring(-POSITIONS[2] + 15, ANIMATION_CONFIG)
-            setRating(3)
-        } else if (POSITION_X < DISTANCE * 3 && POSITION_X > DISTANCE * 4) {
-            //console.log("Dedo está no 4")
-            offset.value = withSpring(-POSITIONS[3] + 15, ANIMATION_CONFIG)
-            setRating(4)
-        } else if (POSITION_X < DISTANCE * 4) {
-            //console.log("Dedo está no 5")
-            offset.value = withSpring(-POSITIONS[4] + 15, ANIMATION_CONFIG)
-            setRating(5)
-        } else {
-            //console.log("Dedo está no 1")
-            offset.value = withSpring(0, ANIMATION_CONFIG)
-            setRating(1)
-        }
     }
 
     const showToast = () => {
@@ -289,37 +325,6 @@ export function Reports({ route, navigation }) {
             text1: 'Eita! Calma aí...',
             text2: 'Não há mais nenhum relatório pra carregar!',
         });
-    }
-
-    const shareReport = async () => {
-        setIsLoading(true)
-        const report = data[currentIndex]
-        FileSystem.downloadAsync(
-            report.image_url,
-            FileSystem.documentDirectory + 'report_image'
-        )
-            .then(async ({ uri }) => {
-                console.log('Finished downloading to ', uri);
-                const base64 = await FileSystem.readAsStringAsync(uri, { encoding: 'base64' });
-                const base64Data = `data:image/png;base64,` + base64;
-                Share.open({
-                    url: base64Data,
-                    message: `Olha esse foco de lixo que vi em *${report.address}*!\nEncontrei ele pelo aplicativo *DFL - Detector de Focos de Lixo*, que envia relatórios de focos de lixo relatados pela comunidade para a prefeitura.\n*Que tal baixar e avaliar nesse foco pra que ele seja resolvido mais rápido?*`,
-                    title: `Olha esse foco de lixo que tá em ${report.address}!`
-                })
-                    .then((response) => {
-                        console.log(response);
-                        setIsLoading(false)
-                    })
-                    .catch((error) => {
-                        error && console.log(error, "Houve uma ocorrência ao compartilhar a imagem baixada.");
-                        setIsLoading(false)
-                    });
-                FileSystem.deleteAsync(uri, { idempotent: true }) // idempotent faz com que a imagem seja apagada mesmo que ela já exista no dispositivo
-            })
-            .catch(error => {
-                console.error(error, "Houve um erro ao baixar a imagem.");
-            });
     }
 
     const [isCommentsModalVisible, setCommentsModalVisible] = useState(false)
@@ -390,14 +395,13 @@ export function Reports({ route, navigation }) {
                             <Text style={[styles.ratingViewerText]}>{GetRatingsAverage(data[currentIndex])}</Text>
                         </View>
                         <Pressable style={styles.actionButton} onPress={() => {
-
                             setCommentsModalVisible(true)
                         }}>
                             <View style={[styles.buttonCircle, { width: 65, height: 65 }]} />
                             <View style={[styles.buttonCircle, { width: 50, height: 50, opacity: 1 }]} />
                             <MaterialIcons name="comment" size={28} color={theme.colors.text1} />
                         </Pressable>
-                        <Pressable style={styles.actionButton} onPress={shareReport}>
+                        <Pressable style={styles.actionButton} onPress={() => shareReport(setIsLoading, data[currentIndex])}>
                             <View style={[styles.buttonCircle, { width: 65, height: 65 }]} />
                             <View style={[styles.buttonCircle, { width: 50, height: 50, opacity: 1 }]} />
                             <MaterialIcons name="share" size={28} color={theme.colors.text1} />
@@ -410,7 +414,7 @@ export function Reports({ route, navigation }) {
                                 <Text style={styles.ratingPlaceholder}>2</Text>
                                 <Text style={styles.ratingPlaceholder}>1</Text>
                             </Animated.View>
-                            <PanGestureHandler onBegan={onGestureBegin} onEnded={onGestureEnded} onGestureEvent={_onPanGestureEvent}>
+                            <PanGestureHandler onBegan={onGestureBegin} onEnded={onGestureEnded} onCancelled={onGestureEnded} onFailed={onGestureEnded} onGestureEvent={(event) => _onPanGestureEvent(event, setRating)}>
                                 <Animated.View style={[styles.ratingRound, ratingSelectorAnimatedStyle]}>
                                     <View style={[styles.buttonCircle, { backgroundColor: theme.colors.primary1, width: 50, height: 50, opacity: 1 }]} />
                                 </Animated.View>
@@ -451,7 +455,7 @@ export function Reports({ route, navigation }) {
                 />
             }
             {
-                isLoading ? <LoadingScreen /> : null
+                isLoading && <LoadingScreen />
             }
         </View>
     );

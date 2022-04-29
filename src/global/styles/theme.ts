@@ -23,6 +23,7 @@ export const theme = {
 
         gray_light: '#C4C4C4',
         gray_dark: '#747474',
+        light_gray2: '#DCDCE5',
 
         text1: "#FFFFFF",
     },

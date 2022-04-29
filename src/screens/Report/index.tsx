@@ -24,7 +24,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { api } from "../../utils/api";
 import { Profile, Report } from "../../@types/application";
 import { GetRatingsAverage } from "../Reports";
-import { CommentsModal } from "../Reports/Comments";
+import { CommentsModal } from "../Reports/Comments/Modal";
 import { UpdateNavigationBar } from "../../utils/functions/UpdateNavigationBar";
 
 type TagsType = {
@@ -39,8 +39,8 @@ export function ReportScreen({ navigation, route }) {
 
     const { user, updateUser } = useAuth();
 
-    const latitude = typeof report.coordinates[0] === "string" ? parseFloat(report.coordinates[0]) : report.coordinates[0]
-    const longitude = typeof report.coordinates[1] === "string" ? parseFloat(report.coordinates[1]) : report.coordinates[0]
+    const latitude = parseFloat(report.coordinates[0])
+    const longitude = parseFloat(report.coordinates[1])
     const reportRegion = {
         latitude: latitude,
         longitude: longitude,

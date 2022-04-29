@@ -24,6 +24,7 @@ export const styles = StyleSheet.create({
     },
     greetingsText: {
         //backgroundColor: "red",
+        width: "100%",
         fontFamily: theme.fonts.subtitle500,
         fontSize: 28,
         color: theme.colors.secondary1,
@@ -62,6 +63,7 @@ export const styles = StyleSheet.create({
         fontFamily: theme.fonts.subtitle900,
         color: theme.colors.text1,
         fontSize: 24,
+        width: "100%"
     },
 
     communityTitle: {

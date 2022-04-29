@@ -53,7 +53,11 @@ class CreateReportService {
                     experience: USER_EXPERIENCE
                 },
                 include: {
-                    reports: true
+                    reports: {
+                        include: {
+                            profile: true
+                        }
+                    }
                 }
             })
             console.log(updatedProfile)

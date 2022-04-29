@@ -34,10 +34,10 @@ export async function ListMarkersOnMap(scope: string, userRegion: Region) {
     if (userRegion) {
         const onlineResult = await Location.reverseGeocodeAsync({ latitude: userRegion.latitude, longitude: userRegion.longitude })
         userLocation = onlineResult[0]
-        console.log("Coordenadas foram fornecidas. O seguinte endereço foi encontrado: ", userLocation)
+        //console.log("Coordenadas foram fornecidas. O seguinte endereço foi encontrado: ", userLocation)
     } else {
         userLocation = JSON.parse(await AsyncStorage.getItem(LOCATION_STORAGE));
-        console.log("Utilizando a localização armazenada. O seguinte endereço foi encontrado: ", userLocation)
+        //console.log("Utilizando a localização armazenada. O seguinte endereço foi encontrado: ", userLocation)
     }
     if (!userLocation) {
         console.log("Não foi possível obter o endereço do usuário.");

@@ -20,6 +20,7 @@ import { MaterialIcons } from "@expo/vector-icons"
 type TagSectionProps = {
     tags: Array<string>;
     section: string;
+    height?: number;
     onSelectTags: (section, tags) => void;
 }
 
@@ -36,7 +37,7 @@ function CreateSectionData(tags: string[]) {
     return data;
 }
 
-function TagSection({ tags, section, onSelectTags }: TagSectionProps) {
+export function TagSection({ tags, section, height, onSelectTags }: TagSectionProps) {
     const [sectionData, setSectionData] = useState([] as any);
 
     function UpdateTagsData() {
@@ -60,7 +61,7 @@ function TagSection({ tags, section, onSelectTags }: TagSectionProps) {
     const renderItem = ({ item }: any) => (
         <TouchableOpacity
             key={item.id}
-            style={item.checked ? [styles.tag, { borderColor: theme.colors.primary1, borderWidth: 3 }] : styles.tag}
+            style={item.checked ? [styles.tag, { borderColor: theme.colors.primary1, borderWidth: 3 }, height && { height: height }] : [styles.tag, height && { height: height }]}
             activeOpacity={0.75}
             onPress={() => {
                 const updatedSectionData = sectionData
@@ -80,9 +81,10 @@ function TagSection({ tags, section, onSelectTags }: TagSectionProps) {
     );
     return (
         <FlatList
-            style={{ marginBottom: 1 }}
+            //style={{ marginBottom: 1 }}
             contentContainerStyle={styles.tagSection}
             horizontal
+            fadingEdgeLength={15}
             showsHorizontalScrollIndicator={false}
             data={sectionData}
             renderItem={renderItem}

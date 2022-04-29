@@ -14,7 +14,6 @@ export type Profile = {
     id: number;
     username: string;
     image_url: string;
-    defaultCity: string;
     level: number;
     experience: number;
     reports?: Array<Report>;
@@ -26,7 +25,7 @@ export type Report = {
     id: number,
     createdAt: string,
     address: string,
-    coordinates: Array<number>,
+    coordinates: Array<string>,
     image_url: string,
     image_deleteHash: string,
     tags: string,

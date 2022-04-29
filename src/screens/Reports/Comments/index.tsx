@@ -1,17 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Image, KeyboardAvoidingView, LayoutAnimation, Platform, Pressable, ScrollView, StatusBar, Text, UIManager, View, ViewToken } from "react-native";
+import {
+    ActivityIndicator,
+    Image,
+    FlatList,
+    LayoutAnimation,
+    Platform,
+    Pressable,
+    ScrollView,
+    Text,
+    UIManager,
+    View
+} from "react-native";
 
+import TrashBinSvg from "../../../assets/icons/trashbin.svg"
+import { MaterialIcons } from "@expo/vector-icons"
 import { styles } from "./styles";
 import { theme } from "../../../global/styles/theme";
 
-import TrashBinSvg from "../../../assets/icons/trashbin.svg"
-import Modal from "react-native-modal"
-import { TextForm } from "../../../components/TextForm";
-
-import { MaterialIcons } from "@expo/vector-icons"
-import { useAuth } from "../../../hooks/useAuth";
 import { Comment, Report } from "../../../@types/application";
+
+import { useAuth } from "../../../hooks/useAuth";
 import { api } from "../../../utils/api";
+
+import { TextForm } from "../../../components/TextForm";
 import { ModalBase } from "../../../components/ModalBase";
 import { TextButton } from "../../../components/TextButton";
 
@@ -37,50 +48,26 @@ function CalculateCommentCreatedAt(item) {
     return createdAtText;
 }
 
-async function GetReportComments(report_id) {
-    try {
-        const reportCommentsResult = await api.post("/report/comments/read", { report_id: report_id })
-        const reportComments = reportCommentsResult.data as Array<Comment>
-        return reportComments
-    } catch (error) {
-        console.log(error)
-    }
-}
-
 type Props = {
-    isVisible: any;
-    closeFunction: () => void;
+    width: string;
     report_id: number;
+    commentsArray: Array<Comment>;
 }
 
-let last_report_id = 0
-
-export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
+export function CommentsView({ width, report_id, commentsArray }: Props) {
     const { user } = useAuth();
+
+    const [comments, setComments] = useState<Array<Comment>>(commentsArray)
+
+    useEffect(() => {
+        setComments(commentsArray)
+    }, [commentsArray])
 
     if (Platform.OS === 'android') {
         if (UIManager.setLayoutAnimationEnabledExperimental) {
             UIManager.setLayoutAnimationEnabledExperimental(true);
         }
     }
-
-    const [comments, setComments] = useState<Array<Comment> | null>(null)
-    useEffect(() => {
-        // Estou fazendo com que os comentários sejam carregados novamente a cada abertura do modal de comentários para teste,
-        // entretanto, isso não é necessário.
-        if (isVisible === true) {
-            // Caso o modal de relatórios atual seja diferente do anterior, limpamos os resultados
-            if (last_report_id !== report_id) setComments(null);
-            async function GetComments() {
-                if (!report_id) return console.log("Um ID de relatório não foi fornecido.")
-                console.log("Obtendo comentários do relatório de ID: ", report_id)
-                const commentsArray = await GetReportComments(report_id)
-                setComments(commentsArray)
-                last_report_id = report_id
-            }
-            GetComments()
-        }
-    }, [isVisible])
 
     const [isDeleteModalVisible, setDeleteModalVisible] = useState(false)
     const [isDeletingComment, setDeletingComment] = useState(false)
@@ -133,11 +120,14 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
         const createdAtText = CalculateCommentCreatedAt(item)
         return (
             item.profile.id === user.profile.id ?
-                <Pressable style={{ flexDirection: "row", marginBottom: 10, width: "90%" }} onLongPress={() => {
-                    actualComment.index = index
-                    actualComment.id = item.id
-                    setDeleteModalVisible(true)
-                }} android_ripple={{ color: theme.colors.primary2 }} >
+                <Pressable
+                    style={{ flexDirection: "row", marginBottom: 10, width: width }}
+                    onLongPress={() => {
+                        actualComment.index = index
+                        actualComment.id = item.id
+                        setDeleteModalVisible(true)
+                    }}
+                    android_ripple={{ color: theme.colors.primary2 }} >
                     <View style={styles.profile_image}>
                         <Image
                             progressiveRenderingEnabled
@@ -147,7 +137,7 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
                             }}
                         />
                     </View>
-                    <View style={{ width: "90%", height: "100%" }}>
+                    <View style={{ width: width, height: "100%" }}>
                         <Text style={styles.usernameText}>
                             {item.profile.username}
                         </Text>
@@ -160,7 +150,7 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
                     </View>
                 </Pressable>
                 :
-                <View style={{ flexDirection: "row", marginBottom: 10, width: "90%" }}>
+                <View style={{ flexDirection: "row", marginBottom: 10, width: width }}>
                     <View style={styles.profile_image}>
                         <Image
                             progressiveRenderingEnabled
@@ -170,7 +160,7 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
                             }}
                         />
                     </View>
-                    <View style={{ width: "90%", height: "100%" }}>
+                    <View style={{ width: width, height: "100%" }}>
                         <Text style={styles.usernameText}>
                             {item.profile.username}
                         </Text>
@@ -192,6 +182,7 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
                     <ActivityIndicator size={"large"} color={theme.colors.secondary1} />
                 </View>
                 :
+                comments.length === 0 &&
                 <View style={{ alignItems: "center", justifyContent: "center", alignSelf: "center", flex: 1 }}>
                     <TrashBinSvg
                         fill={theme.colors.secondary1}
@@ -218,18 +209,9 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
         )
     }
 
-    const nullOrZero = comments === null || comments === undefined ? true : comments.length === 0 ? true : false
+    const nullOrZero = comments !== null ? comments.length === 0 : true
     return (
-        <Modal
-            isVisible={isVisible}
-            onSwipeComplete={closeFunction}
-            onBackdropPress={closeFunction}
-            swipeDirection={['down']}
-            style={styles.view}
-            hardwareAccelerated
-            propagateSwipe={true}
-            avoidKeyboard={true}
-        >
+        <>
             <ModalBase
                 isVisible={isDeleteModalVisible}
                 onBackdropPress={() => { }}
@@ -258,70 +240,64 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
                 }
                 toggleModal={() => { setDeleteModalVisible(!isDeleteModalVisible) }}
             />
-            {/* <View style={[styles.container, { margin: 0, flex: 0.45, justifyContent: 'center' }]}> */}
-            <KeyboardAvoidingView
-                behavior='height'
-                pointerEvents='box-none'
-                style={[styles.container, { margin: 0, flex: 0.5, justifyContent: 'center' }]}
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                nestedScrollEnabled={true}
+                contentContainerStyle={nullOrZero && { height: "100%" }}
             >
-                <View style={{
-                    height: "13%", width: "100%", alignItems: "center",
-                    backgroundColor: "red"
-                }}>
-                    <View style={{
-                        marginTop: 15,
-                        marginBottom: 3,
-                        backgroundColor: theme.colors.primary1,
-                        width: "25%",
-                        height: 3,
-                        borderRadius: 5,
-                        opacity: 0.5
-                    }} />
-                    {
-                        !nullOrZero && <Text style={styles.title}>{`${comments.length} comentário${comments.length !== 1 ? 's' : ""}`}</Text>
-                    }
-                </View>
-                <ScrollView
-                    showsVerticalScrollIndicator={false}
-                    nestedScrollEnabled={true}
-                    contentContainerStyle={nullOrZero && { height: "100%" }}
-                >
-                    <View style={{ flex: 1 }} onStartShouldSetResponder={(): boolean => true}>
-                        <FlatList
-                            style={{ flex: 1 }}
-                            data={comments !== null && comments.sort(function (x, y) {
-                                const date1 = new Date(x.createdAt) as any;
-                                const date2 = new Date(y.createdAt) as any;
-                                return date2 - date1;
-                            })}
-                            contentContainerStyle={{ flex: 1 }}
-                            renderItem={renderComment}
-                            keyExtractor={item => item.id}
-                            ListEmptyComponent={EmptyItem}
-                            showsVerticalScrollIndicator={false}
-                            nestedScrollEnabled={true}
-                            windowSize={10}
-                        />
-                    </View>
-                </ScrollView>
-
-                {
-                    comments !== null && user.profile &&
-                    <TextForm
-                        customStyle={{ height: 40, width: "90%", marginTop: 15, marginBottom: 20 }}
-                        textInputProps={{
-                            placeholder: "Deixe um comentário",
-                            maxLength: 150,
-                            onChangeText: (text) => setCommentText(text),
-                        }}
-                        icon={uploadingComment ? <ActivityIndicator size={"small"} color={theme.colors.secondary1} /> : <MaterialIcons name="send" size={22} color={theme.colors.secondary1} />}
-                        onIconPress={shareComment}
-                        disabled={uploadingComment}
-                        fontStyle={{ fontSize: 13 }}
+                <View style={{ flex: 1 }} onStartShouldSetResponder={(): boolean => true}>
+                    <FlatList
+                        style={{ flex: 1 }}
+                        data={comments !== null && comments.sort(function (x, y) {
+                            const date1 = new Date(x.createdAt) as any;
+                            const date2 = new Date(y.createdAt) as any;
+                            return date2 - date1;
+                        })}
+                        contentContainerStyle={{ flex: 1 }}
+                        renderItem={renderComment}
+                        keyExtractor={item => item.id}
+                        ListEmptyComponent={EmptyItem}
+                        showsVerticalScrollIndicator={false}
+                        nestedScrollEnabled={true}
+                        windowSize={10}
                     />
-                }
-            </KeyboardAvoidingView>
-            {/* </View> */}
-        </Modal>
+                </View>
+            </ScrollView>
+
+            {
+                comments !== null && user.profile &&
+                <TextForm
+                    customStyle={{ height: 40, width: width, marginTop: 15, marginBottom: 20 }}
+                    textInputProps={{
+                        placeholder: "Deixe um comentário",
+                        maxLength: 150,
+                        onChangeText: (text) => setCommentText(text),
+                    }}
+                    icon={uploadingComment ? <ActivityIndicator size={"small"} color={theme.colors.secondary1} /> : <MaterialIcons name="send" size={22} color={theme.colors.secondary1} />}
+                    onIconPress={shareComment}
+                    disabled={uploadingComment}
+                    fontStyle={{ fontSize: 13 }}
+                    children={
+                        <View style={{
+                            width: 12,
+                            height: 12,
+                            borderRadius: 12 / 2,
+                            overflow: "hidden",
+                            position: "absolute",
+                            left: 10,
+                            bottom: "50%"
+                        }}>
+                            <Image
+                                progressiveRenderingEnabled
+                                style={{ flex: 1 }}
+                                source={{
+                                    uri: user.profile.image_url,
+                                }}
+                            />
+                        </View>
+                    }
+                />
+            }
+        </>
     );
 }
