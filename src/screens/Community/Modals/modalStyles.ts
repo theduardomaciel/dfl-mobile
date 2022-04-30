@@ -16,11 +16,10 @@ export const styles = StyleSheet.create({
     container: {
         zIndex: 5,
 
-        marginTop: 'auto',
-
+        marginTop: 0,
         backgroundColor: theme.colors.modalBackground,
-        borderTopLeftRadius: 12,
-        borderTopRightRadius: 12,
+        borderTopLeftRadius: 25,
+        borderTopRightRadius: 25,
 
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 10 },

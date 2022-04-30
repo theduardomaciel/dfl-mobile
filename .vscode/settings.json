@@ -12,6 +12,7 @@
         "signin",
         "Subview",
         "trashbin",
+        "trashfocus",
         "viewability"
     ],
     "cSpell.ignoreWords": [

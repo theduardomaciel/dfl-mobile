@@ -9,6 +9,7 @@ import Toast, { BaseToast, ErrorToast, InfoToast } from 'react-native-toast-mess
 
 import AppLoading from "expo-app-loading";
 
+import { enableLatestRenderer } from 'react-native-maps';
 import { Host } from 'react-native-portalize';
 
 import * as Font from "expo-font";
@@ -98,6 +99,7 @@ export default function App() {
             try {
                 // Keep the splash screen visible while we fetch resources
                 await SplashScreen.preventAutoHideAsync();
+                enableLatestRenderer();
                 // Pre-load fonts, make any API calls you need to do here
             } catch (error) {
                 console.warn(error);

@@ -121,6 +121,7 @@ function AuthProvider({ children }: AuthProviderProps) {
                     console.log(`Usuário autenticou-se no aplicativo com sucesso!`);
 
                     const reportsResponse = await updateReports()
+                    setIsSigningIn(false)
                     if (reportsResponse === true) {
                         return "success"
                     } else {

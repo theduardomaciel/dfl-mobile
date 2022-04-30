@@ -41,7 +41,9 @@ import { styles as reportStyles } from "../../../Reports/styles"
 
 export function FocusModal({ modalizeRef, markerRef, mapRef, report, user }: Props) {
 
-    if (user.profile === null) {
+    if (!report.profile) {
+        console.log(report)
+        console.log("O relatório recebido não possui o objeto do perfil do usuário.")
         return <View></View>
     }
 
@@ -116,6 +118,16 @@ export function FocusModal({ modalizeRef, markerRef, mapRef, report, user }: Pro
         }
     }
 
+    const Header = () => {
+        return (
+            <View style={{
+                width: "100%",
+                height: 25,
+                backgroundColor: theme.colors.background
+            }} />
+        )
+    }
+
     return (
         <Portal>
             <Modalize
@@ -127,17 +139,20 @@ export function FocusModal({ modalizeRef, markerRef, mapRef, report, user }: Pro
                 contentRef={contentRef}
                 velocity={4500}
                 withOverlay={false}
+                //HeaderComponent={Header}
                 closeSnapPointStraightEnabled={false}
                 handleStyle={styles.handle}
                 onClose={async () => {
                     markerRef.current?.hideCallout()
                     const camera = await mapRef.current?.getCamera();
-                    camera.center = {
-                        latitude: parseFloat(report.coordinates[0]) + (0.005 / 2),
-                        longitude: parseFloat(report.coordinates[1])
+                    if (camera) {
+                        camera.center = {
+                            latitude: parseFloat(report.coordinates[0]) + (0.005 / 2),
+                            longitude: parseFloat(report.coordinates[1])
+                        }
+                        camera.zoom = 14
+                        mapRef.current?.animateCamera(camera, { duration: 1000 })
                     }
-                    camera.zoom = 14
-                    mapRef.current?.animateCamera(camera, { duration: 1000 })
                 }}
             >
                 {/* Header */}

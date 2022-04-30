@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { View, Text, ImageBackground, Dimensions } from "react-native";
 
 import MapView, { PROVIDER_GOOGLE, Marker, Geojson, Callout, Camera, LatLng } from "react-native-maps";
+import * as Location from "expo-location";
 
 import { ProfileModal } from "../../components/ProfileModal";
 import { MapScopePicker } from "../../components/MapScopePicker";
@@ -32,7 +33,6 @@ import { FocusCallout } from "./Callouts/FocusCallout";
 import { FocusModal } from "./Modals/FocusModal";
 
 const dimensions = Dimensions.get("screen")
-let loadedUserLocation = false;
 
 const placeholder_report = {
     profile: {
@@ -90,7 +90,30 @@ export function Community({ navigation }) {
         setReports(markersArray)
     }
 
+    const [region, setRegion] = useState<Region>(null);
+
+    async function PrepareScreen() {
+        const { coords } = await Location.getCurrentPositionAsync()
+        const newRegion = {
+            latitude: coords.latitude,
+            longitude: coords.longitude,
+            latitudeDelta: 0.05,
+            longitudeDelta: 0.05
+        }
+        setRegion(newRegion);
+        const initialCamera = {
+            center: {
+                latitude: newRegion.latitude,
+                longitude: newRegion.longitude,
+            },
+            zoom: 14
+        }
+        console.log("Atualizando câmera para o local do usuário.")
+        mapRef.current?.setCamera(initialCamera)
+    }
+
     useEffect(() => {
+        PrepareScreen()
         getScopePicked("city")
         UpdateNavigationBar(null, false, "black")
         function CheckIfProfileIsCreated() {
@@ -101,13 +124,6 @@ export function Community({ navigation }) {
         }
         CheckIfProfileIsCreated()
     }, []);
-
-    const [region, setRegion] = useState({
-        latitude: -14.2400732,
-        longitude: -53.1805017,
-        latitudeDelta: 35,
-        longitudeDelta: 35
-    } as Region);
 
     const [filters, setFilters] = useState({});
     const handleFilters = (section, tags) => {
@@ -144,94 +160,79 @@ export function Community({ navigation }) {
             <FocusAwareStatusBar translucent barStyle="dark-content" />
 
             <View style={styles.container}>
-                <MapView
-                    style={{ height: "100%", width: "100%" }}
-                    ref={mapRef}
-                    provider={PROVIDER_GOOGLE}
-                    showsUserLocation={true}
-                    showsMyLocationButton={true}
-                    minZoomLevel={10}
-                    maxZoomLevel={17}
-                    mapPadding={{
-                        bottom: 0, top: 175, left: 15, right: 15
-                    }}
-                    loadingEnabled
-                    loadingIndicatorColor={theme.colors.primary1}
-                    loadingBackgroundColor={theme.colors.background}
-                    region={region}
-                    onUserLocationChange={async locationChangedResult => {
-                        if (!loadedUserLocation) {
-                            const coords = locationChangedResult.nativeEvent.coordinate
-                            const newRegion = {
-                                latitude: coords.latitude,
-                                longitude: coords.longitude,
-                                latitudeDelta: 0.05,
-                                longitudeDelta: 0.05
-                            }
-                            setRegion(newRegion);
-                            const initialCamera = {
-                                center: {
-                                    latitude: newRegion.latitude,
-                                    longitude: newRegion.longitude,
-                                },
-                                zoom: 14
-                            }
-                            console.log("Atualizando câmera para o local do usuário.")
-                            mapRef.current?.setCamera(initialCamera)
-                            loadedUserLocation = true
-                        }
-                    }}
-                >
-                    {
-                        reports ?
-                            reports.map((report, index) => (
-                                <Marker
-                                    key={index}
-                                    ref={markerRef}
-                                    image={GarbageBagIcon}
-                                    coordinate={{
-                                        latitude: parseFloat(report.coordinates[0]),
-                                        longitude: parseFloat(report.coordinates[1])
-                                        //latitude: typeof report.coordinates[0] !== "number" ?  : report.coordinates[0],
-                                        //longitude: typeof report.coordinates[0] !== "number" ? parseFloat(report.coordinates[1]) : report.coordinates[1]
-                                    }}
-                                    onPress={async () => {
-                                        console.log("Alterando relatório atual e abrindo modal.")
-                                        //console.log("Antes: ", actualMarker)
-                                        if (report !== actualMarker) {
-                                            await setActualMarker(report)
-                                        } else {
-                                            onOpen()
-                                        }
-                                        setTimeout(async () => {
-                                            const camera = await mapRef.current?.getCamera() as Camera;
-                                            camera.center = {
-                                                latitude: parseFloat(report.coordinates[0]) - 0.005,
-                                                longitude: parseFloat(report.coordinates[1])
+                {
+                    region !== null &&
+                    <MapView
+                        style={{ height: "100%", width: "100%" }}
+                        ref={mapRef}
+                        provider={PROVIDER_GOOGLE}
+                        showsUserLocation={true}
+                        showsMyLocationButton={true}
+                        minZoomLevel={10}
+                        toolbarEnabled={false}
+                        maxZoomLevel={17}
+                        mapPadding={{
+                            bottom: 0, top: 175, left: 15, right: 15
+                        }}
+                        loadingEnabled
+                        loadingIndicatorColor={theme.colors.primary1}
+                        loadingBackgroundColor={theme.colors.background}
+                        region={region}
+                        onPress={() => {
+                            console.log("foi")
+                        }}
+                    >
+                        {
+                            reports ?
+                                reports.map((report, index) => (
+                                    <Marker
+                                        key={index}
+                                        ref={markerRef}
+                                        image={{ uri: "trashfocus_icon" }}
+                                        coordinate={{
+                                            latitude: parseFloat(report.coordinates[0]),
+                                            longitude: parseFloat(report.coordinates[1])
+                                            //latitude: typeof report.coordinates[0] !== "number" ?  : report.coordinates[0],
+                                            //longitude: typeof report.coordinates[0] !== "number" ? parseFloat(report.coordinates[1]) : report.coordinates[1]
+                                        }}
+                                        onPress={async () => {
+                                            console.log("Alterando relatório atual e abrindo modal.")
+                                            //console.log("Antes: ", actualMarker)
+                                            if (report !== actualMarker) {
+                                                await setActualMarker(report)
+                                            } else {
+                                                onOpen()
                                             }
-                                            camera.zoom = 15.75
-                                            mapRef.current?.animateCamera(camera, { duration: 1000 })
-                                        }, 150);
-                                    }}
-                                    calloutAnchor={{ x: 5.5, y: -0.15 }}
-                                >
-                                    {
-                                        region !== undefined &&
-                                        <Callout tooltip>
-                                            <FocusCallout report={report} region={region} />
-                                        </Callout>
-                                    }
-                                </Marker>
-                            ))
-                            : null
-                    }
-                    {/* <Geojson
+                                            setTimeout(async () => {
+                                                const camera = await mapRef.current?.getCamera() as Camera;
+                                                camera.center = {
+                                                    latitude: parseFloat(report.coordinates[0]) - 0.005,
+                                                    longitude: parseFloat(report.coordinates[1])
+                                                }
+                                                camera.zoom = 15.75
+                                                mapRef.current?.animateCamera(camera, { duration: 1000 })
+                                            }, 150);
+                                        }}
+                                        calloutAnchor={{ x: 5.5, y: -0.15 }}
+                                    >
+                                        {
+                                            region !== undefined &&
+                                            <Callout tooltip>
+                                                <FocusCallout report={report} region={region} />
+                                            </Callout>
+                                        }
+                                    </Marker>
+                                ))
+                                : null
+                        }
+                        {/* <Geojson
                         geojson={}
                         strokeColor="#FF6D6A"
                         fillColor="#ffffff80"
                         strokeWidth={5}
                     /> */}
-                </MapView>
+                    </MapView>
+                }
             </View>
             <View style={styles.header}>
                 <View style={styles.subHeader}>
