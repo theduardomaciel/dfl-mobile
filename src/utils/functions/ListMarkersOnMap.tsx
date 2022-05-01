@@ -30,6 +30,11 @@ export async function ListMarkersOnMap(scope: string, userRegion: Region) {
     const reportsUnparsed = await AsyncStorage.getItem(REPORTS_STORAGE);
     const reports = await JSON.parse(reportsUnparsed) as Array<Report>
 
+    if (reports === undefined) {
+        console.log("Não foi possível obter os relatórios.");
+        return ["error"]
+    }
+
     let userLocation;
     if (userRegion) {
         const onlineResult = await Location.reverseGeocodeAsync({ latitude: userRegion.latitude, longitude: userRegion.longitude })

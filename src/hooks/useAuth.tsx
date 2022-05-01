@@ -61,7 +61,6 @@ function AuthProvider({ children }: AuthProviderProps) {
     const [user, setUser] = useState<User | null>(null)
 
     async function updateReports() {
-        console.log("Atualizando relatórios do usuários no escopo de cidade.")
         const result = await check(locationPermission)
         if (result === RESULTS.GRANTED) {
             setHasAppPermissionsState(true)
@@ -70,16 +69,17 @@ function AuthProvider({ children }: AuthProviderProps) {
         }
 
         const userLocation = await Location.getCurrentPositionAsync()
-        console.log(userLocation)
         if (userLocation) {
             const result = await Location.reverseGeocodeAsync({ latitude: userLocation.coords.latitude, longitude: userLocation.coords.longitude });
             const location = result[0]
             const state = location.city ? location.city.replace(/ /g, '') : location.region.replace(/ /g, '');
-            console.log(location)
             try {
                 const reports = await GetReportsInLocation(state, true)
-                await AsyncStorage.setItem(REPORTS_STORAGE, JSON.stringify(reports))
-                await AsyncStorage.setItem(LOCATION_STORAGE, JSON.stringify(location))
+                if (reports) {
+                    await AsyncStorage.setItem(REPORTS_STORAGE, JSON.stringify(reports))
+                    await AsyncStorage.setItem(LOCATION_STORAGE, JSON.stringify(location))
+                    console.log("Os relatórios da cidade do usuário foram atualizados na aplicação.")
+                }
                 return true
             } catch (error) {
                 console.log(error)

@@ -57,7 +57,11 @@ export function Home({ route, navigation }) {
 
     useEffect(() => {
         async function LoadMarkersOnMap() {
-            await getScopePicked("district")
+            try {
+                await getScopePicked("district")
+            } catch (error) {
+                console.log(error)
+            }
             SplashScreen.hideAsync();
         }
         LoadMarkersOnMap()

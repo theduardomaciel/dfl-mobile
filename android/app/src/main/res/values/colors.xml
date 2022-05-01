@@ -1,15 +1,8 @@
-<?xml
-  version="1.0"
-  encoding="UTF-8"
-  standalone="yes"
-?>
 <resources>
-  <!-- Below line is handled by '@expo/configure-splash-screen' command and it's discouraged to modify it manually -->
-  <color name="splashscreen_background">#F6F7EB</color>
-  <color name="splashscreen_statusbar_color">#F6F7EB</color>
-  <color name="iconBackground">#F6F7EB</color>
-  <color name="colorPrimary">#4F9D69</color>
-  <color name="colorPrimaryDark">#F6F7EB</color>
-  <color name="gradientstart">#F6F7EB</color>
-  <color name="gradientend">#E6EADA</color>
+    <color name="splashscreen_background">#F6F7EB</color>
+    <color name="splashscreen_statusbar_color">#F6F7EB</color>
+    <color name="colorPrimary">#4F9D69</color>
+    <color name="colorPrimaryDark">#ffffff</color>
+    <color name="navigationBarColor">#F6F7EB</color>
+    <color name="activityBackground">#F6F7EB</color>
 </resources>

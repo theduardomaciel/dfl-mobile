@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, ImageBackground, Dimensions } from "react-native";
+import { View, Text, ImageBackground, Dimensions, Pressable } from "react-native";
 
-import MapView, { PROVIDER_GOOGLE, Marker, Geojson, Callout, Camera, LatLng } from "react-native-maps";
+import Toast from 'react-native-toast-message';
+import MapView, { PROVIDER_GOOGLE, Marker, Callout, LatLng } from "react-native-maps";
 import * as Location from "expo-location";
 
 import { ProfileModal } from "../../components/ProfileModal";
@@ -31,6 +32,7 @@ import { Modalize } from "react-native-modalize";
 
 import { FocusCallout } from "./Callouts/FocusCallout";
 import { FocusModal } from "./Modals/FocusModal";
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
 
 const dimensions = Dimensions.get("screen")
 
@@ -66,8 +68,11 @@ const placeholder_report = {
     comments: [],
 }
 
+let firstUpdate = true
+let modalIsVisible = false
+
 export function Community({ navigation }) {
-    const { user } = useAuth();
+    const { user, updateReports } = useAuth();
 
     if (user === null) return (
         <View style={{ flex: 1 }} />
@@ -112,6 +117,17 @@ export function Community({ navigation }) {
         mapRef.current?.setCamera(initialCamera)
     }
 
+    const refreshButtonRotation = useSharedValue(0);
+    const refreshButtonRotationStyle = useAnimatedStyle(() => {
+        return {
+            transform: [
+                {
+                    rotate: `${refreshButtonRotation.value}deg`
+                },
+            ],
+        };
+    });
+
     useEffect(() => {
         PrepareScreen()
         getScopePicked("city")
@@ -123,6 +139,7 @@ export function Community({ navigation }) {
             }
         }
         CheckIfProfileIsCreated()
+        firstUpdate = false
     }, []);
 
     const [filters, setFilters] = useState({});
@@ -144,16 +161,56 @@ export function Community({ navigation }) {
     }
 
     useEffect(() => {
-        onOpen()
+        if (!firstUpdate) {
+            onOpen()
+        }
     }, [actualMarker]);
 
 
     const onOpen = () => {
+        modalIsVisible = true
         modalizeRef.current?.open();
     };
     const onClose = () => {
+        modalIsVisible = false;
         modalizeRef.current?.close();
     };
+
+    const showToast = () => {
+        console.log("Mostrando toast de sucesso.")
+        Toast.show({
+            type: 'success',
+            text1: 'Eba! Deu tudo certo.',
+            text2: 'Os relatórios de sua cidade foram atualizados com sucesso!',
+        });
+    }
+
+    const showErrorToast = () => {
+        console.log("Mostrando toast de erro.")
+        Toast.show({
+            type: 'success',
+            text1: 'Opa! Algo deu errado...',
+            text2: 'Infelizmente não possível atualizar os relatórios de sua cidade.',
+        });
+    }
+
+    const [isLoading, setIsLoading] = useState(false)
+    const refreshReports = async () => {
+        setIsLoading(true)
+        console.log("Atualizando relatórios.")
+        refreshButtonRotation.value = withSpring(360)
+        setTimeout(() => {
+            refreshButtonRotation.value = 0
+        }, 1250);
+        const success = await updateReports()
+        if (success) {
+            getScopePicked("city")
+            showToast()
+        } else {
+            showErrorToast()
+        }
+        setIsLoading(false)
+    }
 
     return (
         <ImageBackground source={require("../../assets/placeholders/background_placeholder.png")} style={styles.container}>
@@ -177,9 +234,11 @@ export function Community({ navigation }) {
                         loadingEnabled
                         loadingIndicatorColor={theme.colors.primary1}
                         loadingBackgroundColor={theme.colors.background}
-                        region={region}
                         onPress={() => {
-                            console.log("foi")
+                            if (modalIsVisible) {
+                                console.log("Modal está visível. Ocultando-o.")
+                                onClose()
+                            }
                         }}
                     >
                         {
@@ -203,17 +262,15 @@ export function Community({ navigation }) {
                                             } else {
                                                 onOpen()
                                             }
-                                            setTimeout(async () => {
-                                                const camera = await mapRef.current?.getCamera() as Camera;
-                                                camera.center = {
-                                                    latitude: parseFloat(report.coordinates[0]) - 0.005,
-                                                    longitude: parseFloat(report.coordinates[1])
-                                                }
-                                                camera.zoom = 15.75
-                                                mapRef.current?.animateCamera(camera, { duration: 1000 })
-                                            }, 150);
+                                            const camera = await mapRef.current?.getCamera() as Camera;
+                                            camera.center = {
+                                                latitude: parseFloat(report.coordinates[0]) - 0.0035,
+                                                longitude: parseFloat(report.coordinates[1])
+                                            }
+                                            camera.zoom = 15.75
+                                            mapRef.current?.animateCamera(camera, { duration: 1000 })
                                         }}
-                                        calloutAnchor={{ x: 5.5, y: -0.15 }}
+                                        calloutAnchor={{ x: 4.35, y: -0.15 }}
                                     >
                                         {
                                             region !== undefined &&
@@ -239,9 +296,11 @@ export function Community({ navigation }) {
                     <Text style={styles.title}>
                         Comunidade
                     </Text>
-                    <RectButton style={styles.reloadButton} onPress={onOpen}>
-                        <MaterialIcons name="refresh" color={theme.colors.secondary1} size={32} />
-                    </RectButton>
+                    <Animated.View style={[styles.reloadButton, refreshButtonRotationStyle]}>
+                        <RectButton style={styles.reloadButton} onPress={refreshReports} enabled={!isLoading}>
+                            <MaterialIcons name="refresh" color={isLoading ? theme.colors.light_gray2 : theme.colors.secondary1} size={32} />
+                        </RectButton>
+                    </Animated.View>
                 </View>
                 <TextForm
                     customStyle={styles.searchBar}

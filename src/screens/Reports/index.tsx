@@ -78,6 +78,49 @@ export const shareReport = async (setIsLoading: React.Dispatch<React.SetStateAct
         });
 }
 
+export async function UpdateReportRating(rating, report, user) {
+    // Quando o usuário passar de relatório, atualizaremos a nota do anterior, caso ele tenha votado (seu rating será diferente de 0)
+    if (rating !== 0) {
+        const newRating = new Array(5)
+
+        let profileRating = Object.assign(typeof user.profile.ratings === "string" ? JSON.parse(user.profile.ratings) : user.profile.ratings);
+
+        // newRating[x] = nota | [0] = increment | [1] = decrement
+        function CheckIfProfileAlreadyRated() {
+            // Loopamos entre cada uma das possíveis notas
+            for (let note = 1; note <= 5; note++) {
+                const noteRatings = profileRating[note.toString()]
+                const index = noteRatings.indexOf(report.id)
+                // Caso encontremos um index diferente de -1, o usuário já votou com a "note" do loop atual
+                if (index > -1) {
+                    console.log(`Usuário já avaliou esse relatório com a nota ${note}. 🚯 Removendo-a.`)
+                    // Removemos 1 voto da nota em que o usuário votou
+                    newRating[note] = [0, 1]
+                    // Removemos a avaliação do perfil do usuário para em seguida atualizarmos ele no banco de dados
+                    profileRating[note.toString()].splice(index, 1)
+                    return true
+                }
+            }
+        }
+
+        const hasAlreadyVoted = CheckIfProfileAlreadyRated();
+
+        // Deixa isso aqui depois da função que checa se o cara já votou por favor.
+        profileRating[rating.toString()].push(report.id)
+        newRating[rating] = [1, 0]
+
+        const serverResponse = await api.post("/report/update", {
+            report_id: report.id,
+            decrement: hasAlreadyVoted ? true : false,
+            rating: newRating,
+            profile_id: user.profile.id,
+            profileRating: profileRating
+        });
+
+        return serverResponse.data;
+    }
+}
+
 export function Reports({ route, navigation }) {
     const { user, updateUser, signOut } = useAuth();
 
@@ -196,8 +239,12 @@ export function Reports({ route, navigation }) {
                 showToast();
             }
         } catch (error) {
-            console.log("Não foi possível conectar-se ao servidor para obter relatórios próximos ao usuário.", error)
-            setErrorModalVisible(true)
+            console.log("Não foi possível conectar-se ao servidor para obter relatórios próximos ao usuário.", error, error.response.status)
+            if (error.response.status === 401) {
+                setErrorModalVisible(true)
+            } else {
+                showErrorToast()
+            }
         }
     }
 
@@ -238,60 +285,21 @@ export function Reports({ route, navigation }) {
     }, []);
 
     useEffect(() => {
-        async function UpdateReportRating() {
-            // Quando o usuário passar de relatório, atualizaremos a nota do anterior, caso ele tenha votado (seu rating será diferente de 0)
-            if (rating !== 0) {
-                const lastReport = data[lastIndex]
-                const newRating = new Array(5)
+        async function UpdateReport() {
+            const { report, profile } = await UpdateReportRating(rating, data[lastIndex], user)
 
-                let profileRating = Object.assign(typeof user.profile.ratings === "string" ? JSON.parse(user.profile.ratings) : user.profile.ratings);
+            const dataCopy = Object.assign(data)
+            dataCopy[lastIndex] = report
+            setData(dataCopy)
 
-                // newRating[x] = nota | [0] = increment | [1] = decrement
-                function CheckIfProfileAlreadyRated() {
-                    // Loopamos entre cada uma das possíveis notas
-                    for (let note = 1; note <= 5; note++) {
-                        const noteRatings = profileRating[note.toString()]
-                        const index = noteRatings.indexOf(lastReport.id)
-                        // Caso encontremos um index diferente de -1, o usuário já votou com a "note" do loop atual
-                        if (index > -1) {
-                            console.log(`Usuário já avaliou esse relatório com a nota ${note}. 🚯 Removendo-a.`)
-                            // Removemos 1 voto da nota em que o usuário votou
-                            newRating[note] = [0, 1]
-                            // Removemos a avaliação do perfil do usuário para em seguida atualizarmos ele no banco de dados
-                            profileRating[note.toString()].splice(index, 1)
-                            return true
-                        }
-                    }
-                }
+            updateUser(profile, "profile")
 
-                const hasAlreadyVoted = CheckIfProfileAlreadyRated();
-
-                // Deixa isso aqui depois da função que checa se o cara já votou por favor.
-                profileRating[rating.toString()].push(lastReport.id)
-                newRating[rating] = [1, 0]
-
-                const serverResponse = await api.post("/report/update", {
-                    report_id: lastReport.id,
-                    decrement: hasAlreadyVoted ? true : false,
-                    rating: newRating,
-                    profile_id: user.profile.id,
-                    profileRating: profileRating
-                })
-
-                const { report, profile } = serverResponse.data;
-
-                const dataCopy = Object.assign(data)
-                dataCopy[lastIndex] = report
-                setData(dataCopy)
-
-                updateUser(profile, "profile")
-
-                lastIndex = currentIndex
-                setRating(0)
-            }
+            lastIndex = currentIndex
+            setRating(0)
         }
+
         if (data.length > 0) {
-            UpdateReportRating();
+            UpdateReport();
         }
     }, [currentIndex])
 
@@ -326,6 +334,16 @@ export function Reports({ route, navigation }) {
             text2: 'Não há mais nenhum relatório pra carregar!',
         });
     }
+
+    const showErrorToast = () => {
+        console.log("Mostrando toast de erro.")
+        Toast.show({
+            type: 'error',
+            text1: 'Eita! Não foi possível obter relatórios para você :(',
+            text2: 'Verifique sua conexão com a internet e tente novamente.',
+        });
+    }
+
 
     const [isCommentsModalVisible, setCommentsModalVisible] = useState(false)
     return (

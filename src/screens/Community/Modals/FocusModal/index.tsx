@@ -16,7 +16,7 @@ import { Portal } from 'react-native-portalize';
 import { styles as ratingStyles } from "../../../Reports/styles";
 import MapView, { Marker } from "react-native-maps";
 import { Report, User } from "../../../../@types/application";
-import { GetRatingsAverage, shareReport } from "../../../Reports";
+import { GetRatingsAverage, shareReport, UpdateReportRating } from "../../../Reports";
 import { LoadingScreen } from "../../../../components/LoadingScreen";
 import { CommentsView } from "../../../Reports/Comments";
 
@@ -38,14 +38,12 @@ type Props = {
 }
 
 import { styles as reportStyles } from "../../../Reports/styles"
+import { api } from "../../../../utils/api";
+import { useAuth } from "../../../../hooks/useAuth";
 
 export function FocusModal({ modalizeRef, markerRef, mapRef, report, user }: Props) {
 
-    if (!report.profile) {
-        console.log(report)
-        console.log("O relatório recebido não possui o objeto do perfil do usuário.")
-        return <View></View>
-    }
+    const { updateUser } = useAuth();
 
     const [ratingBarHeight, setRatingBarHeight] = useState(0)
     const [commentsPositionY, setCommentsPositionY] = useState(0)
@@ -54,6 +52,12 @@ export function FocusModal({ modalizeRef, markerRef, mapRef, report, user }: Pro
     const [isLoading, setIsLoading] = useState(false)
 
     const totalRatings = report.note1 + report.note2 + report.note3 + report.note4 + report.note5
+    const note1Width = report.note1 > 0 ? (report.note1 * 100) / totalRatings : 5
+    const note2Width = report.note2 > 0 ? (report.note2 * 100) / totalRatings : 5
+    const note3Width = report.note3 > 0 ? (report.note3 * 100) / totalRatings : 5
+    const note4Width = report.note4 > 0 ? (report.note4 * 100) / totalRatings : 5
+    const note5Width = report.note5 > 0 ? (report.note5 * 100) / totalRatings : 5
+
     const parsedCoordinates = {
         latitude: parseFloat(report.coordinates[0]),
         longitude: parseFloat(report.coordinates[1])
@@ -118,10 +122,14 @@ export function FocusModal({ modalizeRef, markerRef, mapRef, report, user }: Pro
         }
     }
 
+    const uploadRating = async () => {
+        const { _, profile } = await UpdateReportRating(rating, report, user)
+        updateUser(profile, "profile")
+    }
+
     const Header = () => {
         return (
             <View style={{
-                width: "100%",
                 height: 25,
                 backgroundColor: theme.colors.background
             }} />
@@ -137,6 +145,7 @@ export function FocusModal({ modalizeRef, markerRef, mapRef, report, user }: Pro
                 modalHeight={modalSize}
                 avoidKeyboardLikeIOS
                 contentRef={contentRef}
+                modalStyle={styles.container}
                 velocity={4500}
                 withOverlay={false}
                 //HeaderComponent={Header}
@@ -296,19 +305,19 @@ export function FocusModal({ modalizeRef, markerRef, mapRef, report, user }: Pro
                                 const { x, y, width, height } = event.nativeEvent.layout;
                                 setRatingBarHeight(height)
                             }}>
-                                <View style={[styles.ratingLineFilled, { width: (report.note1 * 100) / totalRatings, height: ratingBarHeight }]} />
+                                <View style={[styles.ratingLineFilled, { width: note1Width, height: ratingBarHeight }]} />
                             </View>
                             <View style={styles.ratingLine}>
-                                <View style={[styles.ratingLineFilled, { width: (report.note2 * 100) / totalRatings, height: ratingBarHeight }]} />
+                                <View style={[styles.ratingLineFilled, { width: note2Width, height: ratingBarHeight }]} />
                             </View>
                             <View style={styles.ratingLine}>
-                                <View style={[styles.ratingLineFilled, { width: (report.note3 * 100) / totalRatings, height: ratingBarHeight }]} />
+                                <View style={[styles.ratingLineFilled, { width: note3Width, height: ratingBarHeight }]} />
                             </View>
                             <View style={styles.ratingLine}>
-                                <View style={[styles.ratingLineFilled, { width: (report.note4 * 100) / totalRatings, height: ratingBarHeight }]} />
+                                <View style={[styles.ratingLineFilled, { width: note4Width, height: ratingBarHeight }]} />
                             </View>
                             <View style={styles.ratingLine}>
-                                <View style={[styles.ratingLineFilled, { width: (report.note5 * 100) / totalRatings, height: ratingBarHeight }]} />
+                                <View style={[styles.ratingLineFilled, { width: note5Width, height: ratingBarHeight }]} />
                             </View>
                         </View>
                     </View>
@@ -337,7 +346,7 @@ export function FocusModal({ modalizeRef, markerRef, mapRef, report, user }: Pro
                             <Text style={ratingStyles.ratingPlaceholder}>3</Text>
                             <Text style={ratingStyles.ratingPlaceholder}>2</Text>
                             <Text style={ratingStyles.ratingPlaceholder}>1</Text>
-                            <PanGestureHandler onGestureEvent={(event) => _onPanGestureEvent(event, setRating)}>
+                            <PanGestureHandler onGestureEvent={(event) => _onPanGestureEvent(event, setRating)} onEnded={uploadRating}>
                                 <Animated.View style={[reportStyles.ratingRound, ratingSelectorAnimatedStyle]}>
                                     <View style={[reportStyles.buttonCircle, { backgroundColor: theme.colors.primary1, width: 50, height: 50, opacity: 1 }]} />
                                 </Animated.View>

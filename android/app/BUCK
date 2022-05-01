@@ -35,12 +35,12 @@ android_library(
 
 android_build_config(
     name = "build_config",
-    package = "com.dfl",
+    package = "com.meninocoiso.dfl",
 )
 
 android_resource(
     name = "res",
-    package = "com.dfl",
+    package = "com.meninocoiso.dfl",
     res = "src/main/res",
 )
 
