@@ -1,9 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { SvgProps } from "react-native-svg";
 import { View, Text, ScrollView } from "react-native";
 
 import { TextButton } from "../../../components/TextButton";
-import { elements } from "../../../global/styles/elements";
 import { theme } from "../../../global/styles/theme";
 
 import { styles } from "./styles";
@@ -18,7 +17,6 @@ type Props = {
 import { MaterialIcons } from '@expo/vector-icons';
 import { AccordionOptions } from "../../../components/AccordionOptions";
 import { HintView, HintViewTextStyle } from "../../../components/HintView";
-import { UpdateNavigationBar } from "../../../utils/functions/UpdateNavigationBar";
 
 const Bold = (props) => <Text style={{ fontWeight: 'bold' }}>{props.children}</Text>
 
@@ -64,10 +62,6 @@ const PERMISSIONS = [
 ]
 
 export function PermissionsExplanation({ navigation }) {
-    useEffect(() => {
-        UpdateNavigationBar("dark", false, "transparent")
-    }, [])
-
     function PermissionItem(itemMaster) {
         const item = itemMaster.item;
         return (
@@ -84,6 +78,7 @@ export function PermissionsExplanation({ navigation }) {
                 <AccordionOptions
                     style={{
                         flexDirection: "row",
+                        width: "95%",
                         justifyContent: "flex-start",
                     }}
                     id={item.id}
@@ -112,7 +107,7 @@ export function PermissionsExplanation({ navigation }) {
             <TextButton
                 title="Continuar"
                 shadow
-                buttonStyle={{ height: 45, width: "90%", marginBottom: 15 }}
+                buttonStyle={{ height: 45, width: "90%", marginBottom: 25 }}
                 colors={[theme.colors.primary1, theme.colors.secondary1]}
                 onPress={() => { navigation.navigate("PermissionsRequest", { update: true }) }} />
         </View>

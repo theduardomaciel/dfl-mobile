@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 
 import {
@@ -6,6 +6,7 @@ import {
     FlatList,
     Image,
     Pressable,
+    StatusBar,
     Text,
     TouchableOpacity,
     View
@@ -35,6 +36,7 @@ import { LoadingScreen } from '../LoadingScreen';
 import { MAX_USERNAME_CHARACTERS, MIN_USERNAME_CHARACTERS, verifyFormatting, verifyRange } from '../ProfileModal/Username';
 import { api } from '../../utils/api';
 import { Profile } from '../../@types/application';
+import { UpdateNavigationBar } from '../../utils/functions/UpdateNavigationBar';
 
 async function CheckIfUsernameIsAvailable(username) {
     const usersInLocationResults = await api.post("/profiles/search", {
@@ -85,7 +87,7 @@ export function ProfileIcon({ uri, openConfig }: Props) {
             }}
         />
         <Text style={[styles.modalSubtitle, { color: verifyFormatting(usernameText) ? theme.colors.red_light : theme.colors.secondary2 }]}>
-            {`• Seu nome de usuário não pode conter letras maiúsculas ou espaços. ${verifyFormatting(usernameText) ? "❌" : "✅"}`}
+            {`• Seu nome de usuário não pode conter espaços. ${verifyFormatting(usernameText) ? "❌" : "✅"}`}
         </Text>
         <Text style={[styles.modalSubtitle, { color: verifyRange(usernameText) ? theme.colors.red_light : theme.colors.secondary2 }]}>
             {`• Seu nome de usuário deve ter no mínimo ${MIN_USERNAME_CHARACTERS} e no máximo ${MAX_USERNAME_CHARACTERS} caracteres. ${verifyRange(usernameText) ? "❌" : "✅"}`}
@@ -207,17 +209,32 @@ export function ProfileIcon({ uri, openConfig }: Props) {
         />
     );
 
+    const openModal = () => {
+        UpdateNavigationBar("dark", true, theme.colors.background)
+        setModalVisible(true)
+    }
+
+    const closeModal = () => {
+        UpdateNavigationBar("dark", false, "black")
+        StatusBar.setBarStyle("dark-content")
+        setModalVisible(false)
+    }
+
     return (
         <TouchableOpacity
             activeOpacity={1}
             style={styles.container}
             onPress={() => {
-                openConfig ? setModalVisible(true) : navigation.navigate("Conta")
+                openConfig ? openModal() : navigation.navigate("Conta")
             }}
         >
             <ModalBase
                 isVisible={isDeleteModalVisible}
-                onBackdropPress={() => { setDeleteModalVisible(!isDeleteModalVisible) }}
+                onBackdropPress={() => {
+                    counter = 5
+                    setTimer(0)
+                    setDeleteModalVisible(!isDeleteModalVisible)
+                }}
                 title={"Tem certeza que deseja excluir sua conta?"}
                 showCloseButton
                 description={
@@ -281,11 +298,12 @@ export function ProfileIcon({ uri, openConfig }: Props) {
                 style={{ margin: 0, alignItems: "center", justifyContent: "flex-end" }}
                 isVisible={modalVisible}
                 deviceHeight={1920}
+                coverScreen={true}
                 statusBarTranslucent={true}
                 backdropTransitionOutTiming={0}
                 hideModalContentWhileAnimating
                 animationOut={"slideOutDown"}
-                onSwipeComplete={() => setModalVisible(false)}
+                onSwipeComplete={closeModal}
                 swipeDirection="down"
             >
                 <View style={styles.modalContainer}>
@@ -299,7 +317,7 @@ export function ProfileIcon({ uri, openConfig }: Props) {
                         <Text style={styles.modalSubtitle}>{user ? user.email : "email@email.com"}</Text>
                     </LinearGradient>
                     <View style={styles.options}>
-                        <Pressable style={styles.closeButton} onPress={() => { setModalVisible(false) }}>
+                        <Pressable style={styles.closeButton} onPress={closeModal}>
                             <Text style={styles.closeButtonText}>X</Text>
                         </Pressable>
                         <FlatList

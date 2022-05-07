@@ -1,5 +1,5 @@
-import React, { useRef, useState, useCallback, useEffect } from "react";
-import { Text, View, FlatList, Animated, ViewToken, Linking, Platform, Modal, PermissionsAndroid, StatusBar } from "react-native";
+import React, { useRef, useState, useCallback } from "react";
+import { Text, View, FlatList, Animated, ViewToken, Linking, Platform, Modal } from "react-native";
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 import { permissions_screens } from "../../../utils/permissions"
@@ -11,13 +11,13 @@ import { theme } from "../../../global/styles/theme";
 import { OnboardingItem } from "../../../components/OnboardingItem";
 import { Paginator } from "../../../components/Paginator";
 
-import { ModalBase } from "../../../components/ModalBase";
 import { TextButton } from "../../../components/TextButton";
 import { HintView, HintViewTextStyle } from "../../../components/HintView";
 import { ConclusionScreen } from "../../../components/ConclusionScreen";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { useAuth } from "../../../hooks/useAuth";
-import { UpdateNavigationBar } from "../../../utils/functions/UpdateNavigationBar";
+
+import FocusAwareStatusBar from "../../../utils/functions/FocusAwareStatusBar";
 
 type PropTypes = {
     viewableItems: Array<ViewToken>;
@@ -70,14 +70,11 @@ export function PermissionsRequest({ navigation, route }) {
 
     async function PrepareApp() {
         setLoading(true)
-        UpdateNavigationBar("dark", false, "transparent")
-        StatusBar.setBarStyle("dark-content")
 
         if (hasToUpdate) {
             console.log("Atualizando relatórios de maneira geral.")
             await updateReports()
         }
-
         setLoading(false)
         setModalVisible(true)
     }
@@ -170,11 +167,12 @@ export function PermissionsRequest({ navigation, route }) {
 
     return (
         <View style={styles.container}>
+            <FocusAwareStatusBar barStyle={"dark-content"} />
             <Logo height={75} width={150} />
             <View style={{ flex: 0.8, marginTop: 48 }}>
                 <FlatList style={styles.list}
                     data={permissions_screens}
-                    renderItem={({ item }) => <OnboardingItem image={item.icon} title={item.title} description={item.description} children={<Hint />} />}
+                    renderItem={({ item }) => <OnboardingItem image={item.icon} title={item.title} description={item.description} children={Platform.OS === "android" && <Hint />} />}
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     pagingEnabled
@@ -194,14 +192,14 @@ export function PermissionsRequest({ navigation, route }) {
                 isModalVisible && <Modal
                     transparent={false}
                     animationType={"slide"}
-                    statusBarTranslucent
+
                 >
                     <ConclusionScreen
                         title="O DFL está pronto para você!"
                         info={`Tudo está configurado.\nAgora é sua vez de tornar sua cidade cada vez mais limpa!`}
                         backButtonText="Ir para o app"
-                        onPress={() => {
-                            setModalVisible(false)
+                        onPress={async () => {
+                            await setModalVisible(false)
                             navigation.navigate('Main')
                         }}
                     />

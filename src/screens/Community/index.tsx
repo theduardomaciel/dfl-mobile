@@ -32,7 +32,7 @@ import { Modalize } from "react-native-modalize";
 
 import { FocusCallout } from "./Callouts/FocusCallout";
 import { FocusModal } from "./Modals/FocusModal";
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
+import Animated, { cancelAnimation, useAnimatedStyle, useSharedValue, withRepeat, withSpring } from "react-native-reanimated";
 
 const dimensions = Dimensions.get("screen")
 
@@ -131,8 +131,7 @@ export function Community({ navigation }) {
     useEffect(() => {
         PrepareScreen()
         getScopePicked("city")
-        UpdateNavigationBar(null, false, "black")
-        function CheckIfProfileIsCreated() {
+        async function CheckIfProfileIsCreated() {
             if (user.profile.username == "") {
                 console.log("Usuário não possui perfil. Exibindo modal para criação.")
                 setFirstModalVisible(true)
@@ -198,14 +197,12 @@ export function Community({ navigation }) {
     const refreshReports = async () => {
         setIsLoading(true)
         console.log("Atualizando relatórios.")
-        refreshButtonRotation.value = withSpring(360)
-        setTimeout(() => {
-            refreshButtonRotation.value = 0
-        }, 1250);
+        refreshButtonRotation.value = withRepeat(withSpring(refreshButtonRotation.value + 360, { damping: 15, restSpeedThreshold: 1 }), -1, false)
         const success = await updateReports()
         if (success) {
             getScopePicked("city")
             showToast()
+            cancelAnimation(refreshButtonRotation)
         } else {
             showErrorToast()
         }
@@ -270,7 +267,7 @@ export function Community({ navigation }) {
                                             camera.zoom = 15.75
                                             mapRef.current?.animateCamera(camera, { duration: 1000 })
                                         }}
-                                        calloutAnchor={{ x: 4.35, y: -0.15 }}
+                                        calloutAnchor={{ x: 4.825, y: -0.15 }}
                                     >
                                         {
                                             region !== undefined &&
@@ -322,9 +319,9 @@ export function Community({ navigation }) {
                 </View>
             </View>
 
-            <View style={{ position: "absolute", bottom: 65, right: 15 }}>
+            {/* <View style={{ position: "absolute", bottom: 65, right: 15 }}>
                 <MapScopePicker changedScope={getScopePicked} actualRegion={region} biggerScope />
-            </View>
+            </View> */}
             <ProfileModal
                 isVisible={isFirstModalVisible}
                 toggleModal={firstToggleModal}

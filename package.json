@@ -12,6 +12,7 @@
         "@expo-google-fonts/alatsi": "^0.2.2",
         "@expo-google-fonts/inter": "^0.2.0",
         "@expo-google-fonts/roboto": "^0.2.0",
+        "@gorhom/bottom-sheet": "^4.2.2",
         "@prisma/client": "^3.11.0",
         "@react-native-async-storage/async-storage": "^1.16.1",
         "@react-native-google-signin/google-signin": "^7.2.1",

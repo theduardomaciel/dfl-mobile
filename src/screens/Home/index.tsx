@@ -50,6 +50,7 @@ const initialRegion = {
 
 import * as SplashScreen from "expo-splash-screen";
 import { FocusCallout } from "../Community/Callouts/FocusCallout";
+import { GetUserWithVersion } from "../../utils/functions/GetUserWithVersion";
 
 export function Home({ route, navigation }) {
     const [errorMessage, setErrorMessage] = useState(route.params?.errorMessage);
@@ -75,7 +76,7 @@ export function Home({ route, navigation }) {
 
     useFocusEffect(
         useCallback(() => {
-            UpdateNavigationBar(null, false, "black")
+            UpdateNavigationBar("dark", false, theme.colors.background)
             if (route.params?.errorMessage) {
                 console.log("Error Message: ", route.params?.errorMessage)
                 setErrorMessage(route.params?.errorMessage)
@@ -133,6 +134,13 @@ export function Home({ route, navigation }) {
             setIsAvailable(false)
             setErrorMessage("Por enquanto, o DFL não está disponível em sua localização :(\nAguarde o lançamento oficial do aplicativo para que sua região esteja disponível.")
             setErrorModalVisible(true)
+        } else {
+            const version = await GetUserWithVersion()
+            if (version !== "0.0.1") {
+                setIsAvailable(false)
+                setErrorMessage("Epa! Parece que você está usando uma versão desatualizada do aplicativo.\nPor favor, baixe a versão mais recente para poder continuar utilizando o app.")
+                setErrorModalVisible(true)
+            }
         }
     }
 
@@ -202,7 +210,7 @@ export function Home({ route, navigation }) {
                 </View>
                 <View style={[elements.subContainerGreen, theme.shadowProperties, { height: 125, marginTop: 17 }]}>
                     <Text style={styles.subtitle}>
-                        {userReportsInMonthAmount === 1 ? `Deste 1 foco,` : `Destes ${userReportsInMonthAmount} focos,`}
+                        {userReportsInMonthAmount === 1 ? `Desse 1 foco,` : `Desses ${userReportsInMonthAmount} focos,`}
                     </Text>
                     <Text style={[styles.info, { flex: 1, textAlign: "center", textAlignVertical: "center" }]}>
                         {userReportsSolvedInMonthAmount === 1 ? `1 já foi recolhido pelos órgãos responsáveis` : userReportsSolvedInMonthAmount + " já foram recolhidos pelos órgãos responsáveis"}
@@ -231,6 +239,7 @@ export function Home({ route, navigation }) {
                             showsMyLocationButton={true}
                             region={region}
                             loadingEnabled
+                            toolbarEnabled={false}
                             loadingIndicatorColor={theme.colors.primary1}
                             loadingBackgroundColor={theme.colors.background}
                             onUserLocationChange={locationChangedResult => {
@@ -254,14 +263,16 @@ export function Home({ route, navigation }) {
                                     reports.map((report, index) => (
                                         <Marker
                                             key={index}
-                                            image={GarbageBagIcon}
+                                            image={{ uri: "trashfocus_icon" }}
                                             coordinate={{
                                                 latitude: parseFloat(report.coordinates[0]),
                                                 longitude: parseFloat(report.coordinates[1])
                                             }}
-                                            calloutAnchor={{ x: 5.5, y: -0.15 }}
+                                            calloutAnchor={{ x: 4.825, y: -0.15 }}
                                         >
-                                            <Callout tooltip>
+                                            <Callout tooltip onPress={() => {
+                                                navigation.navigate("Report", { item: report })
+                                            }}>
                                                 <FocusCallout report={report} region={region} />
                                             </Callout>
                                         </Marker>

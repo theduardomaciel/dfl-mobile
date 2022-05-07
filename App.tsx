@@ -1,21 +1,15 @@
 import * as Svg from "react-native-svg";
 import 'react-native-gesture-handler'
 
-import React, { useEffect } from "react";
+import React from "react";
 import { StatusBar } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 
 import Toast, { BaseToast, ErrorToast, InfoToast } from 'react-native-toast-message';
 
 import AppLoading from "expo-app-loading";
-
-import { Host } from 'react-native-portalize';
-
+import * as SplashScreen from "expo-splash-screen";
 import * as Font from "expo-font";
-
-import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold, Inter_900Black } from "@expo-google-fonts/inter"
-import { Roboto_400Regular, Roboto_500Medium, Roboto_700Bold, Roboto_900Black } from "@expo-google-fonts/roboto"
-import { Alatsi_400Regular } from "@expo-google-fonts/alatsi"
 
 const fontsToLoad = {
     Inter_400Regular,
@@ -29,6 +23,13 @@ const fontsToLoad = {
     Roboto_700Bold,
     Alatsi_400Regular
 }
+
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { Host } from 'react-native-portalize';
+
+import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold, Inter_900Black } from "@expo-google-fonts/inter"
+import { Roboto_400Regular, Roboto_500Medium, Roboto_700Bold, Roboto_900Black } from "@expo-google-fonts/roboto"
+import { Alatsi_400Regular } from "@expo-google-fonts/alatsi"
 
 import Routes from "./src/routes";
 import { AuthProvider } from "./src/hooks/useAuth"
@@ -90,22 +91,7 @@ export const toastConfig = {
     ),
 };
 
-import * as SplashScreen from "expo-splash-screen";
-
 export default function App() {
-    useEffect(() => {
-        async function prepare() {
-            try {
-                // Keep the splash screen visible while we fetch resources
-                await SplashScreen.preventAutoHideAsync();
-                // Pre-load fonts, make any API calls you need to do here
-            } catch (error) {
-                console.warn(error);
-            }
-        }
-        prepare();
-    }, []);
-
     const [fontsLoaded] = Font.useFonts({
         Inter_400Regular,
         Inter_500Medium,
@@ -118,28 +104,33 @@ export default function App() {
         Roboto_700Bold,
         Alatsi_400Regular
     });
-    /* if (!fontsLoaded) {
-        return <AppLoading />
-    } */
+
+    if (!fontsLoaded) {
+        return <AppLoading autoHideSplash={false} />
+    }
 
     return (
-        <AuthProvider>
-            <Host>
-                <NavigationContainer>
-                    <StatusBar
-                        barStyle="dark-content"
-                        backgroundColor="transparent"
-                        translucent
+        <GestureHandlerRootView style={{ flex: 1 }}>
+
+            <AuthProvider>
+                <Host>
+                    <NavigationContainer>
+                        <StatusBar
+                            barStyle="dark-content"
+                            backgroundColor="transparent"
+                            translucent
+                        />
+                        <Routes />
+                    </NavigationContainer>
+                    <Toast
+                        config={toastConfig}
+                        visibilityTime={3000}
+                        position='bottom'
+                        bottomOffset={50 + TAB_BAR_HEIGHT}
                     />
-                    <Routes />
-                </NavigationContainer>
-                <Toast
-                    config={toastConfig}
-                    visibilityTime={3000}
-                    position='bottom'
-                    bottomOffset={50 + TAB_BAR_HEIGHT}
-                />
-            </Host>
-        </AuthProvider>
+                </Host>
+            </AuthProvider>
+        </GestureHandlerRootView>
+
     )
 }

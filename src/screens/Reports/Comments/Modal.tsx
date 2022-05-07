@@ -1,42 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Image, KeyboardAvoidingView, LayoutAnimation, Platform, Pressable, ScrollView, StatusBar, Text, UIManager, View, ViewToken } from "react-native";
+import { KeyboardAvoidingView, Platform, Text, UIManager, View, } from "react-native";
 
 import { styles } from "./styles";
 import { theme } from "../../../global/styles/theme";
 
-import TrashBinSvg from "../../../assets/icons/trashbin.svg"
 import Modal from "react-native-modal"
-import { TextForm } from "../../../components/TextForm";
 
-import { MaterialIcons } from "@expo/vector-icons"
 import { useAuth } from "../../../hooks/useAuth";
-import { Comment, Report } from "../../../@types/application";
+import { Comment } from "../../../@types/application";
 import { api } from "../../../utils/api";
-import { ModalBase } from "../../../components/ModalBase";
-import { TextButton } from "../../../components/TextButton";
 import { CommentsView } from ".";
-
-let actualComment = { id: 0, index: 0 }
-
-function CalculateCommentCreatedAt(item) {
-    const actualDate = new Date();
-    const differenceTime = actualDate.getTime() - new Date(item.createdAt).getTime()
-    const SECONDS = Math.floor(Math.abs(differenceTime) / 1000)
-    const MINUTES = Math.floor(SECONDS / 60)
-    const HOURS = Math.floor(MINUTES / 60)
-    const DAYS = Math.floor(HOURS / 24)
-    let createdAtText = ""
-    if (HOURS > 24) {
-        createdAtText = `${DAYS} dia${DAYS !== 1 ? "s" : ""} atrás`
-    } else if (HOURS >= 1) {
-        createdAtText = `${HOURS} hora${HOURS !== 1 ? "s" : ""} atrás`
-    } else if (MINUTES >= 1) {
-        createdAtText = `${MINUTES} minuto${MINUTES !== 1 ? "s" : ""} atrás`
-    } else {
-        createdAtText = `${SECONDS} segundo${SECONDS !== 1 ? "s" : ""} atrás`
-    }
-    return createdAtText;
-}
+import { UpdateNavigationBar } from "../../../utils/functions/UpdateNavigationBar";
 
 async function GetReportComments(report_id) {
     try {
@@ -71,6 +45,7 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
         // Estou fazendo com que os comentários sejam carregados novamente a cada abertura do modal de comentários para teste,
         // entretanto, isso não é necessário.
         if (isVisible === true) {
+            UpdateNavigationBar("dark", true, theme.colors.background)
             // Caso o modal de relatórios atual seja diferente do anterior, limpamos os resultados
             if (last_report_id !== report_id) setComments(null);
             async function GetComments() {
@@ -81,6 +56,8 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
                 last_report_id = report_id
             }
             GetComments()
+        } else {
+            UpdateNavigationBar("dark", false, theme.colors.background)
         }
     }, [isVisible])
 
@@ -102,7 +79,7 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
                 style={[styles.container, { margin: 0, flex: 0.5, justifyContent: 'flex-start' }]}
             >
                 <View style={{
-                    height: "13%", width: "100%", alignItems: "center",
+                    height: "13%", width: "100%", alignItems: "center", backgroundColor: theme.colors.modalBackground, borderRadius: styles.container.borderTopLeftRadius
                 }}>
                     <View style={{
                         marginTop: 15,

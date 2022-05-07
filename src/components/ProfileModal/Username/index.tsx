@@ -18,7 +18,8 @@ export function verifyRange(usernameText) {
     return usernameText.length > MAX_USERNAME_CHARACTERS || usernameText.length < MIN_USERNAME_CHARACTERS
 }
 export function verifyFormatting(usernameText) {
-    return (usernameText.includes(" ") || usernameText.toLowerCase() !== usernameText)
+    //return (usernameText.includes(" ") || usernameText.toLowerCase() !== usernameText)
+    return (usernameText.includes(" "))
 }
 
 type CustomProps = {

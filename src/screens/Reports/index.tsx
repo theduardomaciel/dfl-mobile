@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { View, Text, FlatList, Dimensions, Image, ViewToken, Pressable, ActivityIndicator } from "react-native";
+import { View, Text, FlatList, Dimensions, Image, ViewToken, Pressable, ActivityIndicator, StatusBar } from "react-native";
 import { TextForm } from "../../components/TextForm";
 
 import { theme } from "../../global/styles/theme";
@@ -38,6 +38,7 @@ type PropTypes = {
 import { useFocusEffect } from '@react-navigation/native';
 import { ModalBase } from "../../components/ModalBase";
 import { TextButton } from "../../components/TextButton";
+import { UpdateNavigationBar } from "../../utils/functions/UpdateNavigationBar";
 
 let lastIndex = 0;
 
@@ -117,7 +118,13 @@ export async function UpdateReportRating(rating, report, user) {
             profileRating: profileRating
         });
 
-        return serverResponse.data;
+        if (serverResponse.data) {
+            return serverResponse.data;
+        } else {
+            return { report: false }
+        }
+    } else {
+        return { report: false }
     }
 }
 
@@ -272,6 +279,8 @@ export function Reports({ route, navigation }) {
     useFocusEffect(
         useCallback(() => {
             if (shouldLoadData) loadMoreReports()
+            UpdateNavigationBar("dark", true, "black")
+            UpdateNavigationBar("dark", false, "black")
         }, [data])
     );
 
@@ -287,15 +296,16 @@ export function Reports({ route, navigation }) {
     useEffect(() => {
         async function UpdateReport() {
             const { report, profile } = await UpdateReportRating(rating, data[lastIndex], user)
+            if (report) {
+                const dataCopy = Object.assign(data)
+                dataCopy[lastIndex] = report
+                setData(dataCopy)
 
-            const dataCopy = Object.assign(data)
-            dataCopy[lastIndex] = report
-            setData(dataCopy)
+                updateUser(profile, "profile")
 
-            updateUser(profile, "profile")
-
-            lastIndex = currentIndex
-            setRating(0)
+                lastIndex = currentIndex
+                setRating(0)
+            }
         }
 
         if (data.length > 0) {
@@ -348,7 +358,7 @@ export function Reports({ route, navigation }) {
     const [isCommentsModalVisible, setCommentsModalVisible] = useState(false)
     return (
         <View style={styles.container}>
-            <FocusAwareStatusBar barStyle="light-content" backgroundColor="#000000" />
+            <FocusAwareStatusBar barStyle="light-content" backgroundColor="black" />
             <View style={{ height: IMAGE_HEIGHT, width: "100%", backgroundColor: theme.colors.background }}>
                 <FlatList
                     pagingEnabled
@@ -396,7 +406,7 @@ export function Reports({ route, navigation }) {
                     </Text>
                     <View style={{ flexDirection: "row" }}>
                         <MaterialIcons name="place" size={18} color={theme.colors.text1} style={{ marginRight: 5 }} />
-                        <Text style={styles.description}>
+                        <Text style={[styles.description, { marginRight: 15 }]}>
                             {data.length > 0 ? data[currentIndex].address : ""}
                         </Text>
                     </View>

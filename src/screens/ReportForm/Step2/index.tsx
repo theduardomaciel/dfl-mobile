@@ -176,7 +176,7 @@ export function ReportScreen2({ route, navigation }: any) {
                         visible={modalOpen}
                     >
                         <View style={defaultStyles.container}>
-                            <View style={defaultStyles.safeView}>
+                            <View style={[defaultStyles.safeView, { marginTop: 35 }]}>
                                 <Text style={defaultStyles.title}>
                                     E aí, gostou da foto, ou vai querer tirar outra?
                                 </Text>

@@ -29,7 +29,7 @@ export function Onboarding({ navigation }) {
     const { signIn, isSigningIn } = useAuth();
 
     useEffect(() => {
-        UpdateNavigationBar("dark", true, theme.colors.background)
+        UpdateNavigationBar("dark", true, "transparent")
         StatusBar.setBarStyle("dark-content")
     }, [])
 
