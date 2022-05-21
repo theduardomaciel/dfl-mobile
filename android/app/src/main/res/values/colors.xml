@@ -3,6 +3,5 @@
     <color name="splashscreen_statusbar_color">#00000000</color>
     <color name="colorPrimary">#4F9D69</color>
     <color name="colorPrimaryDark">#ffffff</color>
-    <color name="navigationBarColor">#00000000</color>
     <color name="activityBackground">#F6F7EB</color>
 </resources>

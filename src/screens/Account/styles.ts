@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-//import { getStatusBarHeight } from 'react-native-iphone-x-helper'
+
 import { theme } from "../../global/styles/theme";
 
 export const styles = StyleSheet.create({
@@ -17,7 +17,7 @@ export const styles = StyleSheet.create({
         alignItems: "flex-start",
         flexDirection: "row",
         justifyContent: "space-between",
-        marginTop: 35, //+ getStatusBarHeight(),
+        marginTop: 35,
         marginBottom: 15,
     },
     userInfoContainer: {

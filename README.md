@@ -1,39 +1,49 @@
-# Development Client example
+<h1 align="center">
+  <img alt="DFL - Web" height="80" title="DFL - Web" src=".github/cover.png" />
+</h1>
 
-<p>
-  <!-- iOS -->
-  <img alt="Supports Expo iOS" longdesc="Supports Expo iOS" src="https://img.shields.io/badge/iOS-4630EB.svg?style=flat-square&logo=APPLE&labelColor=999999&logoColor=fff" />
-  <!-- Android -->
-  <img alt="Supports Expo Android" longdesc="Supports Expo Android" src="https://img.shields.io/badge/Android-4630EB.svg?style=flat-square&logo=ANDROID&labelColor=A4C639&logoColor=fff" />
+<p align="center">
+  <img alt="License" src="https://img.shields.io/static/v1?label=license&message=MIT&color=346259&labelColor=26413C">
+
+ <img src="https://img.shields.io/static/v1?label=version&message=web&color=346259&labelColor=26413C" alt="NLW 06" />
 </p>
 
-Experiment with Development Client in SDK 40.
 
-## 🚀 How to use
+![cover](.github/cover.png?style=flat)
 
-> `npx create-react-native-app my-app -t with-dev-client`
 
-- Run `expo start --dev-client`, try it out.
+## 💻 Projeto
+Um aplicativo que irá lhe ajudar a reportar focos de lixo e encontrar pontos de coleta em sua cidade.
 
-## 🏗 Build with EAS
+## ✨ Tecnologias
 
-You can easily use this project with `EAS` - just follow the steps below.
+-   [ ] HTML
+-   [ ] CSS
+-   [ ] JavaScript
+-   [ ] Context API
+-   [ ] Material Icons
+-   [ ] Express
+-   [ ] Axios
 
-### ⚙️ Prepare project
 
-- adjust value of `ios.bundleIdentifier` and `android.package` in `app.json`
-- run `eas build:configure`
+## 🔖 Layout
 
-### 💪 Build whatever you want
+Você pode visualizar o layout do projeto através [desse link](https://www.figma.com/file/6PllN3nfMjMHgkNk6AKCRV). É necessário ter conta no [Figma](http://figma.com/) para acessá-lo.
 
-This example comes with two pre-configured build types: `release` (a production version of your app - ready to be uploaded to stores), `with-dev-client` (a development version of your app that can be shared with your teammates).
 
-To build the app with the dev client, just run `eas build --profile with-dev-client`.
+## Executando o projeto
 
-> **Note**: the `with-dev-client` uses the **internal distribution** on **iOS**. That's why, you need to add your device to be able to install the built app. To do it, you can use `eas device:create`.
+Utilize o **yarn** ou o **npm install** para instalar as dependências do projeto.
+Em seguida, inicie o projeto.
 
-**For more information about EAS, check out [documentation](https://docs.expo.dev/eas/).**
+```cl
+npm run start
+```
 
-## 📝 Notes
 
-- [Development Client docs](https://docs.expo.dev/clients/introduction/)
+
+## 📄 Licença
+
+Esse projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE.md) para mais detalhes.
+
+<br />

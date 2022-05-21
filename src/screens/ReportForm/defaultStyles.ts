@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-//import { getStatusBarHeight } from 'react-native-iphone-x-helper'
+
 import { theme } from "../../global/styles/theme";
 
 export const defaultStyles = StyleSheet.create({
@@ -20,7 +20,7 @@ export const defaultStyles = StyleSheet.create({
         width: "100%",
         flexDirection: "row",
         justifyContent: "space-between",
-        marginTop: 35, //+ getStatusBarHeight(),
+        marginTop: 35,
         marginBottom: 5,
         //paddingHorizontal: 20
     },

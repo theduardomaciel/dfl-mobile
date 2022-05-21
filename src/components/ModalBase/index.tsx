@@ -1,7 +1,6 @@
 import React from 'react'
 import { View, Text, ViewStyle, TextStyle, Dimensions } from 'react-native'
-import Modal, { ModalProps } from 'react-native-modal'
-import FocusAwareStatusBar from '../../utils/functions/FocusAwareStatusBar'
+import Modal from 'react-native-modal'
 
 import { TextButton } from '../TextButton'
 
@@ -23,19 +22,17 @@ type Props = CustomModalProps & {
     children?: React.ReactNode;
 }
 
-const deviceHeight = Dimensions.get('screen').height;
+const deviceHeight = Dimensions.get('screen').height * 2;
 
 export function ModalBase({ title, description, backButton, showCloseButton, toggleModal, children, style, descriptionStyle, ...rest }: Props) {
     return (
         <Modal
-            statusBarTranslucent={true}
             deviceHeight={deviceHeight}
             style={{ alignItems: "center" }}
             animationIn={"fadeInUp"}
             backdropTransitionOutTiming={0}
             {...rest}
         >
-            <FocusAwareStatusBar translucent barStyle="light-content" />
             <View style={style ? [styles.modal, style] : styles.modal}>
                 <Text style={styles.title}>
                     {title}

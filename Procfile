@@ -1,1 +1,0 @@
-web: npx ts-node-dev --exit-child src/app.ts

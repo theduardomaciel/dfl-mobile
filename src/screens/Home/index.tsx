@@ -135,11 +135,19 @@ export function Home({ route, navigation }) {
             setErrorMessage("Por enquanto, o DFL não está disponível em sua localização :(\nAguarde o lançamento oficial do aplicativo para que sua região esteja disponível.")
             setErrorModalVisible(true)
         } else {
-            const version = await GetUserWithVersion()
-            if (version !== "0.0.1") {
+            const deviceVersion = "0.0.1"
+            const serverVersion = await GetUserWithVersion()
+            console.warn(`Device: ${deviceVersion} | Server: ${serverVersion}`)
+            if (serverVersion === "error") {
                 setIsAvailable(false)
-                setErrorMessage("Epa! Parece que você está usando uma versão desatualizada do aplicativo.\nPor favor, baixe a versão mais recente para poder continuar utilizando o app.")
+                setErrorMessage("Epa! Houve um problema de autenticação.\nPor favor, entre em sua conta novamente.")
                 setErrorModalVisible(true)
+            } else {
+                if (deviceVersion !== serverVersion) {
+                    setIsAvailable(false)
+                    setErrorMessage("Epa! Parece que você está usando uma versão desatualizada do aplicativo.\nPor favor, baixe a versão mais recente para poder continuar utilizando o app.")
+                    setErrorModalVisible(true)
+                }
             }
         }
     }

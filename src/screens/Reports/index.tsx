@@ -36,8 +36,6 @@ type PropTypes = {
     viewableItems: Array<ViewToken>;
 }
 import { useFocusEffect } from '@react-navigation/native';
-import { ModalBase } from "../../components/ModalBase";
-import { TextButton } from "../../components/TextButton";
 import { UpdateNavigationBar } from "../../utils/functions/UpdateNavigationBar";
 
 let lastIndex = 0;
@@ -216,8 +214,6 @@ export function Reports({ route, navigation }) {
         }
     }
 
-    const [errorModalVisible, setErrorModalVisible] = useState(false);
-
     const [isLoading, setIsLoading] = useState(false)
     const [data, setData] = useState<Array<Report>>([])
     async function loadMoreReports() {
@@ -247,11 +243,7 @@ export function Reports({ route, navigation }) {
             }
         } catch (error) {
             console.log("Não foi possível conectar-se ao servidor para obter relatórios próximos ao usuário.", error, error.response.status)
-            if (error.response.status === 401) {
-                setErrorModalVisible(true)
-            } else {
-                showErrorToast()
-            }
+            showErrorToast()
         }
     }
 
@@ -459,27 +451,6 @@ export function Reports({ route, navigation }) {
                         setCommentsModalVisible(false)
                     }}
                     report_id={data[currentIndex].id}
-                />
-            }
-            {
-                <ModalBase
-                    title="Eita! Parece que você não está mais autenticado!"
-                    description={`Ocorreu um problema por nossa parte e seu dispositivo acabou perdendo a conexão com sua conta.\nPrecisamos que você entre novamente para poder continuar a usar o aplicativo.`}
-                    style={{ height: "40%" }}
-                    children={
-                        <TextButton
-                            title="AUTENTICAR"
-                            buttonStyle={{ paddingHorizontal: 20, paddingVertical: 10 }}
-                            onPress={async () => {
-                                setErrorModalVisible(false)
-                                setIsLoading(true)
-                                await signOut()
-                            }}
-                        />
-                    }
-                    onBackdropPress={() => { }}
-                    toggleModal={() => setErrorModalVisible(!errorModalVisible)}
-                    isVisible={errorModalVisible}
                 />
             }
             {

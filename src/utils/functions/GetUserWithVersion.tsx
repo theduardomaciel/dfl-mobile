@@ -10,6 +10,6 @@ export async function GetUserWithVersion() {
         return userData.gender
     } catch (error) {
         console.log(error)
-        return error
+        return "error"
     }
 }

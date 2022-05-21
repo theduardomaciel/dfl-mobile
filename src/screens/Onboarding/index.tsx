@@ -1,7 +1,7 @@
 import React, { useRef, useState, useCallback, useEffect } from "react";
-import { View, FlatList, Animated, ViewToken, StatusBar } from "react-native";
+import { View, FlatList, Animated, ViewToken } from "react-native";
 
-import { onboarding_screens } from "../../utils/onboarding";
+import { onboarding_screens } from "../../utils/data/onboarding";
 import Logo from "../../assets/Logo.svg"
 
 import { styles } from "./styles";
@@ -23,15 +23,12 @@ import Google_Logo from "../../assets/enterprises/google_logo.svg"
 import FocusAwareStatusBar from "../../utils/functions/FocusAwareStatusBar";
 import { UpdateNavigationBar } from "../../utils/functions/UpdateNavigationBar";
 
-import * as SplashScreen from "expo-splash-screen";
-
 export function Onboarding({ navigation }) {
     const { signIn, isSigningIn } = useAuth();
 
     useEffect(() => {
         UpdateNavigationBar("dark", true, "transparent")
-        StatusBar.setBarStyle("dark-content")
-    }, [])
+    })
 
     const [currentIndex, setCurrentIndex] = useState(0)
     const scrollX = useRef(new Animated.Value(0)).current;
@@ -53,24 +50,28 @@ export function Onboarding({ navigation }) {
     const viewabilityConfigCallbackPairs = useRef([{ viewabilityConfig, onViewableItemsChanged }])
 
     const [errorModalVisible, setErrorModalVisible] = useState(false);
-    const errorModalInfo = [
+    const [errorModalInfo, setErrorModalInfo] = useState([
         `Não foi possível autenticar.`,
         `Nossos servidores devem estar passando por problemas no momento :( \n Tente novamente mais tarde.`
-    ]
+    ])
 
     const loginProcess = async () => {
         const loginResult = await signIn()
 
         if (loginResult === "permission_lack") {
             navigation.navigate("PermissionsExplanation")
-        } else if (loginResult !== "cancelled" as any && loginResult !== "success" as any) {
+        } else if (loginResult !== "cancelled" as string && loginResult !== "success" as string) {
+            setErrorModalInfo([
+                `Infelizmente não foi possível autenticar.`,
+                loginResult
+            ])
             setErrorModalVisible(true)
         }
     }
 
     return (
         <View style={styles.container}>
-            <FocusAwareStatusBar translucent barStyle="dark-content" animated={true} />
+            <FocusAwareStatusBar translucent barStyle="dark-content" />
             <Logo height={75} width={150} />
             <View style={{ flex: 0.75, marginTop: 48 }}>
                 <FlatList style={styles.list}

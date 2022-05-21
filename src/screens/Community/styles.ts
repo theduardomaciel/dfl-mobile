@@ -25,6 +25,19 @@ export const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "center"
     },
+    cityContainer: {
+        flexDirection: "row",
+        width: "90%",
+        alignItems: "center",
+        marginTop: -7.5,
+        marginBottom: 10
+    },
+    cityText: {
+        fontFamily: theme.fonts.title500,
+        color: theme.colors.secondary1,
+        fontSize: 18,
+        marginRight: 5
+    },
     searchBar: {
         width: "90%",
         height: 40,

@@ -1,6 +1,8 @@
 import React, { useRef, useState, useCallback } from "react";
-import { Text, View, FlatList, Animated, ViewToken, Linking, Platform, Modal } from "react-native";
+import { Text, View, FlatList, Animated, ViewToken, Linking, Platform } from "react-native";
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+
+import Modal from "react-native-modal"
 
 import { permissions_screens } from "../../../utils/permissions"
 import Logo from "../../../assets/Logo.svg"
@@ -167,7 +169,7 @@ export function PermissionsRequest({ navigation, route }) {
 
     return (
         <View style={styles.container}>
-            <FocusAwareStatusBar barStyle={"dark-content"} />
+            <FocusAwareStatusBar translucent={true} barStyle={"dark-content"} />
             <Logo height={75} width={150} />
             <View style={{ flex: 0.8, marginTop: 48 }}>
                 <FlatList style={styles.list}
@@ -189,10 +191,10 @@ export function PermissionsRequest({ navigation, route }) {
             </View>
 
             {
-                isModalVisible && <Modal
-                    transparent={false}
-                    animationType={"slide"}
-
+                isModalVisible &&
+                <Modal
+                    statusBarTranslucent={true}
+                    isVisible={isModalVisible}
                 >
                     <ConclusionScreen
                         title="O DFL está pronto para você!"

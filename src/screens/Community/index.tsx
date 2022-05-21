@@ -212,7 +212,6 @@ export function Community({ navigation }) {
     return (
         <ImageBackground source={require("../../assets/placeholders/background_placeholder.png")} style={styles.container}>
             <FocusAwareStatusBar translucent barStyle="dark-content" />
-
             <View style={styles.container}>
                 {
                     region !== null &&
@@ -226,7 +225,7 @@ export function Community({ navigation }) {
                         toolbarEnabled={false}
                         maxZoomLevel={17}
                         mapPadding={{
-                            bottom: 0, top: 175, left: 15, right: 15
+                            bottom: 0, top: 200, left: 15, right: 15
                         }}
                         loadingEnabled
                         loadingIndicatorColor={theme.colors.primary1}
@@ -291,13 +290,17 @@ export function Community({ navigation }) {
             <View style={styles.header}>
                 <View style={styles.subHeader}>
                     <Text style={styles.title}>
-                        Comunidade
+                        Sua Cidade
                     </Text>
                     <Animated.View style={[styles.reloadButton, refreshButtonRotationStyle]}>
                         <RectButton style={styles.reloadButton} onPress={refreshReports} enabled={!isLoading}>
                             <MaterialIcons name="refresh" color={isLoading ? theme.colors.light_gray2 : theme.colors.secondary1} size={32} />
                         </RectButton>
                     </Animated.View>
+                </View>
+                <View style={styles.cityContainer}>
+                    <Text style={styles.cityText}>{`Maceió, AL`}</Text>
+                    <MaterialIcons name="pending" size={16} color={theme.colors.secondary1} />
                 </View>
                 <TextForm
                     customStyle={styles.searchBar}

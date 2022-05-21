@@ -129,31 +129,23 @@ function AuthProvider({ children }: AuthProviderProps) {
                     }
                 } catch (error) {
                     setIsSigningIn(false)
-                    console.log(error)
-                    return "error"
+                    return error
                 }
             } else {
-                console.log("[Error]: Os dados da conta do Google fornecida não foram encontrados.")
                 setIsSigningIn(false)
-                return "error"
+                return "[Error]: Os dados da conta do Google fornecida não foram encontrados."
             }
         } catch (error) {
+            setIsSigningIn(false)
             if (error.code === statusCodes.SIGN_IN_CANCELLED) {
                 console.log("Usuário cancelou o processo de login.");
-                setIsSigningIn(false)
                 return "cancelled"
             } else if (error.code === statusCodes.IN_PROGRESS) {
-                setIsSigningIn(false)
-                console.log("Um processo de login já está em execução.");
-                return "error"
+                return `Um processo de login já está em execução.`
             } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-                setIsSigningIn(false)
-                console.log("Os serviços da Google Play estão desatualizados ou indisponíveis.");
-                return "error"
+                return `Os serviços da Google Play estão desatualizados ou indisponíveis em seu dispositivo.`
             } else {
-                setIsSigningIn(false)
-                console.log(error)
-                return "error"
+                return error
             }
         }
     }

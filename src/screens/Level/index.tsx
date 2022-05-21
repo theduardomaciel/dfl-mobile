@@ -151,6 +151,7 @@ export function Level({ route, navigation }) {
                 index: currentIndex - 1,
             });
         }
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     };
 
     const handleOnNext = () => {
@@ -164,6 +165,7 @@ export function Level({ route, navigation }) {
                 index: currentIndex + 1,
             });
         }
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     };
 
     useEffect(() => {
@@ -175,8 +177,6 @@ export function Level({ route, navigation }) {
             UIManager.setLayoutAnimationEnabledExperimental(true);
         }
     }, [])
-
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
 
     const USER_LEVEL = user.profile.level
     const USER_EXP = user.profile.experience;

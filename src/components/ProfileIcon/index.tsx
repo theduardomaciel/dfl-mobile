@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 
 import {
-    Alert,
     FlatList,
     Image,
     Pressable,
-    StatusBar,
     Text,
     TouchableOpacity,
     View
@@ -109,10 +107,8 @@ export function ProfileIcon({ uri, openConfig }: Props) {
         />
     </View>
 
+    const [canDelete, setCanDelete] = useState(false)
     const [isDeleteModalVisible, setDeleteModalVisible] = useState(false)
-    const [timer, setTimer] = useState(0)
-    let counter = 5
-
     const deleteAccount = async () => {
         console.log("Apagando conta do usuário...")
         setIsLoading(true)
@@ -141,12 +137,12 @@ export function ProfileIcon({ uri, openConfig }: Props) {
             title='EXCLUIR CONTA'
             icon={<Ionicons name="trash" size={24} color={theme.colors.text1} />}
             onPress={async () => {
-                await setTimer(5)
                 setDeleteModalVisible(true)
+                let timer = 5
                 const interval = setInterval(function () {
-                    counter -= 1;
-                    setTimer(counter)
-                    if (counter === 0) {
+                    timer -= 1
+                    if (timer === 0) {
+                        //setTimer(5)
                         clearInterval(interval)
                     }
                 }, 1000)
@@ -210,13 +206,10 @@ export function ProfileIcon({ uri, openConfig }: Props) {
     );
 
     const openModal = () => {
-        UpdateNavigationBar("dark", true, theme.colors.background)
         setModalVisible(true)
     }
 
     const closeModal = () => {
-        UpdateNavigationBar("dark", false, "black")
-        StatusBar.setBarStyle("dark-content")
         setModalVisible(false)
     }
 
@@ -231,8 +224,6 @@ export function ProfileIcon({ uri, openConfig }: Props) {
             <ModalBase
                 isVisible={isDeleteModalVisible}
                 onBackdropPress={() => {
-                    counter = 5
-                    setTimer(0)
                     setDeleteModalVisible(!isDeleteModalVisible)
                 }}
                 title={"Tem certeza que deseja excluir sua conta?"}
@@ -245,13 +236,13 @@ export function ProfileIcon({ uri, openConfig }: Props) {
                             title='EXCLUIR CONTA'
                             icon={<Ionicons name="trash" size={24} color={theme.colors.text1} />}
                             onPress={deleteAccount}
-                            disabled={timer === 0 ? false : true}
-                            buttonStyle={{ backgroundColor: timer !== 0 ? theme.colors.gray_light : theme.colors.red, marginTop: 10, paddingHorizontal: 15, paddingVertical: 7 }}
+                            disabled={canDelete ? false : true}
+                            buttonStyle={{ backgroundColor: canDelete ? theme.colors.red : theme.colors.gray_light, marginTop: 10, paddingHorizontal: 15, paddingVertical: 7 }}
                         />
-                        {
-                            timer > 0 &&
+                        {/* {
+                            !canDelete &&
                             <Text style={styles.title}>{timer}</Text>
-                        }
+                        } */}
                     </View>
                 }
                 toggleModal={() => { setDeleteModalVisible(!isDeleteModalVisible) }}
@@ -299,7 +290,6 @@ export function ProfileIcon({ uri, openConfig }: Props) {
                 isVisible={modalVisible}
                 deviceHeight={1920}
                 coverScreen={true}
-                statusBarTranslucent={true}
                 backdropTransitionOutTiming={0}
                 hideModalContentWhileAnimating
                 animationOut={"slideOutDown"}
