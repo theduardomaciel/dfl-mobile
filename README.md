@@ -1,5 +1,8 @@
 <h1 align="center">
-  <img alt="DFL - Mobile" height="80" title="DFL - Mobile" src=".github/app_icon.png" />
+    <img alt="DFL - Mobile" height="80" title="DFL - Mobile" src=".github/app_icon.png" />
+</h1>
+<h1 align="center">
+  DFL - Mobile
 </h1>
 
 <p align="center">
