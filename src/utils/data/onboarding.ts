@@ -1,8 +1,8 @@
-import onboarding_1 from "../assets/onboarding/onboarding_1.svg"
-import onboarding_2 from "../assets/onboarding/onboarding_2.svg"
-import onboarding_3 from "../assets/onboarding/onboarding_3.svg"
-import onboarding_4 from "../assets/onboarding/onboarding_4.svg"
-import onboarding_5 from "../assets/onboarding/onboarding_5.svg"
+import onboarding_1 from "../../assets/onboarding/onboarding_1.svg"
+import onboarding_2 from "../../assets/onboarding/onboarding_2.svg"
+import onboarding_3 from "../../assets/onboarding/onboarding_3.svg"
+import onboarding_4 from "../../assets/onboarding/onboarding_4.svg"
+import onboarding_5 from "../../assets/onboarding/onboarding_5.svg"
 
 export const onboarding_screens = [
     {

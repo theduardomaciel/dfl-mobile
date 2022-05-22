@@ -1,5 +1,5 @@
-import onboarding_2 from "../assets/onboarding/onboarding_2.svg"
-import onboarding_3 from "../assets/onboarding/onboarding_3.svg"
+import onboarding_2 from "../../assets/onboarding/onboarding_2.svg"
+import onboarding_3 from "../../assets/onboarding/onboarding_3.svg"
 
 export const permissions_screens = [
     {

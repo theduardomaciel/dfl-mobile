@@ -4,7 +4,7 @@ import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 import Modal from "react-native-modal"
 
-import { permissions_screens } from "../../../utils/permissions"
+import { permissions_screens } from "../../../utils/data/permissions"
 import Logo from "../../../assets/Logo.svg"
 
 import { styles } from "./styles";

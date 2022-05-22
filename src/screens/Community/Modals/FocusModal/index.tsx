@@ -10,7 +10,6 @@ import { actionButtonsMargin, paddingHorizontal, styles, triangleSize } from "..
 import TrashbinIcon from "../../../../assets/icons/trashbin.svg"
 import { MaterialIcons } from "@expo/vector-icons"
 
-import { Modalize } from "react-native-modalize";
 import { Portal } from 'react-native-portalize';
 
 import { styles as ratingStyles } from "../../../Reports/styles";
@@ -30,7 +29,7 @@ const snapPoint = (50 / 100) * dimensions.height
 const modalSize = (95 / 100) * dimensions.height
 
 type Props = {
-    modalizeRef: React.MutableRefObject<Modalize>;
+    modalizeRef: React.MutableRefObject<View>; //React.MutableRefObject<Modalize>;
     markerRef: React.MutableRefObject<Marker>;
     mapRef: React.MutableRefObject<MapView>;
     report: Report;
@@ -138,31 +137,31 @@ export function FocusModal({ modalizeRef, markerRef, mapRef, report, user }: Pro
 
     return (
         <Portal>
-            <Modalize
-                ref={modalizeRef}
-                snapPoint={snapPoint}
-                handlePosition={"inside"}
-                modalHeight={modalSize}
-                avoidKeyboardLikeIOS
-                contentRef={contentRef}
-                modalStyle={styles.container}
-                velocity={4500}
-                withOverlay={false}
-                //HeaderComponent={Header}
-                closeSnapPointStraightEnabled={false}
-                handleStyle={styles.handle}
-                onClose={async () => {
-                    markerRef.current?.hideCallout()
-                    const camera = await mapRef.current?.getCamera();
-                    if (camera) {
-                        camera.center = {
-                            latitude: parseFloat(report.coordinates[0]) + (0.005 / 2),
-                            longitude: parseFloat(report.coordinates[1])
-                        }
-                        camera.zoom = 14
-                        mapRef.current?.animateCamera(camera, { duration: 1000 })
+            <View
+            /* ref={modalizeRef}
+            snapPoint={snapPoint}
+            handlePosition={"inside"}
+            modalHeight={modalSize}
+            avoidKeyboardLikeIOS
+            contentRef={contentRef}
+            modalStyle={styles.container}
+            velocity={4500}
+            withOverlay={false}
+            //HeaderComponent={Header}
+            closeSnapPointStraightEnabled={false}
+            handleStyle={styles.handle}
+            onClose={async () => {
+                markerRef.current?.hideCallout()
+                const camera = await mapRef.current?.getCamera();
+                if (camera) {
+                    camera.center = {
+                        latitude: parseFloat(report.coordinates[0]) + (0.005 / 2),
+                        longitude: parseFloat(report.coordinates[1])
                     }
-                }}
+                    camera.zoom = 14
+                    mapRef.current?.animateCamera(camera, { duration: 1000 })
+                }
+            }} */
             >
                 {/* Header */}
                 <View style={styles.padding}>
@@ -365,7 +364,7 @@ export function FocusModal({ modalizeRef, markerRef, mapRef, report, user }: Pro
                     </Text>
                     <CommentsView width="100%" report_id={report.id} commentsArray={report.comments} />
                 </ScrollView>
-            </Modalize>
+            </View>
             {
                 isLoading && <LoadingScreen />
             }

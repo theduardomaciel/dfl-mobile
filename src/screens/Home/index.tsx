@@ -48,7 +48,6 @@ const initialRegion = {
     longitudeDelta: 35
 }
 
-import * as SplashScreen from "expo-splash-screen";
 import { FocusCallout } from "../Community/Callouts/FocusCallout";
 import { GetUserWithVersion } from "../../utils/functions/GetUserWithVersion";
 
@@ -63,7 +62,6 @@ export function Home({ route, navigation }) {
             } catch (error) {
                 console.log(error)
             }
-            SplashScreen.hideAsync();
         }
         LoadMarkersOnMap()
         setErrorModalVisible(typeof errorMessage === "string" ? true : false)

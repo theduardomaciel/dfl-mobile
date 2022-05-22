@@ -28,7 +28,6 @@ import { TextForm } from "../../components/TextForm";
 import { TagSection } from "../../components/TagsSelector";
 
 import { RectButton } from "react-native-gesture-handler";
-import { Modalize } from "react-native-modalize";
 
 import { FocusCallout } from "./Callouts/FocusCallout";
 import { FocusModal } from "./Modals/FocusModal";
@@ -152,7 +151,7 @@ export function Community({ navigation }) {
 
     const mapRef = useRef<MapView>(null);
     const markerRef = useRef<Marker>(null);
-    const modalizeRef = useRef<Modalize>(null);
+    const modalizeRef = useRef<View>(null);
 
     interface Camera {
         center: LatLng;
@@ -168,11 +167,11 @@ export function Community({ navigation }) {
 
     const onOpen = () => {
         modalIsVisible = true
-        modalizeRef.current?.open();
+        /* modalizeRef.current?.open(); */
     };
     const onClose = () => {
         modalIsVisible = false;
-        modalizeRef.current?.close();
+        /* modalizeRef.current?.close(); */
     };
 
     const showToast = () => {
@@ -340,13 +339,13 @@ export function Community({ navigation }) {
                 toggleModal={secondToggleModal}
                 secondToggleModal={firstToggleModal}
             />
-            <FocusModal
+            {/* <FocusModal
                 modalizeRef={modalizeRef}
                 markerRef={markerRef}
                 mapRef={mapRef}
                 report={actualMarker}
                 user={user}
-            />
+            /> */}
         </ImageBackground >
     );
 }

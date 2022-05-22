@@ -1,12 +1,7 @@
 package com.meninocoiso.dfl;
-import expo.modules.devmenu.react.DevMenuAwareReactActivity;
-import android.content.Intent;
-import expo.modules.devlauncher.DevLauncherController;
 
 import android.os.Build;
 import android.os.Bundle;
-
-import android.view.View;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
@@ -14,40 +9,14 @@ import com.facebook.react.ReactRootView;
 
 import expo.modules.ReactActivityDelegateWrapper;
 
-public class MainActivity extends DevMenuAwareReactActivity {
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        if (hasFocus) {
-            hideNavigationBar();
-        }
-    }
-
-    private void hideNavigationBar() {
-        getWindow().getDecorView().setSystemUiVisibility(
-            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-
-    }
-
-  @Override
-  public void onNewIntent(Intent intent) {
-    if (DevLauncherController.tryToHandleIntent(this, intent)) {
-      return;
-    }
-    super.onNewIntent(intent);
-  }
-
+public class MainActivity extends ReactActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     // Set the theme to AppTheme BEFORE onCreate to support 
     // coloring the background, status bar, and navigation bar.
     // This is required for expo-splash-screen.
-    super.onCreate(savedInstanceState);
-    hideNavigationBar();
     setTheme(R.style.AppTheme);
-    // super.onCreate(null);
+    super.onCreate(null);
   }
 
   /**
@@ -61,9 +30,9 @@ public class MainActivity extends DevMenuAwareReactActivity {
 
   @Override
   protected ReactActivityDelegate createReactActivityDelegate() {
-    return DevLauncherController.wrapReactActivityDelegate(this, () -> new ReactActivityDelegateWrapper(this,
+    return new ReactActivityDelegateWrapper(this,
       new ReactActivityDelegate(this, getMainComponentName())
-    ));
+    );
   }
 
   /**
