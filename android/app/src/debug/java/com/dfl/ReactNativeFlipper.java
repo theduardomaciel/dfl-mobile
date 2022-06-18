@@ -5,10 +5,14 @@
  * directory of this source tree.
  */
 <<<<<<< HEAD
+<<<<<<< HEAD
 package com.meninocoiso.dfl;
 =======
 package com.dfl;
 >>>>>>> fbef4ce (First commit)
+=======
+package com.meninocoiso.dfl;
+>>>>>>> 64b3a6bdcfe5f8747a36b551f809e3aace1bf45b
 
 import android.content.Context;
 import com.facebook.flipper.android.AndroidFlipperClient;

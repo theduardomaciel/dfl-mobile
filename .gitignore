@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 node_modules/
 .expo/
 .vscode/
@@ -59,3 +60,8 @@ buck-out/
 web-build/
 dist/
 >>>>>>> fbef4ce (First commit)
+=======
+node_modules/
+.expo/
+.vscode/
+>>>>>>> 64b3a6bdcfe5f8747a36b551f809e3aace1bf45b

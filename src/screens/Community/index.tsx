@@ -6,10 +6,13 @@ import MapView, { PROVIDER_GOOGLE, Marker, Callout, LatLng } from "react-native-
 import * as Location from "expo-location";
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 import { TextForm } from "../../components/TextForm";
 import { TagSection } from "../../components/TagsSelector";
 >>>>>>> fbef4ce (First commit)
+=======
+>>>>>>> 64b3a6bdcfe5f8747a36b551f809e3aace1bf45b
 import { ProfileModal } from "../../components/ProfileModal";
 import { MapScopePicker } from "../../components/MapScopePicker";
 
@@ -30,11 +33,17 @@ import { api } from "../../utils/api";
 import { UpdateNavigationBar } from "../../utils/functions/UpdateNavigationBar";
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { TextForm } from "../../components/TextForm";
 import { TagSection } from "../../components/TagsSelector";
 
 =======
 >>>>>>> fbef4ce (First commit)
+=======
+import { TextForm } from "../../components/TextForm";
+import { TagSection } from "../../components/TagsSelector";
+
+>>>>>>> 64b3a6bdcfe5f8747a36b551f809e3aace1bf45b
 import { RectButton } from "react-native-gesture-handler";
 
 import { FocusCallout } from "./Callouts/FocusCallout";

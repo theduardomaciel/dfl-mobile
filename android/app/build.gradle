@@ -142,10 +142,14 @@ android {
 
     defaultConfig {
 <<<<<<< HEAD
+<<<<<<< HEAD
         applicationId "com.meninocoiso.dfl"
 =======
         applicationId "com.dfl"
 >>>>>>> fbef4ce (First commit)
+=======
+        applicationId "com.meninocoiso.dfl"
+>>>>>>> 64b3a6bdcfe5f8747a36b551f809e3aace1bf45b
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

@@ -1,8 +1,12 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import React, { createContext, useContext, useEffect, useState, SetStateAction } from "react";
 =======
 import React, { createContext, useContext, useEffect, useState } from "react";
 >>>>>>> fbef4ce (First commit)
+=======
+import React, { createContext, useContext, useEffect, useState, SetStateAction } from "react";
+>>>>>>> 64b3a6bdcfe5f8747a36b551f809e3aace1bf45b
 
 import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
 
@@ -134,10 +138,14 @@ function AuthProvider({ children }: AuthProviderProps) {
                 } catch (error) {
                     setIsSigningIn(false)
 <<<<<<< HEAD
+<<<<<<< HEAD
                     return error
 =======
                     return `[${error.code}]: ${error.message}`
 >>>>>>> fbef4ce (First commit)
+=======
+                    return error
+>>>>>>> 64b3a6bdcfe5f8747a36b551f809e3aace1bf45b
                 }
             } else {
                 setIsSigningIn(false)
@@ -154,10 +162,14 @@ function AuthProvider({ children }: AuthProviderProps) {
                 return `Os serviços da Google Play estão desatualizados ou indisponíveis em seu dispositivo.`
             } else {
 <<<<<<< HEAD
+<<<<<<< HEAD
                 return error
 =======
                 return `[${error.code}]: ${error.message}`
 >>>>>>> fbef4ce (First commit)
+=======
+                return error
+>>>>>>> 64b3a6bdcfe5f8747a36b551f809e3aace1bf45b
             }
         }
     }

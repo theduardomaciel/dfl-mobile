@@ -63,10 +63,14 @@ export function Onboarding({ navigation }) {
         } else if (loginResult !== "cancelled" as string && loginResult !== "success" as string) {
             setErrorModalInfo([
 <<<<<<< HEAD
+<<<<<<< HEAD
                 `Infelizmente não foi possível autenticar.`,
 =======
                 `Não foi possível autenticar.`,
 >>>>>>> fbef4ce (First commit)
+=======
+                `Infelizmente não foi possível autenticar.`,
+>>>>>>> 64b3a6bdcfe5f8747a36b551f809e3aace1bf45b
                 loginResult
             ])
             setErrorModalVisible(true)

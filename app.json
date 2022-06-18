@@ -1,5 +1,8 @@
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 64b3a6bdcfe5f8747a36b551f809e3aace1bf45b
     "expo": {
         "name": "dfl",
         "slug": "dfl",
@@ -11,6 +14,7 @@
             "android"
         ]
     }
+<<<<<<< HEAD
 }
 =======
   "expo": {
@@ -23,3 +27,6 @@
   }
 }
 >>>>>>> fbef4ce (First commit)
+=======
+}
+>>>>>>> 64b3a6bdcfe5f8747a36b551f809e3aace1bf45b

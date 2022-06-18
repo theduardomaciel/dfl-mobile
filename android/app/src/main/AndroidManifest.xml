@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 64b3a6bdcfe5f8747a36b551f809e3aace1bf45b
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.meninocoiso.dfl">
 
   <uses-permission android:name="android.permission.INTERNET"/>
@@ -31,6 +34,7 @@
     <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="45.0.0"/>
     <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyBQrpdH4XwBB5_2z6ztyobOgb_zmGrl_R8"/>
     <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
+<<<<<<< HEAD
 =======
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.dfl">
   <uses-permission android:name="android.permission.INTERNET"/>
@@ -50,15 +54,21 @@
     <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="45.0.1"/>
     <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
 >>>>>>> fbef4ce (First commit)
+=======
+>>>>>>> 64b3a6bdcfe5f8747a36b551f809e3aace1bf45b
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 64b3a6bdcfe5f8747a36b551f809e3aace1bf45b
     </activity>
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" android:exported="false"/>
   </application>
 </manifest>
+<<<<<<< HEAD
 =======
       <intent-filter>
         <action android:name="android.intent.action.VIEW"/>
@@ -71,3 +81,5 @@
   </application>
 </manifest>
 >>>>>>> fbef4ce (First commit)
+=======
+>>>>>>> 64b3a6bdcfe5f8747a36b551f809e3aace1bf45b

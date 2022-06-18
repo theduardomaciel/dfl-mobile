@@ -38,12 +38,18 @@ import { TAB_BAR_HEIGHT } from "./src/components/TabBar";
 
 export const toastConfig = {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 64b3a6bdcfe5f8747a36b551f809e3aace1bf45b
     /*
       Overwrite 'success' type,
       by modifying the existing `BaseToast` component
     */
+<<<<<<< HEAD
 =======
 >>>>>>> fbef4ce (First commit)
+=======
+>>>>>>> 64b3a6bdcfe5f8747a36b551f809e3aace1bf45b
     success: (props) => (
         <BaseToast
             {...props}
@@ -58,12 +64,18 @@ export const toastConfig = {
         />
     ),
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 64b3a6bdcfe5f8747a36b551f809e3aace1bf45b
     /*
       Overwrite 'error' type,
       by modifying the existing `ErrorToast` component
     */
+<<<<<<< HEAD
 =======
 >>>>>>> fbef4ce (First commit)
+=======
+>>>>>>> 64b3a6bdcfe5f8747a36b551f809e3aace1bf45b
     error: (props) => (
         <ErrorToast
             {...props}
@@ -78,12 +90,18 @@ export const toastConfig = {
         />
     ),
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 64b3a6bdcfe5f8747a36b551f809e3aace1bf45b
     /*
       Overwrite 'info' type,
       by modifying the existing `InfoToast` component
     */
+<<<<<<< HEAD
 =======
 >>>>>>> fbef4ce (First commit)
+=======
+>>>>>>> 64b3a6bdcfe5f8747a36b551f809e3aace1bf45b
     info: (props) => (
         <InfoToast
             {...props}
@@ -106,9 +124,12 @@ export default function App() {
         async function prepare() {
             try {
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
                 console.log("Pelo menos a parte lógica tá funcionando.")
 >>>>>>> fbef4ce (First commit)
+=======
+>>>>>>> 64b3a6bdcfe5f8747a36b551f809e3aace1bf45b
                 // Keep the splash screen visible while we fetch resources
                 await SplashScreen.preventAutoHideAsync();
                 // Pre-load fonts, make any API calls you need to do here
