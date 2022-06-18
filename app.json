@@ -1,0 +1,25 @@
+{
+<<<<<<< HEAD
+    "expo": {
+        "name": "dfl",
+        "slug": "dfl",
+        "version": "0.1.5",
+        "description": "Um aplicativo que irá lhe ajudar a reportar focos de lixo e encontrar pontos de coleta em sua cidade.",
+        "sdkVersion": "45.0.0",
+        "platforms": [
+            "ios",
+            "android"
+        ]
+    }
+}
+=======
+  "expo": {
+    "name": "dfl",
+    "slug": "dfl",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
+>>>>>>> fbef4ce (First commit)
