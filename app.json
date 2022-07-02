@@ -1,0 +1,10 @@
+{
+  "expo": {
+    "name": "dfl",
+    "slug": "dfl",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}

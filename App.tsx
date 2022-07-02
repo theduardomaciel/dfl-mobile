@@ -1,8 +1,8 @@
 import * as Svg from "react-native-svg";
+import * as React from 'react';
 import 'react-native-gesture-handler'
 import 'expo-dev-client'
 
-import React, { useEffect, useState } from "react";
 import { StatusBar } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 
@@ -92,9 +92,9 @@ export const toastConfig = {
 };
 
 export default function App() {
-    const [appIsReady, setAppIsReady] = useState(false);
+    const [appIsReady, setAppIsReady] = React.useState(false);
 
-    useEffect(() => {
+    React.useEffect(() => {
         async function prepare() {
             try {
                 // Keep the splash screen visible while we fetch resources
@@ -115,7 +115,7 @@ export default function App() {
         prepare();
     }, []);
 
-    useEffect(() => {
+    React.useEffect(() => {
         async function prepareApp() {
             if (appIsReady) {
                 // This tells the splash screen to hide immediately! If we call this after
@@ -129,9 +129,9 @@ export default function App() {
         prepareApp()
     }, [appIsReady]);
 
-    if (!appIsReady) {
+    /* if (!appIsReady) {
         return null;
-    }
+    } */
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
