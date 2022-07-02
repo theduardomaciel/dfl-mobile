@@ -1,4 +1,4 @@
-package com.meninocoiso.dfl.newarchitecture;
+package com.dfl.newarchitecture;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
@@ -19,9 +19,9 @@ import com.facebook.react.fabric.CoreComponentsRegistry;
 import com.facebook.react.fabric.EmptyReactNativeConfig;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.meninocoiso.dfl.BuildConfig;
-import com.meninocoiso.dfl.newarchitecture.components.MainComponentsRegistry;
-import com.meninocoiso.dfl.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
+import com.dfl.BuildConfig;
+import com.dfl.newarchitecture.components.MainComponentsRegistry;
+import com.dfl.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
 import java.util.ArrayList;
 import java.util.List;
 

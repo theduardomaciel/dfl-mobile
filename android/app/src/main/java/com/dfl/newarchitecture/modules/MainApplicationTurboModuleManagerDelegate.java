@@ -1,4 +1,4 @@
-package com.meninocoiso.dfl.newarchitecture.modules;
+package com.dfl.newarchitecture.modules;
 
 import com.facebook.jni.HybridData;
 import com.facebook.react.ReactPackage;

@@ -1,4 +1,4 @@
-package com.meninocoiso.dfl.newarchitecture.components;
+package com.dfl.newarchitecture.components;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;

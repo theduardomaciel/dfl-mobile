@@ -1,4 +1,4 @@
-package com.meninocoiso.dfl;
+package com.dfl;
 
 import android.os.Build;
 import android.os.Bundle;

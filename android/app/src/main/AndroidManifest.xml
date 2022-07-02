@@ -1,4 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.meninocoiso.dfl">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.dfl">
 
   <uses-permission android:name="android.permission.INTERNET"/>
   <!-- OPTIONAL PERMISSIONS, REMOVE WHATEVER YOU DO NOT NEED -->
@@ -38,7 +38,6 @@
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
-        <data android:scheme="com.meninocoiso.dfl"/>
         <data android:scheme="exp+dfl"/>
       </intent-filter>
     </activity>
