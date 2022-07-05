@@ -46,7 +46,7 @@ function GetReportsAmountBars(profile) {
     const TOP_DIFFERENCE = 30
     let bars = []
     for (let index = 0; index < 11; index++) {
-        const monthAmount = reportsAmountByMonth[index];
+        const monthAmount = reportsAmountByMonth[index + 1];
         const MAX_HEIGHT = 100 - TOP_DIFFERENCE
         const PERCENTAGE = `${Math.abs((monthAmount * MAX_HEIGHT) / max)}%`
         const height = monthAmount ? PERCENTAGE : "10%"
@@ -177,7 +177,7 @@ export function Account({ navigation, route }) {
                 <Image
                     style={styles.report_image}
                     source={{
-                        uri: item.image_url !== "" ? item.image_url : "https://github.com/theduardomaciel.png"
+                        uri: item.images_urls[0]
                     }}
                 />
             </TouchableOpacity>

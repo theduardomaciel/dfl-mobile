@@ -5,7 +5,6 @@ export const styles = StyleSheet.create({
     modal: {
         justifyContent: "space-around",
         alignItems: "center",
-        height: 250,
         width: 350,
         borderRadius: 15,
         backgroundColor: theme.colors.modalBackground,

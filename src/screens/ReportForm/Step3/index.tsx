@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Modal, KeyboardAvoidingView, ScrollView } from "react-native";
+import { View, Text, KeyboardAvoidingView, ScrollView } from "react-native";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 
 import { theme } from "../../../global/styles/theme";
@@ -11,26 +11,16 @@ import { AntDesign } from '@expo/vector-icons';
 import { TextButton } from "../../../components/TextButton";
 import { TagsSelector } from "../../../components/TagsSelector";
 import { TextInput } from "react-native-gesture-handler";
-import { ConclusionScreen } from "../../../components/ConclusionScreen";
 
-import axios from "axios";
-import { api } from "../../../utils/api";
+import { LoadingScreen } from "../../../components/LoadingScreen";
+import SubmitReport from "./SubmitReport";
 import { useAuth } from "../../../hooks/useAuth";
 
-import { Profile, Report } from "../../../@types/application";
-import { LoadingScreen } from "../../../components/LoadingScreen";
-
-type ImageUploadResponse = {
-    deletehash: string;
-    link: string;
-}
-
-type ReportResponse = Profile
-
 export function ReportScreen3({ route, navigation }: any) {
-    const { data } = route.params;
     const { user, updateUser } = useAuth();
-    const [modalOpen, setModalOpen] = useState(false)
+    const { data } = route.params;
+
+    const [isLoading, setIsLoading] = useState(false)
 
     const [tags, setTags] = useState({});
     const handleTags = (tags) => {
@@ -40,62 +30,24 @@ export function ReportScreen3({ route, navigation }: any) {
     const [suggestion, setSuggestion] = useState("");
     const [hasTrashbin, setHasTrashbin] = useState(false);
 
-    async function UploadImage() {
-        try {
-            const imageResponse = await api.post("/upload", { image_base64: data.image_base64, profile_id: user.profile.id });
-            const { deletehash, link } = imageResponse.data as ImageUploadResponse;
-            console.log(deletehash, link)
-            return { deletehash, link }
-        } catch (error) {
-            console.log(error)
-            return {
-                deletehash: "",
-                link: ""
-            }
-        }
-    }
-
-    const [isLoading, setIsLoading] = useState(false)
-
-    const errorMessage = `Infelizmente não foi cadastrar seu relatório :(\nPor favor, tente novamente mais tarde.`
-
-    const [gainedExperience, setGainedExperience] = useState(25 || null)
-    async function SubmitReport(data: Report) {
-        console.log("Iniciando processo de upload do relatório.")
-        try {
-            setIsLoading(true)
-            const { deletehash, link } = await UploadImage()
-            if (!link) {
-                console.log(errorMessage)
-                return navigation.navigate("Início", { errorMessage: errorMessage })
-            }
-            const submitResponse = await api.post("/report/create", {
-                profile_id: user.profile.id,
-                coordinates: data.coordinates,
-                address: data.address,
-                image_url: link,
-                image_deleteHash: deletehash,
-                tags: data.tags,
-                suggestion: data.suggestion,
-                hasTrashBins: data.hasTrashBins
-            })
-            const updatedProfile = submitResponse.data as ReportResponse
-            console.log(updatedProfile)
-            if (updatedProfile.level > user.profile.level) {
-                console.log("O usuário subiu de nível.")
-                // Caso o usuário tenha subido de nível, indicamos que ele não ganhou nenhuma experiência, e realizamos a tratativa no modal
-                setGainedExperience(null)
-            } else {
-                console.log("O usuário não subiu de nível.")
-                // Caso não, somente mostramos o quanto o usuário ganhou de exp
-                setGainedExperience(updatedProfile.experience - user.profile.experience)
-            }
-            await updateUser(updatedProfile, "profile");
+    async function EndForm() {
+        setIsLoading(true)
+        data.tags = tags
+        data.hasTrashBins = hasTrashbin
+        data.suggestion = suggestion
+        const response = await SubmitReport(data, user.profile)
+        if (response === "error") {
+            console.log("Deu erro :(")
+            navigation.navigate("Início" as never, { errorMessage: `Infelizmente não foi cadastrar seu relatório :(\nPor favor, tente novamente mais tarde.` })
+        } else {
+            await updateUser(response, "profile");
             setIsLoading(false)
-            return "correct"
-        } catch (error) {
-            console.log(error)
-            return navigation.navigate("Início", { errorMessage: errorMessage })
+            navigation.navigate("ConclusionScreen", {
+                title: "O relatório foi enviado com sucesso!",
+                info: "Obrigado por contribuir com o meio ambiente!",
+                gainedExperience: response.experience - user.profile.experience,
+                navigateTo: response === null ? "Home" : "NewLevel",
+            })
         }
     }
 
@@ -161,39 +113,8 @@ export function ReportScreen3({ route, navigation }: any) {
                     colors={[theme.colors.secondary1, theme.colors.secondary2]}
                     textStyle={{ fontSize: 18 }}
                     buttonStyle={{ height: 55, width: "90%" }}
-                    onPress={async () => {
-                        data.tags = tags
-                        data.hasTrashBins = hasTrashbin
-                        data.suggestion = suggestion
-                        const response = await SubmitReport(data);
-                        if (response === "correct") {
-                            setModalOpen(true)
-                        }
-                    }}
+                    onPress={EndForm}
                 />
-                {
-                    modalOpen && <Modal
-                        transparent={false}
-                        animationType={"slide"}
-                        statusBarTranslucent
-                    >
-                        {
-                            <ConclusionScreen
-                                gainedExperience={gainedExperience}
-                                title="O relato foi registrado com sucesso!"
-                                info="Os órgãos responsáveis de sua cidade serão notificados."
-                                onPress={() => {
-                                    setModalOpen(false)
-                                    if (gainedExperience === null) {
-                                        navigation.navigate('NewLevel')
-                                    } else {
-                                        navigation.navigate('Início')
-                                    }
-                                }}
-                            />
-                        }
-                    </Modal>
-                }
             </ScrollView>
             {
                 isLoading ? <LoadingScreen /> : null

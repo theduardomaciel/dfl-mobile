@@ -37,7 +37,7 @@ let counter = 0;
 export function ReportScreen({ navigation, route }) {
     const report = route.params.item as Report;
 
-    const { user, updateUser } = useAuth();
+    const { user, updateProfile } = useAuth();
 
     const latitude = parseFloat(report.coordinates[0])
     const longitude = parseFloat(report.coordinates[1])
@@ -103,13 +103,15 @@ export function ReportScreen({ navigation, route }) {
         setMenuVisible(false)
 
         try {
-            await api.post("/report/delete", { report_id: report.id, image_deleteHash: report.image_deleteHash })
-            await updateUser()
-            navigation.navigate("Main", {
-                screen: "Conta",
-                params: { status: `success_${counter}` },
-            });
-            console.log("O relatório selecionado foi excluído com sucesso.")
+            const response = await api.delete(`/report/${report.id}`)
+            if (response.status === 200) {
+                await updateProfile()
+                navigation.navigate("Main", {
+                    screen: "Conta",
+                    params: { status: `success_${counter}` },
+                });
+                console.log("O relatório selecionado foi excluído com sucesso.")
+            }
         } catch (error) {
             navigation.navigate("Main", {
                 screen: "Conta",
@@ -129,24 +131,12 @@ export function ReportScreen({ navigation, route }) {
                 onBackdropPress={() => { }}
                 title={"Tem certeza que quer deletar o relatório?"}
                 description={"Essa ação não poderá ser desfeita."}
-                children={
-                    <View style={{ flex: 1, flexDirection: "row" }}>
-                        <TextButton
-                            title="CANCELAR"
-                            buttonStyle={{ backgroundColor: theme.colors.red_light, paddingVertical: 10, paddingHorizontal: 15, marginRight: 10 }}
-                            onPress={() => {
-                                LayoutAnimation.configureNext(animationPreset);
-                                setDeleteModalVisible(false)
-                                setMenuVisible(false)
-                            }}
-                        />
-                        <TextButton
-                            title="CONTINUAR"
-                            buttonStyle={{ paddingVertical: 10, paddingHorizontal: 15 }}
-                            onPress={deleteReport}
-                        />
-                    </View>
-                }
+                dismissFunction={() => {
+                    LayoutAnimation.configureNext(animationPreset);
+                    setDeleteModalVisible(false)
+                    setMenuVisible(false)
+                }}
+                actionFunction={deleteReport}
                 toggleModal={() => { setDeleteModalVisible(!isDeleteModalVisible) }}
             />
 
@@ -179,7 +169,7 @@ export function ReportScreen({ navigation, route }) {
                 </View>
             </LinearGradient>
             <View style={styles.image}>
-                <Image style={{ flex: 1 }} source={{ uri: report.image_url }} />
+                <Image style={{ flex: 1 }} source={{ uri: report.images_urls[0] }} />
                 <LinearGradient
                     colors={[theme.colors.primary1, 'transparent']}
                     start={{ x: 0.5, y: 1 }}

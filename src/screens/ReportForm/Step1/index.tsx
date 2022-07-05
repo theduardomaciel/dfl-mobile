@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { View, Text } from "react-native";
 
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
@@ -52,7 +52,7 @@ export function ReportScreen1({ navigation }: any) {
         return data;
     }
 
-    let mapReference: any;
+    let mapReference: MapView;
     return (
         <View style={defaultStyles.container}>
             <View style={defaultStyles.safeView}>
@@ -68,8 +68,19 @@ export function ReportScreen1({ navigation }: any) {
                         style={{ flex: 1, borderRadius: 10, justifyContent: "center" }}
                         provider={PROVIDER_GOOGLE}
                         ref={ref => mapReference = ref}
-                        onMapReady={async () => {
-                            console.log("Mapa carregou.")
+                        onMapLoaded={async () => {
+                            console.log("Animando câmera.")
+                            if (mapReference) {
+                                mapReference.animateToRegion(region, 1500)
+                                /* mapReference.setCamera({
+                                    center: {
+                                        latitude: region.latitude,
+                                        longitude: region.longitude,
+                                    },
+                                    pitch: region.latitudeDelta,
+                                    heading: region.longitudeDelta,
+                                }) */
+                            }
                         }}
                         /* userLocationFastestInterval={5000}
                         userLocationUpdateInterval={10000} */

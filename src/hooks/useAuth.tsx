@@ -16,7 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as SplashScreen from "expo-splash-screen";
 
 import { api } from "../utils/api";
-import { Report, User } from "../@types/application";
+import { Profile, Report, User } from "../@types/application";
 
 const SCOPE = "read:user";
 
@@ -34,6 +34,7 @@ type AuthContextData = {
     signOut: () => Promise<void>;
     updateReports: () => Promise<boolean | string>;
     updateUser: (updatedObject?, updatedElementKey?) => Promise<void>;
+    updateProfile: (updatedProfileObject?) => Promise<void>;
     updateReport: (actualObject?, updatedObject?, updatedElementKey?) => Promise<Report>;
 }
 
@@ -73,18 +74,18 @@ function AuthProvider({ children }: AuthProviderProps) {
             const result = await Location.reverseGeocodeAsync({ latitude: userLocation.coords.latitude, longitude: userLocation.coords.longitude });
             const location = result[0]
             const state = location.city ? location.city.replace(/ /g, '') : location.region.replace(/ /g, '');
-            try {
-                const reports = await GetReportsInLocation(state, true)
-                if (reports) {
-                    await AsyncStorage.setItem(REPORTS_STORAGE, JSON.stringify(reports))
-                    await AsyncStorage.setItem(LOCATION_STORAGE, JSON.stringify(location))
-                    console.log("Os relatórios da cidade do usuário foram atualizados na aplicação.")
-                }
+            const reports = await GetReportsInLocation(state, true)
+            console.warn(reports)
+            if (reports) {
+                await AsyncStorage.setItem(REPORTS_STORAGE, JSON.stringify(reports))
+                await AsyncStorage.setItem(LOCATION_STORAGE, JSON.stringify(location))
+                console.log("Os relatórios da cidade do usuário foram atualizados na aplicação.")
                 return true
-            } catch (error) {
-                console.log(error)
-                return "error"
+            } else {
+                return false
             }
+        } else {
+            return false
         }
     }
 
@@ -105,13 +106,13 @@ function AuthProvider({ children }: AuthProviderProps) {
                 // Chamar o backend com o usuário e o access_token
                 try {
                     console.log("Checando dados no servidor...")
-                    const authResponse = await api.post("/authenticate", { user_info: userInfoWithScopes, access_token: tokens.accessToken })
+                    const authResponse = await api.post("/authenticate", { user_info: userInfoWithScopes.user, access_token: tokens.accessToken })
                     const authResponseData = authResponse.data as AuthResponse;
 
                     const responseUser = authResponseData.user
                     const responseToken = authResponseData.token
 
-                    console.log("Dados obtidos com sucesso!")
+                    console.log("Dados obtidos com sucesso!", responseToken)
                     api.defaults.headers.common['Authorization'] = `Bearer ${responseToken}`;
 
                     await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(responseUser));
@@ -120,8 +121,8 @@ function AuthProvider({ children }: AuthProviderProps) {
                     setUser(responseUser);
                     console.log(`Usuário autenticou-se no aplicativo com sucesso!`);
 
-                    const reportsResponse = await updateReports()
                     setIsSigningIn(false)
+                    const reportsResponse = await updateReports()
                     if (reportsResponse === true) {
                         return "success"
                     } else {
@@ -129,7 +130,7 @@ function AuthProvider({ children }: AuthProviderProps) {
                     }
                 } catch (error) {
                     setIsSigningIn(false)
-                    return error
+                    return error.toString()
                 }
             } else {
                 setIsSigningIn(false)
@@ -145,7 +146,7 @@ function AuthProvider({ children }: AuthProviderProps) {
             } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
                 return `Os serviços da Google Play estão desatualizados ou indisponíveis em seu dispositivo.`
             } else {
-                return error
+                return error.toString()
             }
         }
     }
@@ -166,7 +167,7 @@ function AuthProvider({ children }: AuthProviderProps) {
         let updatedUser = updatedObject || undefined
         if (updatedUser === undefined) {
             console.log("Objeto do usuário atualizado não definido, atualizando via rede...")
-            const readResponse = await api.post("/user", { user_id: user.id })
+            const readResponse = await api.get(`/user/${user.id}`, { headers: { 'Authorization': `Bearer ${await AsyncStorage.getItem(TOKEN_STORAGE)}` } })
             if (readResponse) {
                 console.log(readResponse.data)
                 updatedUser = readResponse.data as User;
@@ -174,6 +175,31 @@ function AuthProvider({ children }: AuthProviderProps) {
         } else if (user && updatedElementKey) {
             let userCopy = Object.assign(user)
             userCopy[updatedElementKey] = updatedObject
+            updatedUser = userCopy
+        }
+        if (updatedUser !== null) {
+            await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(updatedUser));
+            setUser(updatedUser);
+            console.log("Objeto do usuário atualizado com sucesso!")
+        } else {
+            console.log("Erro ao atualizar objeto do usuário.")
+        }
+    }
+
+    async function updateProfile(updatedProfileObject) {
+        let updatedUser = null;
+        let updatedProfile = updatedProfileObject || undefined
+        if (updatedProfile === undefined) {
+            console.log("Objeto do perfil do usuário atualizado não definido, atualizando via rede...")
+            const readResponse = await api.get(`/profile/${user.profile.id}`)
+            if (readResponse) {
+                let userCopy = user;
+                userCopy.profile = readResponse.data as Profile;
+                updatedUser = userCopy
+            }
+        } else if (user && updatedProfile) {
+            let userCopy = user;
+            userCopy.profile = updatedProfileObject
             updatedUser = userCopy
         }
         if (updatedUser !== null) {
@@ -230,6 +256,7 @@ function AuthProvider({ children }: AuthProviderProps) {
             signOut,
             updateReports,
             updateUser,
+            updateProfile,
             updateReport,
             hasAppPermissions,
             setHasAppPermissions,

@@ -8,7 +8,17 @@ export const styles = StyleSheet.create({
         borderTopRightRadius: 15,
         overflow: "hidden"
     },
-    flipCamera: {
+    camera: {
+        flex: 1,
+    },
+
+    buttonContainer: {
+        flex: 1,
+        backgroundColor: 'transparent',
+        flexDirection: 'row',
+        margin: 20,
+    },
+    flipButton: {
         backgroundColor: theme.colors.primary1,
         alignItems: "center",
         justifyContent: "center",
@@ -17,34 +27,54 @@ export const styles = StyleSheet.create({
         width: 48,
         borderRadius: 10,
         position: "absolute",
-        bottom: 15,
-        right: 15
+        bottom: 5,
+        right: 5
     },
     bottomBar: {
         alignItems: "center",
         justifyContent: "center"
     },
 
+    listContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+
     // MODAL
-    newPhotoButton: {
+    footerHolder: {
+        alignSelf: "center",
+        alignItems: "center",
+        flexDirection: "column",
+        width: "85%",
+        marginTop: -55,
+        //backgroundColor: "red"
+    },
+    buttonsHolder: {
+        alignSelf: "center",
+        alignItems: "center",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        height: 45,
+    },
+    button: {
         borderRadius: 15,
         backgroundColor: theme.colors.primary1,
-        width: 225,
-        height: 45,
-
+        flex: 0.5,
         alignSelf: "center",
         alignItems: "center",
         justifyContent: "center",
-        marginTop: -15
+        flexDirection: "row",
+        paddingVertical: 5,
     },
-
-    /*     takePhotoButton: {
-            width: "100%",
-            height: 50,
-            marginBottom: 20,
-    
-            borderBottomLeftRadius: 15,
-            borderBottomRightRadius: 15,
-            backgroundColor: theme.colors.primary1,
-        } */
+    text: {
+        color: theme.colors.text1,
+        fontSize: 14,
+        fontFamily: theme.fonts.subtitle700
+    },
+    icon: {
+        fontSize: 32,
+        marginRight: 5,
+        color: theme.colors.text1
+    }
 });

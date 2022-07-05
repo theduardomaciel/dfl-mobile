@@ -14,7 +14,7 @@ import { UpdateNavigationBar } from "../../../utils/functions/UpdateNavigationBa
 
 async function GetReportComments(report_id) {
     try {
-        const reportCommentsResult = await api.post("/report/comments/read", { report_id: report_id })
+        const reportCommentsResult = await api.get(`report/${report_id}/comments"`)
         const reportComments = reportCommentsResult.data as Array<Comment>
         return reportComments
     } catch (error) {
@@ -61,7 +61,7 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
         }
     }, [isVisible])
 
-    const nullOrZero = comments !== null ? comments.length === 0 : true
+    const hasComments = comments ? true : false
     return (
         <Modal
             isVisible={isVisible}
@@ -91,10 +91,12 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
                         opacity: 0.5
                     }} />
                     {
-                        !nullOrZero && <Text style={styles.title}>{`${comments.length} comentário${comments.length !== 1 ? 's' : ""}`}</Text>
+                        hasComments && <Text style={styles.title}>{`${comments.length} comentário${comments.length !== 1 ? 's' : ""}`}</Text>
                     }
                 </View>
-                <CommentsView width={"90%"} report_id={report_id} commentsArray={comments} />
+                {
+                    hasComments && <CommentsView width={"90%"} report_id={report_id} commentsArray={comments} />
+                }
             </KeyboardAvoidingView>
         </Modal>
     );

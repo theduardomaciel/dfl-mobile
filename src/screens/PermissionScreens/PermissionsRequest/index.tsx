@@ -15,7 +15,7 @@ import { Paginator } from "../../../components/Paginator";
 
 import { TextButton } from "../../../components/TextButton";
 import { HintView, HintViewTextStyle } from "../../../components/HintView";
-import { ConclusionScreen } from "../../../components/ConclusionScreen";
+import { ConclusionScreen } from "../../ConclusionScreen";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { useAuth } from "../../../hooks/useAuth";
 

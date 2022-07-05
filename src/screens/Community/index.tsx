@@ -50,8 +50,8 @@ const placeholder_report = {
     createdAt: "Thu Apr 28 2022 16:58:17 GMT-0300 (Horário Padrão de Brasília)",
     address: "",
     coordinates: ['', ''],
-    image_url: "https://github.com/theduardomaciel.png",
-    image_deleteHash: "",
+    images_urls: ["https://github.com/theduardomaciel.png"],
+    images_deleteHashs: [""],
     tags: "",
     suggestion: "",
     hasTrashBins: false,
@@ -198,7 +198,7 @@ export function Community({ navigation }) {
         console.log("Atualizando relatórios.")
         refreshButtonRotation.value = withRepeat(withSpring(refreshButtonRotation.value + 360, { damping: 15, restSpeedThreshold: 1 }), -1, false)
         const success = await updateReports()
-        if (success) {
+        if (success === true) {
             getScopePicked("city")
             showToast()
             cancelAnimation(refreshButtonRotation)
@@ -299,7 +299,7 @@ export function Community({ navigation }) {
                 </View>
                 <View style={styles.cityContainer}>
                     <Text style={styles.cityText}>{`Maceió, AL`}</Text>
-                    <MaterialIcons name="pending" size={16} color={theme.colors.secondary1} />
+                    <MaterialIcons name="verified" size={16} color={theme.colors.secondary1} />
                 </View>
                 <TextForm
                     customStyle={styles.searchBar}

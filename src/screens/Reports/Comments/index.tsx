@@ -76,7 +76,7 @@ export function CommentsView({ width, report_id, commentsArray }: Props) {
         setDeletingComment(true)
 
         // Atualizando objeto do relatório no banco de dados
-        await api.post("/report/comments/delete", { comment_id: actualComment.id })
+        await api.delete(`/report/${report_id}/comment/${actualComment.id}`)
 
         // Atualizando array de comentários localmente
         let commentsCopy = Object.assign(comments)

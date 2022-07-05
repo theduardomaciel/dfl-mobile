@@ -49,13 +49,30 @@ const initialRegion = {
 }
 
 import { FocusCallout } from "../Community/Callouts/FocusCallout";
-import { GetUserWithVersion } from "../../utils/functions/GetUserWithVersion";
+
+import { hideNavigationBar } from 'react-native-navigation-bar-color';
 
 export function Home({ route, navigation }) {
     const [errorMessage, setErrorMessage] = useState(route.params?.errorMessage);
     const [errorModalVisible, setErrorModalVisible] = useState(false);
 
-    useEffect(() => {
+    const { user, updateProfile, signOut } = useAuth();
+
+    let mapReference: any;
+    const [alreadyLoaded, setAlreadyLoaded] = useState(false)
+
+    function checkData() {
+        if (route.params?.errorMessage) {
+            console.log("Error Message: ", route.params?.errorMessage)
+            setErrorMessage(route.params?.errorMessage)
+            setErrorModalVisible(true)
+        }
+        check(locationPermission)
+            .then(async (result) => {
+                if (result !== RESULTS.GRANTED) return navigation.navigate("PermissionsRequest");
+            });
+        UpdateNavigationBar("dark", false, theme.colors.background)
+        hideNavigationBar()
         async function LoadMarkersOnMap() {
             try {
                 await getScopePicked("district")
@@ -65,28 +82,13 @@ export function Home({ route, navigation }) {
         }
         LoadMarkersOnMap()
         setErrorModalVisible(typeof errorMessage === "string" ? true : false)
-    }, [errorMessage])
+    }
 
-    const { user, updateUser, signOut } = useAuth();
-
-    let mapReference: any;
-    const [alreadyLoaded, setAlreadyLoaded] = useState(false)
-
-    useFocusEffect(
-        useCallback(() => {
-            UpdateNavigationBar("dark", false, theme.colors.background)
-            if (route.params?.errorMessage) {
-                console.log("Error Message: ", route.params?.errorMessage)
-                setErrorMessage(route.params?.errorMessage)
-                setErrorModalVisible(true)
-            }
-            check(locationPermission)
-                .then(async (result) => {
-                    console.log(result)
-                    if (result !== RESULTS.GRANTED) return navigation.navigate("PermissionsRequest");
-                });
-        }, [navigation])
-    );
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', checkData);
+        // Return the function to unsubscribe from the event so it gets removed on unmount
+        return unsubscribe;
+    }, [navigation]);
 
     const [region, setRegion] = useState(initialRegion as Region);
     const [scopeText, setScopeText] = useState("em seu bairro")
@@ -107,19 +109,17 @@ export function Home({ route, navigation }) {
                 break;
         }
         const markersArray = await ListMarkersOnMap(scope, newRegion)
-        if (markersArray[0] === "error") {
-            signOut();
-            return;
-        } else {
-            await setReports(markersArray)
-            await setReportsInScopeAmount(markersArray.length)
+        if (markersArray) {
+            setReports(markersArray)
+            setReportsInScopeAmount(markersArray.length)
         }
     }
 
     const [isRefreshing, setIsRefreshing] = useState(false)
     const onRefresh = async () => {
         setIsRefreshing(true)
-        await updateUser()
+        await updateProfile()
+
         setIsRefreshing(false)
         console.log("Usuário atualizou a página inicial.")
     }
@@ -132,7 +132,7 @@ export function Home({ route, navigation }) {
             setIsAvailable(false)
             setErrorMessage("Por enquanto, o DFL não está disponível em sua localização :(\nAguarde o lançamento oficial do aplicativo para que sua região esteja disponível.")
             setErrorModalVisible(true)
-        } else {
+        } /* else {
             const deviceVersion = "0.0.1"
             const serverVersion = await GetUserWithVersion()
             console.warn(`Device: ${deviceVersion} | Server: ${serverVersion}`)
@@ -147,7 +147,7 @@ export function Home({ route, navigation }) {
                     setErrorModalVisible(true)
                 }
             }
-        }
+        } */
     }
 
     if (user === null) return (

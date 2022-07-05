@@ -7,17 +7,16 @@ import {
     View,
 } from 'react-native';
 
-import { TextButton } from '../TextButton';
+import { TextButton } from '../../components/TextButton';
 
 import { theme } from '../../global/styles/theme';
 import { styles } from './styles';
-import { levelStyles } from '../../screens/Level/styles';
+import { levelStyles } from '../Level/styles';
 
 import { LEVELS_DATA } from '../../utils/data/levels';
 import { useAuth } from '../../hooks/useAuth';
 
 import AnimatedNumbers from 'react-native-animated-numbers';
-import { UpdateNavigationBar } from '../../utils/functions/UpdateNavigationBar';
 
 type Props = {
     // A ? faz com que o elemento não seja obrigatório
@@ -26,10 +25,11 @@ type Props = {
     icon?: string;
     gainedExperience?: number | null;
     backButtonText?: string;
-    onPress: () => void;
+    navigateTo?: string;
 }
 
-export function ConclusionScreen({ title, info, backButtonText, icon, gainedExperience, onPress }: Props) {
+export function ConclusionScreen({ route, navigation }) {
+    const { title, info, backButtonText, icon, gainedExperience, navigateTo } = route.params as Props;
     const { user } = useAuth();
 
     // [0] = quanto xp o usuário ganhou | [1] = porcentagem da xp que o usuário ganhou | [2] = quanto de xp ele precisa pra subir de nível
@@ -125,17 +125,16 @@ export function ConclusionScreen({ title, info, backButtonText, icon, gainedExpe
                 <Text style={{ fontSize: 64 }}>{icon ? icon : "✅"}</Text>
             </View>
             {
-                gainedExperience ?
-                    <View style={styles.levelBackground}>
-                        {experienceUI}
-                    </View>
-                    : null
+                gainedExperience &&
+                <View style={styles.levelBackground}>
+                    {experienceUI}
+                </View>
             }
             {/* <Confetti colors={[theme.colors.primary1, theme.colors.secondary1, theme.colors.primary2, theme.colors.secondary2]} /> */}
             <TextButton
                 title={backButtonText ? backButtonText : "Voltar para a tela inicial"}
                 buttonStyle={{ backgroundColor: theme.colors.secondary1, paddingHorizontal: 20, paddingVertical: 15, marginBottom: 50 }}
-                onPress={onPress}
+                onPress={() => navigation.navigate(navigateTo ? navigateTo : "Home")}
             />
         </ImageBackground>
     )

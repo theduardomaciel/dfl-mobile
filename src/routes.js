@@ -9,6 +9,8 @@ import { NewLevel } from "./screens/NewLevel"
 import { ReportScreen } from "./screens/Report"
 import { Search } from './screens/Reports/Search';
 
+import { ConclusionScreen } from './screens/ConclusionScreen';
+
 import { PermissionsExplanation } from './screens/PermissionScreens/PermissionsExplanation';
 import { PermissionsRequest } from './screens/PermissionScreens/PermissionsRequest';
 
@@ -55,6 +57,8 @@ export default function Routes() {
             <Stack.Group screenOptions={{ presentation: 'modal' }}>
                 <Stack.Screen name="PermissionsExplanation" component={PermissionsExplanation} />
                 <Stack.Screen name="PermissionsRequest" component={PermissionsRequest} />
+
+                <Stack.Screen name="ConclusionScreen" component={ConclusionScreen} />
 
                 <Stack.Screen name="Step1" component={ReportScreen1} />
                 <Stack.Screen name="Step2" component={ReportScreen2} />

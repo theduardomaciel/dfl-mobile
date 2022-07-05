@@ -219,16 +219,11 @@ export function Reports({ route, navigation }) {
     async function loadMoreReports() {
         try {
             console.log(data, data.length)
-            const moreReportsResponse = await api.post("/reports/search", {
-                // Condição 1: Local - Caso o usuário já tenha criado um perfil, utilizamos a cidade inserida (primeiro nome antes da vírgula), 
-                // caso contrário, utilizamos o Brasil inteiro como local de busca
-                location: "Brasil",
-                // Condição 2: Novos - Excluímos os relatórios já adicionados em buscas anteriores
-                exclusionsId: data.map(report => report.id),
-                includeInfo: true,
-                // Condição 3: Usuário - Excluímos os relatórios criados pelo próprio usuário
-                //profileToExcludeId: user.profile.id
-            })
+            const moreReportsResponse = await api.get(`/report?location=${`Brasil`}${data.length > 0 ? `&exclusionsId=${data.map(report => report.id)}` : ""}&includeInfo=true`)
+            // Condição 1: Local - utilizamos o Brasil inteiro como local de busca
+            // Condição 2: Novos - Excluímos os relatórios já adicionados em buscas anteriores
+            // Condição 3: Usuário - Excluímos os relatórios criados pelo próprio usuário
+            //profileToExcludeId: user.profile.id
             const moreReports = moreReportsResponse.data as Array<Report>;
             if (moreReports.length > 0) {
                 if (data.length > 0) {

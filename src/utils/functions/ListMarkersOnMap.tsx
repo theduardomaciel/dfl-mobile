@@ -25,14 +25,13 @@ import * as Location from "expo-location";
 import { LocationGeocodedAddress } from "expo-location";
 
 export async function ListMarkersOnMap(scope: string, userRegion: Region) {
-
     const markersArray = []
     const reportsUnparsed = await AsyncStorage.getItem(REPORTS_STORAGE);
-    const reports = await JSON.parse(reportsUnparsed) as Array<Report>
+    const reports = JSON.parse(reportsUnparsed) as Array<Report>
 
-    if (reports === undefined) {
+    if (reports && reports.length < 1) {
         console.log("Não foi possível obter os relatórios.");
-        return ["error"]
+        return null
     }
 
     let userLocation;
@@ -46,7 +45,7 @@ export async function ListMarkersOnMap(scope: string, userRegion: Region) {
     }
     if (!userLocation) {
         console.log("Não foi possível obter o endereço do usuário.");
-        return ["error"]
+        return null
     }
 
     switch (scope) {
@@ -54,12 +53,12 @@ export async function ListMarkersOnMap(scope: string, userRegion: Region) {
             const district = userLocation.district.replace(/ /g, '')
             reports.forEach((report) => {
                 const reportDistrict = report.address.split(",")[2].replace(/ /g, '');
-                console.log(reportDistrict, district)
+                // console.log(reportDistrict, district)
                 if (reportDistrict === district) {
                     markersArray.push(report)
                 }
             })
-            console.log(markersArray)
+            // console.log(markersArray)
             return markersArray;
         case "city":
             const city = userLocation.city ? userLocation.city.replace(/ /g, '') : userLocation.subregion.replace(/ /g, '')
