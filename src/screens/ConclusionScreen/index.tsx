@@ -65,51 +65,56 @@ export function ConclusionScreen({ route, navigation }) {
         }, 3500);
     }, [])
 
-    const experienceUI = <View>
-        <View style={styles.animatedTextView}>
-            <Text style={levelStyles.levelDescription}>
-                Você ganhou{` `}
-            </Text>
-            <AnimatedNumbers
-                animateToNumber={number0}
-                fontStyle={levelStyles.levelDescription}
-            />
-            <Text style={levelStyles.levelDescription}>
-                xp!
-            </Text>
-        </View>
-        <View style={{ flexDirection: "row", marginBottom: 5, marginTop: 5, alignItems: "center", justifyContent: "center" }}>
-            <View style={levelStyles.progressBar}>
-                <Animated.View style={[levelStyles.progressBar, {
-                    backgroundColor: theme.colors.primary2,
-                    borderRadius: 25 / 2,
-                    width: barWidth
-                }]} />
-            </View>
-            <View style={[styles.animatedTextView, { marginLeft: 5 }]}>
-                <AnimatedNumbers
-                    animateToNumber={number1}
-                    fontStyle={levelStyles.levelDescription2}
-                />
-                <Text style={levelStyles.levelDescription2}>
-                    %
-                </Text>
-            </View>
-        </View>
+    const experienceUI = () => {
+        /* Nunca deixar uma string dessa maneira: "", sem espaços, pois o react native acusa o erro de string fora de Text element */
+        return (
+            <View>
+                <View style={styles.animatedTextView}>
+                    <Text style={levelStyles.levelDescription}>
+                        {`Você ganhou `}
+                    </Text>
+                    <AnimatedNumbers
+                        animateToNumber={number0}
+                        fontStyle={levelStyles.levelDescription}
+                    />
+                    <Text style={levelStyles.levelDescription}>
+                        {`XP!`}
+                    </Text>
+                </View>
+                <View style={{ flexDirection: "row", marginBottom: 5, marginTop: 5, alignItems: "center", justifyContent: "center" }}>
+                    <View style={levelStyles.progressBar}>
+                        <Animated.View style={[levelStyles.progressBar, {
+                            backgroundColor: theme.colors.primary2,
+                            borderRadius: 25 / 2,
+                            width: barWidth
+                        }]} />
+                    </View>
+                    <View style={[styles.animatedTextView, { marginLeft: 5 }]}>
+                        <AnimatedNumbers
+                            animateToNumber={number1}
+                            fontStyle={levelStyles.levelDescription2}
+                        />
+                        <Text style={levelStyles.levelDescription2}>
+                            %
+                        </Text>
+                    </View>
+                </View>
 
-        <View style={styles.animatedTextView}>
-            <Text style={levelStyles.levelDescription2}>
-                Faltam mais{` `}
-            </Text>
-            <AnimatedNumbers
-                animateToNumber={number2}
-                fontStyle={levelStyles.levelDescription}
-            />
-            <Text style={levelStyles.levelDescription2}>
-                xp para subir de nível!
-            </Text>
-        </View>
-    </View>
+                <View style={styles.animatedTextView}>
+                    <Text style={levelStyles.levelDescription2}>
+                        Faltam mais{` `}
+                    </Text>
+                    <AnimatedNumbers
+                        animateToNumber={number2}
+                        fontStyle={levelStyles.levelDescription}
+                    />
+                    <Text style={levelStyles.levelDescription2}>
+                        xp para subir de nível!
+                    </Text>
+                </View>
+            </View>
+        );
+    }
 
     return (
         <ImageBackground source={require("../../assets/placeholders/background_placeholder.png")} style={styles.container}>
@@ -124,12 +129,12 @@ export function ConclusionScreen({ route, navigation }) {
                 <View style={styles.circle} />
                 <Text style={{ fontSize: 64 }}>{icon ? icon : "✅"}</Text>
             </View>
-            {
+            {/* {
                 gainedExperience &&
                 <View style={styles.levelBackground}>
                     {experienceUI}
                 </View>
-            }
+            } */}
             {/* <Confetti colors={[theme.colors.primary1, theme.colors.secondary1, theme.colors.primary2, theme.colors.secondary2]} /> */}
             <TextButton
                 title={backButtonText ? backButtonText : "Voltar para a tela inicial"}

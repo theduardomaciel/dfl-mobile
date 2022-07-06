@@ -124,7 +124,7 @@ export function NewLevel({ route, navigation }) {
             setNumber1(100)
             setNumber2(0)
             setNumber0(USER_LEVEL)
-        }, 1250);
+        }, 2500);
         setTimeout(() => {
             setIsExpandedView(true)
         }, 5000);

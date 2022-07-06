@@ -33,7 +33,6 @@ type AuthContextData = {
     signIn: () => Promise<string>;
     signOut: () => Promise<void>;
     updateReports: () => Promise<boolean | string>;
-    updateUser: (updatedObject?, updatedElementKey?) => Promise<void>;
     updateProfile: (updatedProfileObject?) => Promise<void>;
     updateReport: (actualObject?, updatedObject?, updatedElementKey?) => Promise<Report>;
 }
@@ -60,34 +59,6 @@ function AuthProvider({ children }: AuthProviderProps) {
     const [isSigningIn, setIsSigningIn] = useState(true)
     const [hasAppPermissions, setHasAppPermissionsState] = useState(true)
     const [user, setUser] = useState<User | null>(null)
-
-    async function updateReports() {
-        const result = await check(locationPermission)
-        if (result === RESULTS.GRANTED) {
-            setHasAppPermissionsState(true)
-        } else {
-            return false
-        }
-
-        const userLocation = await Location.getCurrentPositionAsync()
-        if (userLocation) {
-            const result = await Location.reverseGeocodeAsync({ latitude: userLocation.coords.latitude, longitude: userLocation.coords.longitude });
-            const location = result[0]
-            const state = location.city ? location.city.replace(/ /g, '') : location.region.replace(/ /g, '');
-            const reports = await GetReportsInLocation(state, true)
-            console.warn(reports)
-            if (reports) {
-                await AsyncStorage.setItem(REPORTS_STORAGE, JSON.stringify(reports))
-                await AsyncStorage.setItem(LOCATION_STORAGE, JSON.stringify(location))
-                console.log("Os relatórios da cidade do usuário foram atualizados na aplicação.")
-                return true
-            } else {
-                return false
-            }
-        } else {
-            return false
-        }
-    }
 
     async function signIn() {
         setIsSigningIn(true)
@@ -163,26 +134,31 @@ function AuthProvider({ children }: AuthProviderProps) {
         }
     }
 
-    async function updateUser(updatedObject, updatedElementKey) {
-        let updatedUser = updatedObject || undefined
-        if (updatedUser === undefined) {
-            console.log("Objeto do usuário atualizado não definido, atualizando via rede...")
-            const readResponse = await api.get(`/user/${user.id}`, { headers: { 'Authorization': `Bearer ${await AsyncStorage.getItem(TOKEN_STORAGE)}` } })
-            if (readResponse) {
-                console.log(readResponse.data)
-                updatedUser = readResponse.data as User;
-            }
-        } else if (user && updatedElementKey) {
-            let userCopy = Object.assign(user)
-            userCopy[updatedElementKey] = updatedObject
-            updatedUser = userCopy
-        }
-        if (updatedUser !== null) {
-            await AsyncStorage.setItem(USER_STORAGE, JSON.stringify(updatedUser));
-            setUser(updatedUser);
-            console.log("Objeto do usuário atualizado com sucesso!")
+    async function updateReports() {
+        const result = await check(locationPermission)
+        if (result === RESULTS.GRANTED) {
+            setHasAppPermissionsState(true)
         } else {
-            console.log("Erro ao atualizar objeto do usuário.")
+            return false
+        }
+
+        const userLocation = await Location.getCurrentPositionAsync()
+        if (userLocation) {
+            const result = await Location.reverseGeocodeAsync({ latitude: userLocation.coords.latitude, longitude: userLocation.coords.longitude });
+            const location = result[0]
+            const state = location.city ? location.city.replace(/ /g, '') : location.region.replace(/ /g, '');
+            const reports = await GetReportsInLocation(state, true)
+            console.warn(reports)
+            if (reports) {
+                await AsyncStorage.setItem(REPORTS_STORAGE, JSON.stringify(reports))
+                await AsyncStorage.setItem(LOCATION_STORAGE, JSON.stringify(location))
+                console.log("Os relatórios da cidade do usuário foram atualizados na aplicação.")
+                return true
+            } else {
+                return false
+            }
+        } else {
+            return false
         }
     }
 
@@ -214,7 +190,7 @@ function AuthProvider({ children }: AuthProviderProps) {
     async function updateReport(actualObject, updatedObject, updatedElementKey) {
         let updatedReport = updatedObject || undefined
         if (actualObject && updatedElementKey) {
-            let reportCopy = Object.assign(actualObject)
+            let reportCopy = actualObject;
             reportCopy[updatedElementKey] = updatedObject
             updatedReport = reportCopy
         }
@@ -255,12 +231,11 @@ function AuthProvider({ children }: AuthProviderProps) {
             signIn,
             signOut,
             updateReports,
-            updateUser,
             updateProfile,
             updateReport,
-            hasAppPermissions,
             setHasAppPermissions,
             user,
+            hasAppPermissions,
             isSigningIn,
         }}>
             {children}

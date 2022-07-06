@@ -60,7 +60,12 @@ export function CommentsView({ width, report_id, commentsArray }: Props) {
     const [comments, setComments] = useState<Array<Comment>>(commentsArray)
 
     useEffect(() => {
-        setComments(commentsArray)
+        if (commentsArray) {
+            setComments(commentsArray)
+            console.log("Comentários: ", commentsArray)
+        } else {
+            setComments([])
+        }
     }, [commentsArray])
 
     if (Platform.OS === 'android') {
@@ -98,7 +103,7 @@ export function CommentsView({ width, report_id, commentsArray }: Props) {
         setUploadingComment(true)
 
         // Atualizando objeto do relatório no banco de dados
-        const commentResponse = await api.post("/report/comments/create", {
+        const commentResponse = await api.post(`/report/${report_id}/comment`, {
             profile_id: user.profile.id,
             report_id: report_id,
             content: commentText
@@ -209,7 +214,7 @@ export function CommentsView({ width, report_id, commentsArray }: Props) {
         )
     }
 
-    const nullOrZero = comments !== null ? comments.length === 0 : true
+    const hasComments = comments !== undefined && comments !== null && comments.length !== 0 ? true : false;
     return (
         <>
             <ModalBase
@@ -243,7 +248,7 @@ export function CommentsView({ width, report_id, commentsArray }: Props) {
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 nestedScrollEnabled={true}
-                contentContainerStyle={nullOrZero && { height: "100%" }}
+                contentContainerStyle={!hasComments && { height: "100%" }}
             >
                 <View style={{ flex: 1 }} onStartShouldSetResponder={(): boolean => true}>
                     <FlatList
@@ -265,7 +270,7 @@ export function CommentsView({ width, report_id, commentsArray }: Props) {
             </ScrollView>
 
             {
-                comments !== null && user.profile &&
+                comments && user.profile &&
                 <TextForm
                     customStyle={{ height: 40, width: width, marginTop: 15, marginBottom: 20 }}
                     textInputProps={{

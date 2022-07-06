@@ -5,7 +5,7 @@ import { theme } from "../../../../global/styles/theme";
 
 import { styles, triangleSize } from "../calloutStyles"
 import TrashbinIcon from "../../../../assets/icons/trashbin.svg"
-import { GetRatingsAverage } from "../../../Reports";
+import GetRatingsAverage from "../../../../utils/functions/GetRatingsAverage";
 import { Report } from "../../../../@types/application";
 import { LatLng } from "react-native-maps";
 

@@ -23,9 +23,9 @@ import TrashBinSVG from "../../assets/icons/trashbin.svg"
 import { useAuth } from "../../hooks/useAuth";
 import { api } from "../../utils/api";
 import { Profile, Report } from "../../@types/application";
-import { GetRatingsAverage } from "../Reports";
 import { CommentsModal } from "../Reports/Comments/Modal";
 import { UpdateNavigationBar } from "../../utils/functions/UpdateNavigationBar";
+import GetRatingsAverage from "../../utils/functions/GetRatingsAverage";
 
 type TagsType = {
     id: string;

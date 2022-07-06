@@ -1,31 +1,20 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { View, Text, FlatList, Dimensions, Image, ViewToken, Pressable, ActivityIndicator, StatusBar } from "react-native";
+import { View, Text, FlatList, Dimensions, Image, ViewToken, ActivityIndicator, Pressable } from "react-native";
 import { TextForm } from "../../components/TextForm";
+import * as FileSystem from 'expo-file-system';
 
+import TrashBinSVG from "../../assets/icons/trashbin.svg"
 import { theme } from "../../global/styles/theme";
-import { SELECTOR_WIDTH, styles } from "./styles";
+import { styles } from "./styles";
 
 import Toast from 'react-native-toast-message';
 import Share from 'react-native-share';
 
-import TrashBinSVG from "../../assets/icons/trashbin.svg"
-
 import { MaterialIcons } from "@expo/vector-icons"
-import { backgroundDrivers, TAB_BAR_HEIGHT, TAB_BAR_HEIGHT_LONG } from "../../components/TabBar";
+import { backgroundDrivers, TAB_BAR_HEIGHT_LONG } from "../../components/TabBar";
 
 import { api } from "../../utils/api";
 import { useAuth } from "../../hooks/useAuth";
-
-import * as FileSystem from 'expo-file-system';
-
-import Animated, {
-    withSpring,
-    useAnimatedStyle,
-    useSharedValue,
-    withTiming,
-    Easing,
-} from 'react-native-reanimated';
-import { PanGestureHandler } from "react-native-gesture-handler";
 
 import { CommentsModal } from "./Comments/Modal";
 import { Report } from "../../@types/application";
@@ -37,20 +26,15 @@ type PropTypes = {
 }
 import { useFocusEffect } from '@react-navigation/native';
 import { UpdateNavigationBar } from "../../utils/functions/UpdateNavigationBar";
+import RatingFrame from "./RatingFrame";
+import GetRatingsAverage from "../../utils/functions/GetRatingsAverage";
 
 let lastIndex = 0;
-
-export function GetRatingsAverage(actualReport: Report) {
-    //console.log("Atualizando rating do relatório atual.")
-    const ratings = [actualReport.note1, actualReport.note2, actualReport.note3, actualReport.note4, actualReport.note5]
-    const sum = ratings.reduce((a, b) => a + b, 0)
-    return sum / 5
-}
 
 export const shareReport = async (setIsLoading: React.Dispatch<React.SetStateAction<boolean>>, report: Report) => {
     setIsLoading(true)
     FileSystem.downloadAsync(
-        report.image_url,
+        report.images_urls[0],
         FileSystem.documentDirectory + 'report_image'
     )
         .then(async ({ uri }) => {
@@ -77,12 +61,12 @@ export const shareReport = async (setIsLoading: React.Dispatch<React.SetStateAct
         });
 }
 
-export async function UpdateReportRating(rating, report, user) {
+export async function UpdateReportRating(rating, report, profile) {
     // Quando o usuário passar de relatório, atualizaremos a nota do anterior, caso ele tenha votado (seu rating será diferente de 0)
     if (rating !== 0) {
         const newRating = new Array(5)
 
-        let profileRating = Object.assign(typeof user.profile.ratings === "string" ? JSON.parse(user.profile.ratings) : user.profile.ratings);
+        let profileRating = Object.assign(typeof profile.ratings === "string" ? JSON.parse(profile.ratings) : profile.ratings);
 
         // newRating[x] = nota | [0] = increment | [1] = decrement
         function CheckIfProfileAlreadyRated() {
@@ -108,11 +92,10 @@ export async function UpdateReportRating(rating, report, user) {
         profileRating[rating.toString()].push(report.id)
         newRating[rating] = [1, 0]
 
-        const serverResponse = await api.post("/report/update", {
-            report_id: report.id,
+        const serverResponse = await api.patch(`/report/${report.id}`, {
             decrement: hasAlreadyVoted ? true : false,
             rating: newRating,
-            profile_id: user.profile.id,
+            profile_id: profile.id,
             profileRating: profileRating
         });
 
@@ -127,92 +110,11 @@ export async function UpdateReportRating(rating, report, user) {
 }
 
 export function Reports({ route, navigation }) {
-    const { user, updateUser, signOut } = useAuth();
+    const { user, updateProfile, signOut } = useAuth();
 
     if (user === null) return (
         <View style={{ flex: 1 }} />
     );
-
-    const offset = useSharedValue(62);
-    const ratingSelectorAnimatedStyle = useAnimatedStyle(() => {
-        return {
-            transform: [
-                {
-                    translateX: offset.value,
-                },
-            ],
-        };
-    });
-
-    const ratingPosition = useSharedValue(350)
-    const ratingContainerAnimatedStyles = useAnimatedStyle(() => {
-        return {
-            transform: [
-                {
-                    translateX: withTiming(ratingPosition.value, {
-                        duration: 500,
-                        easing: Easing.out(Easing.exp),
-                    }),
-                },
-            ],
-        };
-    });
-
-    const onGestureBegin = () => {
-        console.log("O gesto de avaliação iniciou.")
-        offset.value = 62
-        ratingPosition.value = 0
-    }
-
-    const onGestureEnded = () => {
-        console.log("O gesto de avaliação terminou.")
-        offset.value = 62
-        ratingPosition.value = 350
-    }
-
-    const INITIAL_OFFSET = 15
-    const POSITION_OFFSET = SELECTOR_WIDTH / 5
-    const POSITIONS = [
-        INITIAL_OFFSET,
-        INITIAL_OFFSET + POSITION_OFFSET,
-        INITIAL_OFFSET + POSITION_OFFSET * 2,
-        INITIAL_OFFSET + POSITION_OFFSET * 3,
-        INITIAL_OFFSET + POSITION_OFFSET * 4
-    ]
-
-    const _onPanGestureEvent = (event, setRating) => {
-        //O único problema do uso do translationX é que caso o usuário queria trocar seu rating, a animação terá que começar do início
-        const nativeEvent = event.nativeEvent;
-        const POSITION_X = nativeEvent.translationX // Quanta distância foi percorrida desde o início da animação
-        const DISTANCE = (-POSITION_OFFSET / 2) - 15
-
-        const ANIMATION_CONFIG = {
-            damping: 7,
-            stiffness: 85,
-            mass: 0.25,
-        }
-        if (POSITION_X < DISTANCE && POSITION_X > DISTANCE * 2) {
-            //console.log("Dedo está no 2")
-            offset.value = withSpring(-POSITIONS[1] / 2 - 15, ANIMATION_CONFIG)
-            setRating(2)
-        } else if (POSITION_X < DISTANCE * 2 && POSITION_X > DISTANCE * 3) {
-            //console.log("Dedo está no 3")
-            offset.value = withSpring(-POSITIONS[2] + 15, ANIMATION_CONFIG)
-            setRating(3)
-        } else if (POSITION_X < DISTANCE * 3 && POSITION_X > DISTANCE * 4) {
-            //console.log("Dedo está no 4")
-            offset.value = withSpring(-POSITIONS[3] + 15, ANIMATION_CONFIG)
-            setRating(4)
-        } else if (POSITION_X < DISTANCE * 4) {
-            //console.log("Dedo está no 5")
-            offset.value = withSpring(-POSITIONS[4] + 15, ANIMATION_CONFIG)
-            setRating(5)
-        } else {
-            //console.log("Dedo está no 1")
-            offset.value = withSpring(0, ANIMATION_CONFIG)
-            setRating(1)
-        }
-    }
 
     const [isLoading, setIsLoading] = useState(false)
     const [data, setData] = useState<Array<Report>>([])
@@ -282,13 +184,17 @@ export function Reports({ route, navigation }) {
 
     useEffect(() => {
         async function UpdateReport() {
-            const { report, profile } = await UpdateReportRating(rating, data[lastIndex], user)
-            if (report) {
-                const dataCopy = Object.assign(data)
-                dataCopy[lastIndex] = report
-                setData(dataCopy)
+            const response = await api.patch(`/report/${data[lastIndex].id}`, {
+                profile_id: user.profile.id,
+                rating: rating,
+            })
+            const updatedReport = response.data as Report;
+            if (updatedReport) {
+                const updatedData = data;
+                updatedData[lastIndex] = updatedReport
+                setData(updatedData)
 
-                updateUser(profile, "profile")
+                updateProfile()
 
                 lastIndex = currentIndex
                 setRating(0)
@@ -340,7 +246,6 @@ export function Reports({ route, navigation }) {
             text2: 'Verifique sua conexão com a internet e tente novamente.',
         });
     }
-
 
     const [isCommentsModalVisible, setCommentsModalVisible] = useState(false)
     return (
@@ -401,43 +306,32 @@ export function Reports({ route, navigation }) {
             }
 
             {
-                data.length > 0 ?
-                    <View style={styles.actionButtonsHolder}>
-                        <View style={styles.actionButton}>
-                            <View style={[styles.buttonCircle, { width: 65, height: 65 }]} />
-                            <View style={[styles.buttonCircle, { width: 50, height: 50, opacity: 1 }]} />
-                            <TrashBinSVG height={28} width={28} fill={theme.colors.text1} />
-                            <Text style={[styles.ratingViewerText]}>{GetRatingsAverage(data[currentIndex])}</Text>
-                        </View>
-                        <Pressable style={styles.actionButton} onPress={() => {
-                            setCommentsModalVisible(true)
-                        }}>
-                            <View style={[styles.buttonCircle, { width: 65, height: 65 }]} />
-                            <View style={[styles.buttonCircle, { width: 50, height: 50, opacity: 1 }]} />
-                            <MaterialIcons name="comment" size={28} color={theme.colors.text1} />
-                        </Pressable>
-                        <Pressable style={styles.actionButton} onPress={() => shareReport(setIsLoading, data[currentIndex])}>
-                            <View style={[styles.buttonCircle, { width: 65, height: 65 }]} />
-                            <View style={[styles.buttonCircle, { width: 50, height: 50, opacity: 1 }]} />
-                            <MaterialIcons name="share" size={28} color={theme.colors.text1} />
-                        </Pressable>
-                        <View style={styles.ratingSelector}>
-                            <Animated.View style={[ratingContainerAnimatedStyles, styles.ratingContainer]}>
-                                <Text style={styles.ratingPlaceholder}>5</Text>
-                                <Text style={styles.ratingPlaceholder}>4</Text>
-                                <Text style={styles.ratingPlaceholder}>3</Text>
-                                <Text style={styles.ratingPlaceholder}>2</Text>
-                                <Text style={styles.ratingPlaceholder}>1</Text>
-                            </Animated.View>
-                            <PanGestureHandler onBegan={onGestureBegin} onEnded={onGestureEnded} onCancelled={onGestureEnded} onFailed={onGestureEnded} onGestureEvent={(event) => _onPanGestureEvent(event, setRating)}>
-                                <Animated.View style={[styles.ratingRound, ratingSelectorAnimatedStyle]}>
-                                    <View style={[styles.buttonCircle, { backgroundColor: theme.colors.primary1, width: 50, height: 50, opacity: 1 }]} />
-                                </Animated.View>
-                            </PanGestureHandler>
-                        </View>
+                data.length > 0 &&
+                <View style={styles.actionButtonsHolder}>
+                    <View style={styles.actionButton}>
+                        <View style={[styles.buttonCircle, { width: 65, height: 65 }]} />
+                        <View style={[styles.buttonCircle, { width: 50, height: 50, opacity: 1 }]} />
+                        <TrashBinSVG height={28} width={28} fill={theme.colors.text1} />
+                        <Text style={[styles.ratingViewerText]}>{GetRatingsAverage(data[currentIndex])}</Text>
                     </View>
-                    : null
+                    <Pressable style={styles.actionButton} onPress={() => {
+                        setCommentsModalVisible(true)
+                    }}>
+                        <View style={[styles.buttonCircle, { width: 65, height: 65 }]} />
+                        <View style={[styles.buttonCircle, { width: 50, height: 50, opacity: 1 }]} />
+                        <MaterialIcons name="comment" size={28} color={theme.colors.text1} />
+                    </Pressable>
+                    <Pressable style={styles.actionButton} onPress={() => shareReport(setIsLoading, data[currentIndex])}>
+                        <View style={[styles.buttonCircle, { width: 65, height: 65 }]} />
+                        <View style={[styles.buttonCircle, { width: 50, height: 50, opacity: 1 }]} />
+                        <MaterialIcons name="share" size={28} color={theme.colors.text1} />
+                    </Pressable>
+                    <View style={styles.ratingSelector}>
+                        <RatingFrame animation setRating={setRating} />
+                    </View>
+                </View>
             }
+
             {
                 data.length > 0 &&
                 <CommentsModal

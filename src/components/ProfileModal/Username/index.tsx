@@ -10,6 +10,7 @@ import { styles } from './styles';
 import { defaultStyles } from '../pickerDefaultStyles';
 
 import { TextInput } from 'react-native-gesture-handler';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 export const MIN_USERNAME_CHARACTERS = 3;
 export const MAX_USERNAME_CHARACTERS = 16
@@ -26,19 +27,40 @@ type CustomProps = {
     usernameState: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export function UsernamePicker({ usernameState }: CustomProps) {
+export function UsernamePicker({ usernameState, ...props }: CustomProps) {
+
+    const offset = useSharedValue(0);
+
+    const animatedStyles = useAnimatedStyle(() => {
+        return {
+            transform: [{
+                translateY: withSpring(offset.value, {
+                    mass: 0.5,
+                    stiffness: 85,
+                })
+            }],
+        };
+    });
+
     return (
-        <View style={styles.container}>
+        <Animated.View style={[styles.container, animatedStyles]}>
             <Text style={defaultStyles.title}>
                 Nome de Usuário
             </Text>
-            <TextInput onChangeText={usernameState}
+            <TextInput
+                onChangeText={usernameState}
                 placeholder='nomedeusuário'
                 textAlign='center'
+                onFocus={() => {
+                    offset.value = -100
+                }}
+                onBlur={() => {
+                    offset.value = 0
+                }}
                 autoCapitalize={"none"}
                 maxLength={MAX_USERNAME_CHARACTERS}
                 style={[defaultStyles.picker, { width: 250 }, theme.shadowPropertiesLow]}
             />
-        </View>
+        </Animated.View>
     );
 }

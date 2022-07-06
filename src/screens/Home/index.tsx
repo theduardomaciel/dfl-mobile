@@ -1,10 +1,8 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, Image, RefreshControl, Pressable, ImageBackground } from "react-native";
 import { MapScopePicker } from "../../components/MapScopePicker";
 
 import MapView, { PROVIDER_GOOGLE, Marker, Callout } from "react-native-maps";
-
-const GarbageBagIcon = require("../../assets/icons/garbage_bag.png")
 
 import { ProfileIcon } from "../../components/ProfileIcon";
 import { elements } from "../../global/styles/elements";
@@ -15,7 +13,7 @@ import { styles } from "./styles";
 import { useAuth } from "../../hooks/useAuth";
 import { Region } from "../../@types/application";
 
-import { ListMarkersOnMap } from "../../utils/functions/ListMarkersOnMap";
+import ListMarkersOnMap from "../../utils/functions/ListMarkersOnMap";
 import { ModalBase } from "../../components/ModalBase";
 import { LEVELS_DATA } from "../../utils/data/levels";
 
@@ -28,7 +26,6 @@ import { UpdateNavigationBar } from "../../utils/functions/UpdateNavigationBar";
 import { locationPermission } from "../../utils/permissionsToCheck";
 
 import { check, RESULTS } from 'react-native-permissions';
-import { useFocusEffect } from '@react-navigation/native';
 
 function GetGreeting() {
     const hour = new Date().getHours();
@@ -51,6 +48,7 @@ const initialRegion = {
 import { FocusCallout } from "../Community/Callouts/FocusCallout";
 
 import { hideNavigationBar } from 'react-native-navigation-bar-color';
+import { ProfileModal } from "../../components/ProfileModal";
 
 export function Home({ route, navigation }) {
     const [errorMessage, setErrorMessage] = useState(route.params?.errorMessage);
@@ -82,6 +80,18 @@ export function Home({ route, navigation }) {
         }
         LoadMarkersOnMap()
         setErrorModalVisible(typeof errorMessage === "string" ? true : false)
+        CheckIfProfileIsCreated()
+    }
+
+    const [isFirstModalVisible, setFirstModalVisible] = useState(false)
+    const firstToggleModal = () => {
+        setFirstModalVisible(!isFirstModalVisible)
+    }
+    async function CheckIfProfileIsCreated() {
+        if (!user.profile.username) {
+            console.log("Usuário não possui perfil. Exibindo modal para criação.")
+            setFirstModalVisible(true)
+        }
     }
 
     useEffect(() => {
@@ -288,6 +298,12 @@ export function Home({ route, navigation }) {
                         </MapView>
                     </View>
                 </View>
+
+                <ProfileModal
+                    isVisible={isFirstModalVisible}
+                    toggleModal={firstToggleModal}
+                />
+
                 <ModalBase
                     title="Opa! Parece que algo deu errado..."
                     description={errorMessage}

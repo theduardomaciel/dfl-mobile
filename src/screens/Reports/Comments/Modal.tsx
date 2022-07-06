@@ -16,9 +16,16 @@ async function GetReportComments(report_id) {
     try {
         const reportCommentsResult = await api.get(`report/${report_id}/comments"`)
         const reportComments = reportCommentsResult.data as Array<Comment>
-        return reportComments
+        if (reportComments && reportComments.length > 0) {
+            console.log("Há relatórios")
+            return reportComments
+        } else {
+            console.log("Não há comentários para este relatório")
+            return null
+        }
     } catch (error) {
-        console.log(error)
+        console.log(error, "deu erro")
+        return null
     }
 }
 
@@ -61,7 +68,7 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
         }
     }, [isVisible])
 
-    const hasComments = comments ? true : false
+    const hasComments = comments !== undefined && comments !== null && comments.length !== 0 ? true : false;
     return (
         <Modal
             isVisible={isVisible}
@@ -94,9 +101,7 @@ export function CommentsModal({ isVisible, closeFunction, report_id }: Props) {
                         hasComments && <Text style={styles.title}>{`${comments.length} comentário${comments.length !== 1 ? 's' : ""}`}</Text>
                     }
                 </View>
-                {
-                    hasComments && <CommentsView width={"90%"} report_id={report_id} commentsArray={comments} />
-                }
+                <CommentsView width={"90%"} report_id={report_id} commentsArray={comments} />
             </KeyboardAvoidingView>
         </Modal>
     );

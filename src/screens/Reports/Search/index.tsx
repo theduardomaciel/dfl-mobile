@@ -26,7 +26,7 @@ import { styles as defaultStyles } from "../styles";
 import { TextForm } from "../../../components/TextForm";
 import { api } from "../../../utils/api";
 import { Report } from "../../../@types/application";
-import { GetRatingsAverage } from "..";
+import GetRatingsAverage from "../../../utils/functions/GetRatingsAverage";
 
 const FAKE_DATA = [
     {
@@ -139,7 +139,7 @@ export function Search({ route, navigation }) {
                 navigation.navigate("Report", { item })
             }}>
                 <View style={styles.preview}>
-                    <Image source={{ uri: report.image_url }} style={{ flex: 1 }} />
+                    <Image source={{ uri: report.images_urls[0] }} style={{ flex: 1 }} />
                     <View style={styles.previewRatingView}>
                         <TrashBinSvg height={28} width={28} fill={theme.colors.text1} />
                         <Text style={[styles.previewSubTitle, { color: theme.colors.text1 }, theme.shadowPropertiesLow]}>{GetRatingsAverage(item)}</Text>
