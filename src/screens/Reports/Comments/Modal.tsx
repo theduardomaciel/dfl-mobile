@@ -14,7 +14,7 @@ import { UpdateNavigationBar } from "../../../utils/functions/UpdateNavigationBa
 
 async function GetReportComments(report_id) {
     try {
-        const reportCommentsResult = await api.get(`report/${report_id}/comments"`)
+        const reportCommentsResult = await api.get(`/report/${report_id}/comments`)
         const reportComments = reportCommentsResult.data as Array<Comment>
         if (reportComments && reportComments.length > 0) {
             console.log("Há relatórios")

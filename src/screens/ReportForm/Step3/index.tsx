@@ -17,7 +17,7 @@ import SubmitReport from "./SubmitReport";
 import { useAuth } from "../../../hooks/useAuth";
 
 export function ReportScreen3({ route, navigation }: any) {
-    const { user, updateUser } = useAuth();
+    const { user, updateProfile } = useAuth();
     const { data } = route.params;
 
     const [isLoading, setIsLoading] = useState(false)
@@ -40,7 +40,7 @@ export function ReportScreen3({ route, navigation }: any) {
             console.log("Deu erro :(")
             navigation.navigate("Início" as never, { errorMessage: `Infelizmente não foi cadastrar seu relatório :(\nPor favor, tente novamente mais tarde.` })
         } else {
-            await updateUser(response, "profile");
+            await updateProfile(response)
             setIsLoading(false)
             navigation.navigate("ConclusionScreen", {
                 title: "O relatório foi enviado com sucesso!",

@@ -43,7 +43,7 @@ export const shareReport = async (setIsLoading: React.Dispatch<React.SetStateAct
             const base64Data = `data:image/png;base64,` + base64;
             Share.open({
                 url: base64Data,
-                message: `Olha esse foco de lixo que vi em *${report.address}*!\nEncontrei ele pelo aplicativo *DFL - Detector de Focos de Lixo*, que envia relatórios de focos de lixo relatados pela comunidade para a prefeitura.\n*Que tal baixar e avaliar nesse foco pra que ele seja resolvido mais rápido?*`,
+                message: `Olha esse foco de lixo que vi em *${report.address}*!\nEncontrei ele pelo aplicativo *DFL - Detector de Focos de Lixo*, que envia relatórios de focos de lixo relatados pela comunidade para a prefeitura.\n*Que tal baixar e avaliar esse foco pra que ele seja resolvido mais rápido?*\nhttps://dfl.vercel.app`,
                 title: `Olha esse foco de lixo que tá em ${report.address}!`
             })
                 .then((response) => {
@@ -61,56 +61,8 @@ export const shareReport = async (setIsLoading: React.Dispatch<React.SetStateAct
         });
 }
 
-export async function UpdateReportRating(rating, report, profile) {
-    // Quando o usuário passar de relatório, atualizaremos a nota do anterior, caso ele tenha votado (seu rating será diferente de 0)
-    if (rating !== 0) {
-        const newRating = new Array(5)
-
-        let profileRating = Object.assign(typeof profile.ratings === "string" ? JSON.parse(profile.ratings) : profile.ratings);
-
-        // newRating[x] = nota | [0] = increment | [1] = decrement
-        function CheckIfProfileAlreadyRated() {
-            // Loopamos entre cada uma das possíveis notas
-            for (let note = 1; note <= 5; note++) {
-                const noteRatings = profileRating[note.toString()]
-                const index = noteRatings.indexOf(report.id)
-                // Caso encontremos um index diferente de -1, o usuário já votou com a "note" do loop atual
-                if (index > -1) {
-                    console.log(`Usuário já avaliou esse relatório com a nota ${note}. 🚯 Removendo-a.`)
-                    // Removemos 1 voto da nota em que o usuário votou
-                    newRating[note] = [0, 1]
-                    // Removemos a avaliação do perfil do usuário para em seguida atualizarmos ele no banco de dados
-                    profileRating[note.toString()].splice(index, 1)
-                    return true
-                }
-            }
-        }
-
-        const hasAlreadyVoted = CheckIfProfileAlreadyRated();
-
-        // Deixa isso aqui depois da função que checa se o cara já votou por favor.
-        profileRating[rating.toString()].push(report.id)
-        newRating[rating] = [1, 0]
-
-        const serverResponse = await api.patch(`/report/${report.id}`, {
-            decrement: hasAlreadyVoted ? true : false,
-            rating: newRating,
-            profile_id: profile.id,
-            profileRating: profileRating
-        });
-
-        if (serverResponse.data) {
-            return serverResponse.data;
-        } else {
-            return { report: false }
-        }
-    } else {
-        return { report: false }
-    }
-}
-
 export function Reports({ route, navigation }) {
-    const { user, updateProfile, signOut } = useAuth();
+    const { user, updateProfile } = useAuth();
 
     if (user === null) return (
         <View style={{ flex: 1 }} />
@@ -184,20 +136,22 @@ export function Reports({ route, navigation }) {
 
     useEffect(() => {
         async function UpdateReport() {
-            const response = await api.patch(`/report/${data[lastIndex].id}`, {
-                profile_id: user.profile.id,
-                rating: rating,
-            })
-            const updatedReport = response.data as Report;
-            if (updatedReport) {
-                const updatedData = data;
-                updatedData[lastIndex] = updatedReport
-                setData(updatedData)
+            if (rating !== 0) {
+                const response = await api.patch(`/report/${data[lastIndex].id}`, {
+                    profile_id: user.profile.id,
+                    rating: rating,
+                })
+                const updatedReport = response.data as Report;
+                if (updatedReport) {
+                    console.log("Atualizando relatório")
+                    const updatedData = data;
+                    updatedData[lastIndex] = updatedReport
+                    updatedData[lastIndex][`note${rating}`] = updatedReport[`note${rating}`] + 1
+                    setData(updatedData)
 
-                updateProfile()
-
-                lastIndex = currentIndex
-                setRating(0)
+                    lastIndex = currentIndex
+                    setRating(0)
+                }
             }
         }
 
@@ -223,7 +177,7 @@ export function Reports({ route, navigation }) {
                         flex: 1,
                         resizeMode: "cover"
                     }}
-                    source={{ uri: item.image_url }}
+                    source={{ uri: item.images_urls[0] }}
                 />
             </View>
         )

@@ -48,7 +48,7 @@ async function CheckIfUsernameIsAvailable(username) {
 }
 
 export function ProfileIcon({ uri, openConfig }: Props) {
-    const { user, updateUser, signOut } = useAuth();
+    const { user, updateProfile, signOut } = useAuth();
 
     const [modalVisible, setModalVisible] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
@@ -60,10 +60,10 @@ export function ProfileIcon({ uri, openConfig }: Props) {
         setIsLoading(true)
         setChangeUsernameModalVisible(false)
 
-        const profileResponse = await api.post("/profile/update", { profile_id: user.profile.id, username: usernameText })
+        const profileResponse = await api.patch(`/profile/${user.profile.id}`, { username: usernameText })
         const updatedProfile = profileResponse.data as Profile;
         if (updatedProfile) {
-            await updateUser(updatedProfile, "profile");
+            await updateProfile(updatedProfile)
             console.log(`Nome de perfil do usuário atualizado com sucesso!`)
         }
 

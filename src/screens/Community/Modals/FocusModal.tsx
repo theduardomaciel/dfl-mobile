@@ -73,11 +73,11 @@ export const FocusModal = React.forwardRef((props: Props, ref) => {
     return (
         <Portal>
             <BottomSheetModalProvider>
-
                 <BottomSheetModal
                     ref={ref as any}
                     index={0}
                     enablePanDownToClose
+                    overDragResistanceFactor={1.5}
                     snapPoints={snapPoints}
                     onChange={handleSheetChanges}
                 >
@@ -280,10 +280,10 @@ export const FocusModal = React.forwardRef((props: Props, ref) => {
                         </ScrollView>
                     </ScrollView>
                 </BottomSheetModal >
-                {
-                    isLoading && <LoadingScreen />
-                }
             </BottomSheetModalProvider>
+            {
+                isLoading && <LoadingScreen />
+            }
         </Portal >
     )
 });

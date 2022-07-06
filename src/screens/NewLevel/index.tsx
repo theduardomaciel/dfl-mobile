@@ -120,14 +120,12 @@ export function NewLevel({ route, navigation }) {
             duration: 3000,
             useNativeDriver: false,
         }).start();
-        setTimeout(() => {
-            setNumber1(100)
-            setNumber2(0)
-            setNumber0(USER_LEVEL)
-        }, 2500);
+        setNumber1(100)
+        setNumber2(0)
+        setNumber0(USER_LEVEL)
         setTimeout(() => {
             setIsExpandedView(true)
-        }, 5000);
+        }, 1250);
     })
 
     if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
