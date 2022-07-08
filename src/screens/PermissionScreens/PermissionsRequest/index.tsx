@@ -68,17 +68,18 @@ export function PermissionsRequest({ navigation, route }) {
     )
 
     const [isLoading, setLoading] = useState(false)
-    const [isModalVisible, setModalVisible] = useState(false);
 
     async function PrepareApp() {
         setLoading(true)
-
         if (hasToUpdate) {
             console.log("Atualizando relatórios de maneira geral.")
             await updateReports()
         }
         setLoading(false)
-        setModalVisible(true)
+        navigation.navigate("ConclusionScreen", {
+            title: "O DFL está pronto para você!",
+            info: `Tudo está configurado.\nAgora é sua vez de tornar sua cidade cada vez mais limpa!`,
+        })
     }
 
     function CameraGranted() {
@@ -169,7 +170,7 @@ export function PermissionsRequest({ navigation, route }) {
 
     return (
         <View style={styles.container}>
-            <FocusAwareStatusBar translucent={true} barStyle={"dark-content"} />
+            <FocusAwareStatusBar backgroundColor={theme.colors.background} barStyle={"dark-content"} />
             <Logo height={75} width={150} />
             <View style={{ flex: 0.8, marginTop: 48 }}>
                 <FlatList style={styles.list}
@@ -189,25 +190,6 @@ export function PermissionsRequest({ navigation, route }) {
                     ref={slidesRef}
                 />
             </View>
-
-            {
-                isModalVisible &&
-                <Modal
-                    statusBarTranslucent={true}
-                    isVisible={isModalVisible}
-                >
-                    <ConclusionScreen
-                        title="O DFL está pronto para você!"
-                        info={`Tudo está configurado.\nAgora é sua vez de tornar sua cidade cada vez mais limpa!`}
-                        backButtonText="Ir para o app"
-                        onPress={async () => {
-                            await setModalVisible(false)
-                            navigation.navigate('Main')
-                        }}
-                    />
-                </Modal>
-            }
-
             <View style={styles.footer}>
                 <Paginator data={permissions_screens} scrollX={scrollX} scrollTo={scrollTo} />
                 <TextButton buttonStyle={{ backgroundColor: BUTTON_COLORS[currentIndex], paddingHorizontal: 20, paddingVertical: 15 }} title={BUTTONS_TEXTS[currentIndex]} onPress={FUNCTIONS[currentIndex]} />

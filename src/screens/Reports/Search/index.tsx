@@ -27,6 +27,7 @@ import { TextForm } from "../../../components/TextForm";
 import { api } from "../../../utils/api";
 import { Report } from "../../../@types/application";
 import GetRatingsAverage from "../../../utils/functions/GetRatingsAverage";
+import FocusAwareStatusBar from "../../../utils/functions/FocusAwareStatusBar";
 
 const FAKE_DATA = [
     {
@@ -94,7 +95,7 @@ export function Search({ route, navigation }) {
                 includeInfo: true
             }, { timeout: 10 * 1000, timeoutErrorMessage: "O tempo limite de espera do servidor foi atingido." }) */
 
-            const newResults = await api.get(`/report?location=${searchOject}&username=${searchOject}${results !== null ? `&exclusionsId=${results.map(report => report.id)}` : ""}&includeInfo=true`,
+            const newResults = await api.get(`/report?location=${searchOject}&username=${searchOject}${results && results.length > 0 ? `&exclusionsId=${results.map(report => report.id)}` : ""}&includeInfo=true`,
                 { timeout: 10 * 1000, timeoutErrorMessage: "O tempo limite de espera do servidor foi atingido." })
 
             const moreReports = newResults.data as Array<Report>;
@@ -196,7 +197,7 @@ export function Search({ route, navigation }) {
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="dark-content" />
+            <FocusAwareStatusBar translucent backgroundColor={"transparent"} barStyle="dark-content" />
             <View style={{ flexDirection: "row", marginTop: 45, width: "95%", alignSelf: "center" }}>
                 <MaterialIcons
                     name="keyboard-arrow-left"

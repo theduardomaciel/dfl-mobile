@@ -75,7 +75,7 @@ export const levelStyles = StyleSheet.create({
 
     progressBar: {
         flex: 1,
-        borderRadius: 17.5,
+        borderRadius: 999,
         height: 25,
         backgroundColor: theme.colors.primary4
     }

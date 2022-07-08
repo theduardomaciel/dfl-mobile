@@ -32,7 +32,7 @@ import { Roboto_400Regular, Roboto_500Medium, Roboto_700Bold, Roboto_900Black } 
 import { Alatsi_400Regular } from "@expo-google-fonts/alatsi"
 
 import Routes from "./src/routes";
-import { AuthProvider } from "./src/hooks/useAuth"
+import { AuthProvider, useAuth } from "./src/hooks/useAuth"
 
 import { theme } from "./src/global/styles/theme";
 import { TAB_BAR_HEIGHT } from "./src/components/TabBar";
@@ -101,48 +101,24 @@ export default function App() {
                 await SplashScreen.preventAutoHideAsync();
                 // Pre-load fonts, make any API calls you need to do here
                 await Font.loadAsync(fontsToLoad);
-                // Artificially delay for two seconds to simulate a slow loading
-                // experience. Please remove this if you copy and paste the code!
-                await new Promise(resolve => setTimeout(resolve, 2000));
             } catch (e) {
                 console.warn(e);
             } finally {
-                // Tell the application to render
-                setAppIsReady(true);
+                await setAppIsReady(true);
             }
         }
-
-        prepare();
+        prepare()
     }, []);
 
-    React.useEffect(() => {
-        async function prepareApp() {
-            if (appIsReady) {
-                // This tells the splash screen to hide immediately! If we call this after
-                // `setAppIsReady`, then we may see a blank screen while the app is
-                // loading its initial state and rendering its first pixels. So instead,
-                // we hide the splash screen once we know the root view has already
-                // performed layout.
-                await SplashScreen.hideAsync();
-            }
-        }
-        prepareApp()
-    }, [appIsReady]);
-
-    /* if (!appIsReady) {
+    if (!appIsReady) {
         return null;
-    } */
+    }
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <AuthProvider>
                 <Host>
                     <NavigationContainer>
-                        <StatusBar
-                            barStyle="dark-content"
-                            backgroundColor="transparent"
-                            translucent
-                        />
                         <Routes />
                     </NavigationContainer>
                     <Toast
@@ -154,6 +130,5 @@ export default function App() {
                 </Host>
             </AuthProvider>
         </GestureHandlerRootView>
-
     )
 }

@@ -12,6 +12,7 @@ import { TextButton } from "../../../components/TextButton";
 import CameraObject from "./Camera";
 import { Paginator } from "../../../components/Paginator";
 import { ModalBase } from "../../../components/ModalBase";
+import FocusAwareStatusBar from "../../../utils/functions/FocusAwareStatusBar";
 
 type PropTypes = {
     viewableItems: Array<ViewToken>;
@@ -68,6 +69,7 @@ export function ReportScreen2({ route, navigation }: any) {
 
     return (
         <View style={defaultStyles.container}>
+            <FocusAwareStatusBar translucent backgroundColor={"transparent"} barStyle="dark-content" />
             <View style={defaultStyles.safeView}>
                 <View style={defaultStyles.header}>
                     <Text style={defaultStyles.stepTitle}>2 | IMAGEM DO LOCAL</Text>

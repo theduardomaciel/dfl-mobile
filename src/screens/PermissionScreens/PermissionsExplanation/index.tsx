@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { SvgProps } from "react-native-svg";
 import { View, Text, ScrollView } from "react-native";
 
@@ -17,6 +17,7 @@ type Props = {
 import { MaterialIcons } from '@expo/vector-icons';
 import { AccordionOptions } from "../../../components/AccordionOptions";
 import { HintView, HintViewTextStyle } from "../../../components/HintView";
+import FocusAwareStatusBar from "../../../utils/functions/FocusAwareStatusBar";
 
 const Bold = (props) => <Text style={{ fontWeight: 'bold' }}>{props.children}</Text>
 
@@ -61,6 +62,8 @@ const PERMISSIONS = [
     },
 ]
 
+import changeNavigationBarColor from "react-native-navigation-bar-color";
+
 export function PermissionsExplanation({ navigation }) {
     function PermissionItem(itemMaster) {
         const item = itemMaster.item;
@@ -88,8 +91,13 @@ export function PermissionsExplanation({ navigation }) {
         )
     };
 
+    useEffect(() => {
+        changeNavigationBarColor("transparent", false, true)
+    })
+
     return (
         <View style={styles.container}>
+            <FocusAwareStatusBar backgroundColor={theme.colors.background} barStyle={"dark-content"} />
             <View style={[styles.elementsContainer, { marginTop: 25 }]}>
                 <Text style={styles.title}>
                     Antes de começar, precisamos de algumas <Bold>permissões</Bold>.
@@ -109,7 +117,8 @@ export function PermissionsExplanation({ navigation }) {
                 shadow
                 buttonStyle={{ height: 45, width: "90%", marginBottom: 25 }}
                 colors={[theme.colors.primary1, theme.colors.secondary1]}
-                onPress={() => { navigation.navigate("PermissionsRequest", { update: true }) }} />
+                onPress={() => { navigation.navigate("PermissionsRequest", { update: true }) }}
+            />
         </View>
     );
 }

@@ -281,13 +281,13 @@ export function Account({ navigation, route }) {
 
     return (
         <ImageBackground source={require("../../assets/placeholders/background_placeholder.png")} style={styles.container}>
-            <FocusAwareStatusBar translucent barStyle="dark-content" />
+            <FocusAwareStatusBar translucent backgroundColor={"transparent"} barStyle="dark-content" />
             <Header />
             <ScrollView
                 style={{ width: "100%" }}
                 contentContainerStyle={styles.scrollContainer}
                 showsVerticalScrollIndicator={false}
-                fadingEdgeLength={25}
+                //fadingEdgeLength={25}
                 nestedScrollEnabled={true}
                 refreshControl={
                     <RefreshControl

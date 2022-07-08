@@ -12,6 +12,7 @@ import { styles } from "./styles";
 import { AntDesign } from '@expo/vector-icons';
 import { BottomBar } from "../../../components/BottomBar";
 import { TextButton } from "../../../components/TextButton";
+import FocusAwareStatusBar from "../../../utils/functions/FocusAwareStatusBar";
 
 async function getLocationAddress(latitude: number, longitude: number) {
     try {
@@ -55,6 +56,7 @@ export function ReportScreen1({ navigation }: any) {
     let mapReference: MapView;
     return (
         <View style={defaultStyles.container}>
+            <FocusAwareStatusBar translucent backgroundColor={"transparent"} barStyle="dark-content" />
             <View style={defaultStyles.safeView}>
                 <View style={defaultStyles.header}>
                     <Text style={defaultStyles.stepTitle}>1 | LOCAL DO FOCO</Text>

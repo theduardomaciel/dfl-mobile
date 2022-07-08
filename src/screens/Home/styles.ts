@@ -34,6 +34,7 @@ export const styles = StyleSheet.create({
         fontFamily: theme.fonts.subtitle500,
         fontSize: 36,
         color: theme.colors.secondary1,
+        flex: 1,
     },
 
     // ScrollView

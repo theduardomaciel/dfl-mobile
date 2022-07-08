@@ -25,7 +25,7 @@ import { TagSection } from "../../components/TagsSelector";
 import { RectButton } from "react-native-gesture-handler";
 
 import { FocusCallout } from "./Callouts/FocusCallout";
-import { FocusModal } from "./Modals/FocusModal";
+import { FocusModal, returnCamera } from "./Modals/FocusModal";
 
 const placeholder_report = {
     profile: {
@@ -68,10 +68,6 @@ export function Community({ navigation }) {
     const { user, updateReports } = useAuth();
 
     const [reports, setReports] = useState([])
-
-    if (user === null) return (
-        <View style={{ flex: 1 }} />
-    );
 
     const [region, setRegion] = useState<Region>(null);
     const getScopePicked = async (scope, newRegion?) => {
@@ -124,12 +120,25 @@ export function Community({ navigation }) {
     const markerRef = useRef<Marker>(null);
     const focusModalRef = useRef<BottomSheetModal>(null);
 
-    const openFocusModal = useCallback(() => {
+    const openFocusModal = useCallback(async (report) => {
+        console.log("Alterando relatório atual e abrindo modal.")
+        if (report !== actualMarker) {
+            await setActualMarker(report)
+        }
         focusModalRef.current?.present();
+        const camera = await mapRef.current?.getCamera() as Camera;
+        camera.center = {
+            latitude: parseFloat(report.coordinates[0]) - 0.0035,
+            longitude: parseFloat(report.coordinates[1])
+        }
+        camera.zoom = 15.75
+        mapRef.current?.animateCamera(camera, { duration: 1000 })
     }, []);
 
-    const closeFocusModal = useCallback(() => {
+    const closeFocusModal = useCallback(async () => {
+        console.log("Fechando modal")
         focusModalRef.current?.dismiss();
+        returnCamera(actualMarker, markerRef, mapRef)
     }, []);
 
     const showToast = () => {
@@ -166,23 +175,19 @@ export function Community({ navigation }) {
         setIsLoading(false)
     }
 
-    const onDismiss = () => {
-
-    }
-
-    useEffect(() => {
-        openFocusModal();
-    }, [actualMarker]);
-
     useEffect(() => {
         PrepareScreen()
         getScopePicked("city")
     }, []);
 
+    if (user === null) return (
+        <View style={{ flex: 1 }} />
+    );
+
     return (
         <BottomSheetModalProvider>
             <ImageBackground source={require("../../assets/placeholders/background_placeholder.png")} style={styles.container}>
-                <FocusAwareStatusBar translucent barStyle="dark-content" />
+                <FocusAwareStatusBar translucent backgroundColor={"transparent"} barStyle="dark-content" />
                 <View style={styles.container}>
                     {
                         region !== null &&
@@ -219,29 +224,12 @@ export function Community({ navigation }) {
                                                 //latitude: typeof report.coordinates[0] !== "number" ?  : report.coordinates[0],
                                                 //longitude: typeof report.coordinates[0] !== "number" ? parseFloat(report.coordinates[1]) : report.coordinates[1]
                                             }}
-                                            onPress={async () => {
-                                                console.log("Alterando relatório atual e abrindo modal.")
-                                                openFocusModal()
-                                                //console.log("Antes: ", actualMarker)
-                                                if (report !== actualMarker) {
-                                                    await setActualMarker(report)
-                                                } else {
-                                                    console.log("Abrindo modal")
-                                                    openFocusModal()
-                                                }
-                                                const camera = await mapRef.current?.getCamera() as Camera;
-                                                camera.center = {
-                                                    latitude: parseFloat(report.coordinates[0]) - 0.0035,
-                                                    longitude: parseFloat(report.coordinates[1])
-                                                }
-                                                camera.zoom = 15.75
-                                                mapRef.current?.animateCamera(camera, { duration: 1000 })
-                                            }}
+                                            onPress={() => openFocusModal(report)}
                                             calloutAnchor={{ x: 4.825, y: -0.15 }}
                                         >
                                             {
                                                 region !== undefined &&
-                                                <Callout tooltip>
+                                                <Callout tooltip onPress={() => openFocusModal(report)}>
                                                     <FocusCallout report={report} region={region} />
                                                 </Callout>
                                             }
@@ -300,7 +288,9 @@ export function Community({ navigation }) {
                     ref={focusModalRef}
                     report={actualMarker}
                     profile={user.profile}
-                    onDismiss={onDismiss}
+                    updateReport={setActualMarker}
+                    markerRef={markerRef}
+                    mapRef={mapRef}
                 />
             </ImageBackground >
         </BottomSheetModalProvider>

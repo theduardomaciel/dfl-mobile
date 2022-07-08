@@ -4,7 +4,7 @@ import {
     View,
     Animated,
     TouchableOpacity,
-    useWindowDimensions
+    Dimensions
 } from 'react-native';
 import { theme } from '../../global/styles/theme';
 
@@ -16,8 +16,9 @@ type Props = {
     scrollTo: (i: number) => void;
 }
 
+const { width } = Dimensions.get("window");
+
 export function Paginator({ data, scrollX, scrollTo }: Props) {
-    const { width } = useWindowDimensions();
     return (
         <View style={{ flexDirection: 'row', height: 28 }}>
             {data.map((_, index) => {

@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 import {
-    Animated,
     Image,
     ImageBackground,
     LayoutAnimation,
@@ -25,6 +24,8 @@ import FocusAwareStatusBar from "../../utils/functions/FocusAwareStatusBar";
 import AnimatedNumbers from 'react-native-animated-numbers';
 import Confetti from "../../components/Confetti/index"
 
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+
 export function NewLevel({ route, navigation }) {
     const { user } = useAuth();
 
@@ -39,11 +40,12 @@ export function NewLevel({ route, navigation }) {
     const [number1, setNumber1] = useState(0)
     const [number2, setNumber2] = useState(LEVEL_COMPONENT.exp)
 
-    const barAnimation = useRef(new Animated.Value(0)).current;
-    const barWidth = barAnimation.interpolate({
-        inputRange: [0, 1],
-        outputRange: ["0%", "100%"],
-        extrapolate: 'clamp'
+    const barWidth = useSharedValue(0)
+
+    const animatedStyles = useAnimatedStyle(() => {
+        return {
+            width: withTiming(`${barWidth.value}%`, { duration: 2500 }),
+        };
     });
 
     const [isExpandedView, setIsExpandedView] = useState(false)
@@ -64,12 +66,11 @@ export function NewLevel({ route, navigation }) {
                     <Animated.View style={[levelStyles.progressBar, {
                         backgroundColor: theme.colors.primary2,
                         borderRadius: 25 / 2,
-                        width: barWidth
-                    }]} />
+                    }, animatedStyles]} />
                 </View>
                 <View style={[styles.animatedTextView, { marginLeft: 5 }]}>
                     <AnimatedNumbers
-                        animationDuration={1500}
+                        animationDuration={500}
                         animateToNumber={number1}
                         fontStyle={levelStyles.levelDescription2}
                     />
@@ -84,7 +85,7 @@ export function NewLevel({ route, navigation }) {
                     Faltam mais{` `}
                 </Text>
                 <AnimatedNumbers
-                    animationDuration={3000}
+                    animationDuration={2150}
                     animateToNumber={number2}
                     fontStyle={levelStyles.levelDescription}
                 />
@@ -115,57 +116,70 @@ export function NewLevel({ route, navigation }) {
         </View>
 
     useEffect(() => {
-        Animated.timing(barAnimation, {
-            toValue: 1,
-            duration: 3000,
-            useNativeDriver: false,
-        }).start();
-        setNumber1(100)
-        setNumber2(0)
-        setNumber0(USER_LEVEL)
-        setTimeout(() => {
-            setIsExpandedView(true)
-        }, 1250);
+        async function Animate() {
+            barWidth.value = 100
+            setTimeout(() => {
+                setNumber1(100)
+            }, 500);
+            setTimeout(() => {
+                setNumber2(0)
+            }, 1000);
+            setTimeout(() => {
+                setNumber0(USER_LEVEL)
+            }, 1500);
+            /* await setNumber2(0)
+            await setNumber0(USER_LEVEL) */
+            setTimeout(() => {
+                LayoutAnimation.configureNext(LayoutAnimation.create(1000, 'easeOut', "scaleXY"));
+                setIsExpandedView(true)
+            }, 3500);
+        }
+        Animate()
     })
 
     if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
         UIManager.setLayoutAnimationEnabledExperimental(true);
     }
 
-    LayoutAnimation.configureNext(LayoutAnimation.create(500, 'easeOut', "scaleXY"));
-
     return (
         <ImageBackground source={require("../../assets/placeholders/background_placeholder.png")} style={styles.container}>
-            <FocusAwareStatusBar translucent barStyle="dark-content" />
-            <View style={{ alignItems: "center" }}>
-                <Text style={[styles.title, { fontSize: 24, marginTop: 100 }]}>
-                    Parabéns!
-                </Text>
-                <Text style={styles.title}>
-                    Você subiu de nível!
-                </Text>
-                <Text style={styles.info}>
-                    Agora você é um{`\n`}
-                    <Text style={{ fontFamily: theme.fonts.title700, fontSize: 24 }}>
-                        {`${LEVEL_COMPONENT.title}!`}
+            <FocusAwareStatusBar backgroundColor={"transparent"} barStyle={"dark-content"} translucent={true} />
+            {
+                isExpandedView &&
+                <View style={{ alignItems: "center" }}>
+                    <Text style={[styles.title, { fontSize: 24, marginTop: 100 }]}>
+                        Parabéns!
                     </Text>
-                </Text>
-            </View>
+                    <Text style={styles.title}>
+                        Você subiu de nível!
+                    </Text>
+                    <Text style={styles.info}>
+                        Agora você é um{`\n`}
+                        <Text style={{ fontFamily: theme.fonts.title700, fontSize: 24 }}>
+                            {`${LEVEL_COMPONENT.title}!`}
+                        </Text>
+                    </Text>
+                </View>
+            }
             {
                 isExpandedView ?
                     expandedView
                     : defaultView
             }
-            <Confetti colors={[theme.colors.primary1, theme.colors.secondary1, theme.colors.primary2, theme.colors.secondary2]} />
-            <TextButton
-                isLoading={!isExpandedView}
-                title={"Voltar para a tela inicial"}
-                buttonStyle={{ backgroundColor: theme.colors.secondary1, paddingHorizontal: 20, paddingVertical: 15, marginBottom: 50 }}
-                onPress={() => {
-                    console.log("Foi")
-                    navigation.navigate("Início")
-                }}
-            />
+            {
+                isExpandedView &&
+                <Confetti colors={[theme.colors.primary1, theme.colors.secondary1, theme.colors.primary2, theme.colors.secondary2]} />
+            }
+            {
+                isExpandedView &&
+                <TextButton
+                    title={"Voltar para a tela inicial"}
+                    buttonStyle={{ backgroundColor: theme.colors.secondary1, paddingHorizontal: 20, paddingVertical: 15, marginBottom: 50 }}
+                    onPress={() => {
+                        navigation.navigate("Início")
+                    }}
+                />
+            }
         </ImageBackground>
     )
 }

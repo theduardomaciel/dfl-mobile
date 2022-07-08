@@ -1,5 +1,5 @@
 import React, { useRef, useState, useCallback, useEffect } from "react";
-import { View, FlatList, Animated, ViewToken } from "react-native";
+import { View, FlatList, Animated, ViewToken, StatusBar } from "react-native";
 
 import { onboarding_screens } from "../../utils/data/onboarding";
 import Logo from "../../assets/Logo.svg"
@@ -21,14 +21,9 @@ type PropTypes = {
 import Google_Logo from "../../assets/enterprises/google_logo.svg"
 
 import FocusAwareStatusBar from "../../utils/functions/FocusAwareStatusBar";
-import { UpdateNavigationBar } from "../../utils/functions/UpdateNavigationBar";
 
 export function Onboarding({ navigation }) {
     const { signIn, isSigningIn } = useAuth();
-
-    useEffect(() => {
-        UpdateNavigationBar("dark", true, "transparent")
-    })
 
     const [currentIndex, setCurrentIndex] = useState(0)
     const scrollX = useRef(new Animated.Value(0)).current;
@@ -71,7 +66,7 @@ export function Onboarding({ navigation }) {
 
     return (
         <View style={styles.container}>
-            <FocusAwareStatusBar translucent barStyle="dark-content" />
+            <FocusAwareStatusBar barStyle={"dark-content"} backgroundColor={theme.colors.background} />
             <Logo height={75} width={150} />
             <View style={{ flex: 0.75, marginTop: 48 }}>
                 <FlatList style={styles.list}

@@ -84,15 +84,16 @@ export const styles = StyleSheet.create({
         textAlign: "center",
         textAlignVertical: "center"
     },
-    image1: {
-        width: "60%",
+    image: {
         height: 225,
         borderRadius: 5,
     },
-    image2: {
-        width: "38%",
+    imagesHolder: {
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "space-between",
+        width: "49%",
         height: 225,
-        borderRadius: 5,
     },
     sectionTitle: {
         color: theme.colors.secondary1,

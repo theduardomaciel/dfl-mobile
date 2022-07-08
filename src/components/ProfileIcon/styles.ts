@@ -67,12 +67,12 @@ export const styles = StyleSheet.create({
     },
 
     configIconContainer: {
-        height: 35,
-        width: 35,
-        borderRadius: 35 / 2,
-        backgroundColor: theme.colors.primary4,
+        height: 28,
+        width: 28,
+        borderRadius: 28 / 2,
+        backgroundColor: theme.colors.primary3,
         position: "absolute",
-        bottom: -15,
+        bottom: -10,
         alignItems: "center",
         justifyContent: "center"
     },

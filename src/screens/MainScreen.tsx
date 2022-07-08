@@ -115,7 +115,6 @@ export function MainScreen() {
                 listeners={({ navigation }) => ({
                     tabPress: (event) => {
                         event.preventDefault();
-                        UpdateNavigationBar(null, true, null)
                         navigation.navigate('Step1')
                     }
                 })}

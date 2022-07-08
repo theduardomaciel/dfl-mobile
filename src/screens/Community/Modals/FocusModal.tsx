@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { SetStateAction, useCallback, useMemo, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, Platform, Linking } from 'react-native';
 
 import {
@@ -24,27 +24,81 @@ import { ScrollView, NativeViewGestureHandler } from 'react-native-gesture-handl
 
 import { Portal } from 'react-native-portalize';
 import RatingFrame from '../../Reports/RatingFrame';
+import { api } from '../../../utils/api';
+import MapView, { Camera, Marker } from 'react-native-maps';
 
 const Bold = (props) => <Text style={{ fontFamily: theme.fonts.title700 }}>{props.children}</Text>
 
 type Props = {
     report: Report;
     profile: Profile;
-    onDismiss: () => void;
+    updateReport: React.Dispatch<React.SetStateAction<Report>>;
+    markerRef: React.RefObject<Marker>;
+    mapRef: React.RefObject<MapView>;
+}
+
+export function returnCamera(report: Report, markerRef, mapRef) {
+    console.log("Voltando câmera para o local inicial")
+    markerRef.current?.hideCallout()
+    if (report) {
+        console.log(parseFloat(report.coordinates[0]) + (0.005 / 2), parseFloat(report.coordinates[1]))
+        const parsedLatitude = parseFloat(report.coordinates[0]) + (0.005 / 2) as number | string;
+        const latitude = parsedLatitude !== "NaN" ? parsedLatitude : report.coordinates[0]
+
+        const parsedLongitude = parseFloat(report.coordinates[1]) as number | string;
+        const longitude = parsedLongitude !== "NaN" ? parsedLongitude : report.coordinates[1]
+        const camera = {
+            center: {
+                latitude: latitude,
+                longitude: longitude
+            },
+            zoom: 14
+        }
+        if (mapRef.current) {
+            mapRef.current?.animateCamera(camera, { duration: 1000 })
+        }
+    } else {
+        console.log("Não obtivemos o objeto do relatório ou suas coordenadas.")
+    }
 }
 
 export const FocusModal = React.forwardRef((props: Props, ref) => {
-    const { updateProfile } = useAuth();
+    const { updateReports } = useAuth();
 
     const report = props.report;
     const profile = props.profile;
-    const onDismiss = props.onDismiss;
+
+    const markerRef = props.markerRef;
+    const mapRef = props.mapRef;
 
     // variables
     const snapPoints = useMemo(() => ['50%', '75%'], []);
 
+    const [rating, setRating] = useState(0)
     const handleSheetChanges = useCallback((index: number) => {
         console.log('handleSheetChanges', index);
+        if (index === -1) {
+            console.log("Fechando modal.")
+            returnCamera(report, markerRef, mapRef)
+            async function UpdateReport() {
+                console.log(rating)
+                if (rating !== 0) {
+                    console.log("Atualizando relatório")
+                    const response = await api.patch(`/report/${report.id}`, {
+                        profile_id: profile.id,
+                        rating: rating,
+                    })
+                    const updatedReport = response.data as Report;
+                    if (updatedReport) {
+                        setRating(0)
+                        console.log("Avaliação alterada com sucesso.")
+                        updateReports(updatedReport);
+                        console.log("Relatório atualizado com sucesso.")
+                    }
+                }
+            }
+            UpdateReport();
+        }
     }, []);
 
     const [ratingBarHeight, setRatingBarHeight] = useState(0)
@@ -65,10 +119,10 @@ export const FocusModal = React.forwardRef((props: Props, ref) => {
         longitude: parseFloat(report.coordinates[1])
     }
 
-    const ratingsAverage = GetRatingsAverage(report)
-
-    const [rating, setRating] = useState(0)
+    const ratingsAverage = useMemo(() => GetRatingsAverage(report), [report])
     const scrollVieWRef = React.useRef<ScrollView>(null);
+
+    const image1Width = report.images_urls.length > 1 ? "49%" : "100%"
 
     return (
         <Portal>
@@ -81,7 +135,7 @@ export const FocusModal = React.forwardRef((props: Props, ref) => {
                     snapPoints={snapPoints}
                     onChange={handleSheetChanges}
                 >
-                    <ScrollView ref={scrollVieWRef}>
+                    <ScrollView ref={scrollVieWRef} showsVerticalScrollIndicator={false}>
                         <View style={styles.padding}>
                             <View style={[styles.subContainer, { justifyContent: "space-between", marginTop: 25 }]}>
                                 <Text style={styles.title}>
@@ -111,7 +165,7 @@ export const FocusModal = React.forwardRef((props: Props, ref) => {
                                     marginRight: 5
                                 }}>
                                     <Image
-                                        source={{ uri: report.profile.image_url }}
+                                        source={{ uri: report.profile && report.profile.image_url }}
                                         style={{
                                             flex: 1
                                         }}
@@ -189,12 +243,28 @@ export const FocusModal = React.forwardRef((props: Props, ref) => {
                         <View style={[styles.subContainer, { justifyContent: "space-between", marginBottom: 15 }, styles.padding]}>
                             <Image
                                 source={{ uri: report.images_urls[0] }}
-                                style={styles.image1}
+                                style={[styles.image, { width: image1Width }]}
                             />
-                            <Image
-                                source={{ uri: report.images_urls[1] }}
-                                style={styles.image2}
-                            />
+                            {
+                                report.images_urls.length > 1 ?
+                                    report.images_urls.length > 2 ?
+                                        <View style={styles.imagesHolder}>
+                                            <Image
+                                                source={{ uri: report.images_urls[1] }}
+                                                style={[styles.image, { width: "100%", height: "49%" }]}
+                                            />
+                                            <Image
+                                                source={{ uri: report.images_urls[2] }}
+                                                style={[styles.image, { width: "100%", height: "49%" }]}
+                                            />
+                                        </View>
+                                        :
+                                        <Image
+                                            source={{ uri: report.images_urls[1] }}
+                                            style={[styles.image, { width: "49%" }]}
+                                        />
+                                    : null
+                            }
                         </View>
                         {/* Suggestion */}
                         {

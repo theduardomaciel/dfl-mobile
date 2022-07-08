@@ -64,8 +64,8 @@ export default function RatingFrame({ setRating, animation }: Props) {
         ratingPosition.value = 350
     }
 
-    const INITIAL_OFFSET = animation ? 15 : -5
-    const POSITION_OFFSET = animation ? SELECTOR_WIDTH / 5 : (70 / 100) * dimensions.width / 5
+    const INITIAL_OFFSET = 15
+    const POSITION_OFFSET = animation ? SELECTOR_WIDTH / 5 : (65 / 100) * dimensions.width / 5
     const POSITIONS = [
         INITIAL_OFFSET,
         INITIAL_OFFSET + POSITION_OFFSET,
@@ -74,7 +74,7 @@ export default function RatingFrame({ setRating, animation }: Props) {
         INITIAL_OFFSET + POSITION_OFFSET * 4
     ]
 
-    const _onPanGestureEvent = (event, setRating) => {
+    const _onPanGestureEvent = (event) => {
         //O único problema do uso do translationX é que caso o usuário queria trocar seu rating, a animação terá que começar do início
         const nativeEvent = event.nativeEvent;
         const POSITION_X = nativeEvent.translationX // Quanta distância foi percorrida desde o início da animação
@@ -133,7 +133,7 @@ export default function RatingFrame({ setRating, animation }: Props) {
                         <Text style={styles.ratingPlaceholder}>1</Text>
                     </View>
             }
-            <PanGestureHandler onBegan={onGestureBegin} onEnded={onGestureEnded} onCancelled={onGestureEnded} onFailed={onGestureEnded} onGestureEvent={(event) => _onPanGestureEvent(event, setRating)}>
+            <PanGestureHandler onBegan={onGestureBegin} onEnded={onGestureEnded} onCancelled={onGestureEnded} onFailed={onGestureEnded} onGestureEvent={(event) => _onPanGestureEvent(event)}>
                 <Animated.View style={[styles.ratingRound, ratingSelectorAnimatedStyle]}>
                     <View style={[styles.buttonCircle, { backgroundColor: theme.colors.primary1, width: 50, height: 50, opacity: 1 }]} />
                 </Animated.View>

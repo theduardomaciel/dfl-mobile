@@ -1,11 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import {
-    Animated,
-    ImageBackground,
-    Text,
-    View,
-} from 'react-native';
+import { ImageBackground, Text, View, } from 'react-native';
 
 import { TextButton } from '../../components/TextButton';
 
@@ -17,6 +12,9 @@ import { LEVELS_DATA } from '../../utils/data/levels';
 import { useAuth } from '../../hooks/useAuth';
 
 import AnimatedNumbers from 'react-native-animated-numbers';
+import FocusAwareStatusBar from '../../utils/functions/FocusAwareStatusBar';
+
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 
 type Props = {
     // A ? faz com que o elemento não seja obrigatório
@@ -33,91 +31,70 @@ export function ConclusionScreen({ route, navigation }) {
     const { user } = useAuth();
 
     // [0] = quanto xp o usuário ganhou | [1] = porcentagem da xp que o usuário ganhou | [2] = quanto de xp ele precisa pra subir de nível
-    const [number0, setNumber0] = useState(0);
-    const [number1, setNumber1] = useState(0);
+    /* const [number0, setNumber0] = useState(0); */
+    //const [number1, setNumber1] = useState(0);
     const [number2, setNumber2] = useState(0);
 
     const USER_EXP = user.profile.experience;
     const USER_LEVEL = user.profile.level
     const BAR_WIDTH = ((USER_EXP * 100) / LEVELS_DATA[USER_LEVEL + 1].exp)
 
-    const barAnimation = useRef(new Animated.Value(0)).current;
-    const barWidth = barAnimation.interpolate({
-        inputRange: [0, 1],
-        outputRange: ["0%", `${BAR_WIDTH}%`],
-        extrapolate: 'clamp'
+    const barWidth = useSharedValue(0)
+
+    const animatedStyles = useAnimatedStyle(() => {
+        return {
+            width: withTiming(`${barWidth.value}%`, { duration: 1500 }),
+        };
     });
 
+    const [animationConcluded, setAnimationConcluded] = useState(false)
     useEffect(() => {
-        Animated.timing(barAnimation, {
-            toValue: 1,
-            duration: 3000,
-            useNativeDriver: false,
-        }).start();
-        setTimeout(() => {
-            setNumber0(gainedExperience)
-        }, 0);
-        setTimeout(() => {
-            setNumber1(BAR_WIDTH)
-        }, 2000);
+        barWidth.value = BAR_WIDTH
         setTimeout(() => {
             setNumber2(LEVELS_DATA[USER_LEVEL + 1].exp - USER_EXP)
-        }, 3500);
+            setTimeout(() => {
+                setAnimationConcluded(true)
+            }, 1000);
+        }, 1000);
     }, [])
 
-    const experienceUI = () => {
-        /* Nunca deixar uma string dessa maneira: "", sem espaços, pois o react native acusa o erro de string fora de Text element */
-        return (
-            <View>
-                <View style={styles.animatedTextView}>
-                    <Text style={levelStyles.levelDescription}>
-                        {`Você ganhou `}
-                    </Text>
-                    <AnimatedNumbers
-                        animateToNumber={number0}
-                        fontStyle={levelStyles.levelDescription}
-                    />
-                    <Text style={levelStyles.levelDescription}>
-                        {`XP!`}
-                    </Text>
-                </View>
-                <View style={{ flexDirection: "row", marginBottom: 5, marginTop: 5, alignItems: "center", justifyContent: "center" }}>
-                    <View style={levelStyles.progressBar}>
-                        <Animated.View style={[levelStyles.progressBar, {
-                            backgroundColor: theme.colors.primary2,
-                            borderRadius: 25 / 2,
-                            width: barWidth
-                        }]} />
-                    </View>
-                    <View style={[styles.animatedTextView, { marginLeft: 5 }]}>
-                        <AnimatedNumbers
-                            animateToNumber={number1}
-                            fontStyle={levelStyles.levelDescription2}
-                        />
-                        <Text style={levelStyles.levelDescription2}>
-                            %
-                        </Text>
-                    </View>
-                </View>
-
-                <View style={styles.animatedTextView}>
-                    <Text style={levelStyles.levelDescription2}>
-                        Faltam mais{` `}
-                    </Text>
-                    <AnimatedNumbers
-                        animateToNumber={number2}
-                        fontStyle={levelStyles.levelDescription}
-                    />
-                    <Text style={levelStyles.levelDescription2}>
-                        xp para subir de nível!
-                    </Text>
-                </View>
+    console.log(gainedExperience, typeof gainedExperience)
+    /* Nunca deixar uma string dessa maneira: "", sem espaços, pois o react native acusa o erro de string fora de Text element */
+    const experienceUI = <View>
+        <View style={styles.animatedTextView}>
+            <Text style={levelStyles.levelDescription}>{`Você ganhou ${gainedExperience}`}</Text>
+            {/* <AnimatedNumbers
+                animateToNumber={number0}
+                fontStyle={levelStyles.levelDescription}
+            /> */}
+            <Text style={levelStyles.levelDescription}>XP! </Text>
+        </View>
+        <View style={{ flexDirection: "row", marginBottom: 5, marginTop: 5, alignItems: "center", justifyContent: "center" }}>
+            <View style={levelStyles.progressBar}>
+                <Animated.View style={[levelStyles.progressBar, animatedStyles, { backgroundColor: theme.colors.primary2 }]} />
             </View>
-        );
-    }
+            <View style={[styles.animatedTextView, { marginLeft: 5 }]}>
+                {/* <AnimatedNumbers
+                    animateToNumber={number1}
+                    fontStyle={levelStyles.levelDescription2}
+                /> */}
+                <Text style={levelStyles.levelDescription2}>{`${BAR_WIDTH}%`}</Text>
+            </View>
+        </View>
+
+        <View style={styles.animatedTextView}>
+            <Text style={levelStyles.levelDescription2}>{`Faltam mais `}</Text>
+            <AnimatedNumbers
+                animateToNumber={number2}
+                fontStyle={levelStyles.levelDescription}
+            />
+            <Text style={levelStyles.levelDescription2}>xp para subir de nível!</Text>
+        </View>
+    </View>
 
     return (
         <ImageBackground source={require("../../assets/placeholders/background_placeholder.png")} style={styles.container}>
+            <FocusAwareStatusBar backgroundColor={"transparent"} barStyle={"dark-content"} translucent={true} />
             <Text style={styles.title}>
                 {title}
             </Text>
@@ -129,17 +106,24 @@ export function ConclusionScreen({ route, navigation }) {
                 <View style={styles.circle} />
                 <Text style={{ fontSize: 64 }}>{icon ? icon : "✅"}</Text>
             </View>
-            {/* {
+            {
                 gainedExperience &&
                 <View style={styles.levelBackground}>
                     {experienceUI}
                 </View>
-            } */}
+            }
             {/* <Confetti colors={[theme.colors.primary1, theme.colors.secondary1, theme.colors.primary2, theme.colors.secondary2]} /> */}
             <TextButton
                 title={backButtonText ? backButtonText : "Voltar para a tela inicial"}
-                buttonStyle={{ backgroundColor: theme.colors.secondary1, paddingHorizontal: 20, paddingVertical: 15, marginBottom: 50 }}
-                onPress={() => navigation.navigate(navigateTo ? navigateTo : "Home")}
+                buttonStyle={{ backgroundColor: animationConcluded ? theme.colors.secondary1 : theme.colors.gray_light, paddingHorizontal: 20, paddingVertical: 15, marginBottom: 50 }}
+                disabled={!animationConcluded}
+                onPress={() => {
+                    if (navigateTo) {
+                        navigation.navigate(navigateTo);
+                    } else {
+                        navigation.navigate("Main");
+                    }
+                }}
             />
         </ImageBackground>
     )

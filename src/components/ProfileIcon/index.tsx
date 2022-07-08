@@ -37,9 +37,7 @@ import { Profile } from '../../@types/application';
 import { UpdateNavigationBar } from '../../utils/functions/UpdateNavigationBar';
 
 async function CheckIfUsernameIsAvailable(username) {
-    const usersInLocationResults = await api.post("/profiles/search", {
-        username: username
-    })
+    const usersInLocationResults = await api.get(`/profile?username=${username}`)
     const profiles = usersInLocationResults.data as Array<Profile>;
     if (profiles.length > 0) {
         // Uma conta já possui o nome de usuário fornecido, retornando falso.
@@ -122,7 +120,7 @@ export function ProfileIcon({ uri, openConfig }: Props) {
     }
 
     const AccountComponents = <View style={{ flex: 1, width: "100%" }}>
-        <Text style={{
+        {/* <Text style={{
             fontSize: 14,
             color: theme.colors.text1, backgroundColor: theme.colors.red,
             padding: 5,
@@ -132,7 +130,7 @@ export function ProfileIcon({ uri, openConfig }: Props) {
             textAlign: "center"
         }}>
             ⚠️  ZONA DE PERIGO:
-        </Text>
+        </Text> */}
         <TextButton
             title='EXCLUIR CONTA'
             icon={<Ionicons name="trash" size={24} color={theme.colors.text1} />}
@@ -331,7 +329,7 @@ export function ProfileIcon({ uri, openConfig }: Props) {
             {
                 openConfig &&
                 <View style={styles.configIconContainer}>
-                    <GearIcon width={24} height={24} fill={theme.colors.secondary1} />
+                    <GearIcon width={18} height={18} fill={theme.colors.secondary1} />
                 </View>
             }
         </TouchableOpacity>

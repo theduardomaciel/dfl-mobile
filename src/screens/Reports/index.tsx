@@ -82,7 +82,7 @@ export function Reports({ route, navigation }) {
             if (moreReports.length > 0) {
                 if (data.length > 0) {
                     console.log(`➕ Adicionando novos relatórios à array de 'data'.`)
-                    setData(data.concat(moreReports))
+                    setData(data.concat(moreReports.filter(report => report.profile !== null)))
                 } else {
                     console.log(`✌️ Inserindo relatórios à array de 'data' pela primeira vez.`)
                     setData(moreReports)
@@ -137,13 +137,13 @@ export function Reports({ route, navigation }) {
     useEffect(() => {
         async function UpdateReport() {
             if (rating !== 0) {
+                console.log("Atualizando relatório")
                 const response = await api.patch(`/report/${data[lastIndex].id}`, {
                     profile_id: user.profile.id,
                     rating: rating,
                 })
                 const updatedReport = response.data as Report;
                 if (updatedReport) {
-                    console.log("Atualizando relatório")
                     const updatedData = data;
                     updatedData[lastIndex] = updatedReport
                     updatedData[lastIndex][`note${rating}`] = updatedReport[`note${rating}`] + 1
@@ -151,6 +151,7 @@ export function Reports({ route, navigation }) {
 
                     lastIndex = currentIndex
                     setRating(0)
+                    console.log("Relatório atualizado com sucesso.")
                 }
             }
         }

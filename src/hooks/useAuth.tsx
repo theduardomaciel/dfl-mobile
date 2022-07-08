@@ -32,9 +32,8 @@ type AuthContextData = {
     setHasAppPermissions: (state: boolean) => Promise<void>;
     signIn: () => Promise<string>;
     signOut: () => Promise<void>;
-    updateReports: () => Promise<boolean | string>;
+    updateReports: (updatedReport?: Report) => Promise<boolean | string>;
     updateProfile: (updatedProfileObject?) => Promise<void>;
-    updateReport: (actualObject?, updatedObject?, updatedElementKey?) => Promise<Report>;
 }
 
 type AuthProviderProps = {
@@ -134,31 +133,42 @@ function AuthProvider({ children }: AuthProviderProps) {
         }
     }
 
-    async function updateReports() {
-        const result = await check(locationPermission)
-        if (result === RESULTS.GRANTED) {
-            setHasAppPermissionsState(true)
-        } else {
-            return false
-        }
-
-        const userLocation = await Location.getCurrentPositionAsync()
-        if (userLocation) {
-            const result = await Location.reverseGeocodeAsync({ latitude: userLocation.coords.latitude, longitude: userLocation.coords.longitude });
-            const location = result[0]
-            const state = location.city ? location.city.replace(/ /g, '') : location.region.replace(/ /g, '');
-            const reports = await GetReportsInLocation(state, true)
-            console.warn(reports)
+    async function updateReports(reportUpdated?: Report) {
+        if (reportUpdated) {
+            const reports = await AsyncStorage.getItem(REPORTS_STORAGE)
             if (reports) {
-                await AsyncStorage.setItem(REPORTS_STORAGE, JSON.stringify(reports))
-                await AsyncStorage.setItem(LOCATION_STORAGE, JSON.stringify(location))
-                console.log("Os relatórios da cidade do usuário foram atualizados na aplicação.")
+                const reportsArray = JSON.parse(reports)
+                const newReports = reportsArray.filter(report => report.id !== reportUpdated.id) // removemos o relatório que queremos atualizar da array
+                newReports.push(reportUpdated) // e adicionamos o novo no local
+                await AsyncStorage.setItem(REPORTS_STORAGE, JSON.stringify(newReports))
+                console.log("Os relatórios da cidade do usuário foram atualizados na aplicação com dados locais.")
                 return true
+            }
+        } else {
+            const result = await check(locationPermission)
+            if (result === RESULTS.GRANTED) {
+                setHasAppPermissionsState(true)
             } else {
                 return false
             }
-        } else {
-            return false
+
+            const userLocation = await Location.getLastKnownPositionAsync()
+            if (userLocation) {
+                const result = await Location.reverseGeocodeAsync({ latitude: userLocation.coords.latitude, longitude: userLocation.coords.longitude });
+                const location = result[0]
+                const state = location.region ? location.region.replace(/ /g, '') : location.region.replace(/ /g, '');
+                const reports = await GetReportsInLocation(state, true)
+                if (reports) {
+                    await AsyncStorage.setItem(REPORTS_STORAGE, JSON.stringify(reports))
+                    await AsyncStorage.setItem(LOCATION_STORAGE, JSON.stringify(location))
+                    console.log("Os relatórios da cidade do usuário foram atualizados na aplicação.")
+                    return true
+                } else {
+                    return false
+                }
+            } else {
+                return false
+            }
         }
     }
 
@@ -184,21 +194,6 @@ function AuthProvider({ children }: AuthProviderProps) {
             console.log("Objeto do usuário atualizado com sucesso!")
         } else {
             console.log("Erro ao atualizar objeto do usuário.")
-        }
-    }
-
-    async function updateReport(actualObject, updatedObject, updatedElementKey) {
-        let updatedReport = updatedObject || undefined
-        if (actualObject && updatedElementKey) {
-            let reportCopy = actualObject;
-            reportCopy[updatedElementKey] = updatedObject
-            updatedReport = reportCopy
-        }
-        if (updatedReport !== null) {
-            console.log("Objeto do relatório atualizado com sucesso!")
-            return updatedReport;
-        } else {
-            console.log("Erro ao atualizar objeto do relatório.")
         }
     }
 
@@ -232,7 +227,6 @@ function AuthProvider({ children }: AuthProviderProps) {
             signOut,
             updateReports,
             updateProfile,
-            updateReport,
             setHasAppPermissions,
             user,
             hasAppPermissions,

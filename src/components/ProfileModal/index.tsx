@@ -80,9 +80,9 @@ export function ProfileModal({ toggleModal, ...rest }: Props) {
                     Selecione um nome de usuário que os outros usuários visualizarão em seus relatórios e comentários!
                 </Text>
                 <Svg2 width={300} />
-                <KeyboardAvoidingView behavior={"padding"} keyboardVerticalOffset={200}>
-                    <UsernamePicker usernameState={setUsername} />
-                </KeyboardAvoidingView>
+                {/* <KeyboardAvoidingView behavior={"padding"} keyboardVerticalOffset={200}> */}
+                <UsernamePicker usernameState={setUsername} />
+                {/* </KeyboardAvoidingView> */}
                 <TextButton isLoading={loading} title="ENTRAR NA COMUNIDADE" buttonStyle={styles.actionButton} textStyle={{ fontSize: 12 }} onPress={async () => {
                     await CreateProfile();
                 }} />

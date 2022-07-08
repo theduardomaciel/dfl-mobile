@@ -38,11 +38,6 @@ export default function Routes() {
                         component={Level}
                     />
                     <Stack.Screen
-                        name="NewLevel"
-                        component={NewLevel}
-                        options={{ presentation: 'modal' }}
-                    />
-                    <Stack.Screen
                         name="Report"
                         component={ReportScreen}
                     />
@@ -59,6 +54,7 @@ export default function Routes() {
                 <Stack.Screen name="PermissionsRequest" component={PermissionsRequest} />
 
                 <Stack.Screen name="ConclusionScreen" component={ConclusionScreen} />
+                <Stack.Screen name="NewLevel" component={NewLevel} />
 
                 <Stack.Screen name="Step1" component={ReportScreen1} />
                 <Stack.Screen name="Step2" component={ReportScreen2} />

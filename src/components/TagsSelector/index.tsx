@@ -84,7 +84,7 @@ export function TagSection({ tags, section, height, onSelectTags }: TagSectionPr
             //style={{ marginBottom: 1 }}
             contentContainerStyle={styles.tagSection}
             horizontal
-            fadingEdgeLength={15}
+            //fadingEdgeLength={15}
             showsHorizontalScrollIndicator={false}
             data={sectionData}
             renderItem={renderItem}

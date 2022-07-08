@@ -50,6 +50,9 @@ import { FocusCallout } from "../Community/Callouts/FocusCallout";
 import { hideNavigationBar } from 'react-native-navigation-bar-color';
 import { ProfileModal } from "../../components/ProfileModal";
 
+import * as SplashScreen from "expo-splash-screen";
+import { TextButton } from "../../components/TextButton";
+
 export function Home({ route, navigation }) {
     const [errorMessage, setErrorMessage] = useState(route.params?.errorMessage);
     const [errorModalVisible, setErrorModalVisible] = useState(false);
@@ -142,22 +145,8 @@ export function Home({ route, navigation }) {
             setIsAvailable(false)
             setErrorMessage("Por enquanto, o DFL não está disponível em sua localização :(\nAguarde o lançamento oficial do aplicativo para que sua região esteja disponível.")
             setErrorModalVisible(true)
-        } /* else {
-            const deviceVersion = "0.0.1"
-            const serverVersion = await GetUserWithVersion()
-            console.warn(`Device: ${deviceVersion} | Server: ${serverVersion}`)
-            if (serverVersion === "error") {
-                setIsAvailable(false)
-                setErrorMessage("Epa! Houve um problema de autenticação.\nPor favor, entre em sua conta novamente.")
-                setErrorModalVisible(true)
-            } else {
-                if (deviceVersion !== serverVersion) {
-                    setIsAvailable(false)
-                    setErrorMessage("Epa! Parece que você está usando uma versão desatualizada do aplicativo.\nPor favor, baixe a versão mais recente para poder continuar utilizando o app.")
-                    setErrorModalVisible(true)
-                }
-            }
-        } */
+        }
+        SplashScreen.hideAsync();
     }
 
     if (user === null) return (
@@ -170,7 +159,7 @@ export function Home({ route, navigation }) {
 
     return (
         <ImageBackground source={require("../../assets/placeholders/background_placeholder.png")} style={styles.container}>
-            <FocusAwareStatusBar translucent barStyle="dark-content" />
+            <FocusAwareStatusBar translucent backgroundColor={"transparent"} barStyle="dark-content" />
             <View style={styles.header}>
                 <View style={styles.greetingsView}>
                     <Text style={styles.greetingsText}>
@@ -185,7 +174,7 @@ export function Home({ route, navigation }) {
             <ScrollView
                 contentContainerStyle={styles.scrollContainer}
                 showsVerticalScrollIndicator={false}
-                fadingEdgeLength={25}
+                //fadingEdgeLength={10}
                 refreshControl={
                     <RefreshControl
                         progressViewOffset={-10}
@@ -195,6 +184,12 @@ export function Home({ route, navigation }) {
                     />
                 }
             >
+                {/* <TextButton buttonStyle={{ padding: 10 }} title="Ir pra tela" onPress={() => navigation.navigate("ConclusionScreen", {
+                    title: "O relatório foi enviado com sucesso!",
+                    info: "Obrigado por contribuir com o meio ambiente!",
+                    gainedExperience: 500,
+                    navigateTo: "NewLevel",
+                })} /> */}
                 <Text style={[styles.title, { paddingTop: 0 }]}>
                     Seu nível
                 </Text>

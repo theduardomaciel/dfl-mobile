@@ -12,11 +12,7 @@ const defaultProps = {
 export async function UpdateNavigationBar(buttonStyle: "dark" | "light", visibility: boolean, backgroundColor: string) {
     try {
         visibility ? await showNavigationBar() : await hideNavigationBar()
-        await changeNavigationBarColor(
-            backgroundColor ? backgroundColor : defaultProps.backgroundColor,
-            buttonStyle ? buttonStyle === "dark" ? false : true : defaultProps.buttonStyle,
-            true
-        )
+        await changeNavigationBarColor(backgroundColor, buttonStyle === "dark" ? false : true, true)
     } catch (error) {
         console.log("Provavelmente o pacote necessário para atualização da navigation bar não foi instalado corretamente.")
     }

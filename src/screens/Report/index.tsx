@@ -26,6 +26,7 @@ import { Profile, Report } from "../../@types/application";
 import { CommentsModal } from "../Reports/Comments/Modal";
 import { UpdateNavigationBar } from "../../utils/functions/UpdateNavigationBar";
 import GetRatingsAverage from "../../utils/functions/GetRatingsAverage";
+import FocusAwareStatusBar from "../../utils/functions/FocusAwareStatusBar";
 
 type TagsType = {
     id: string;
@@ -55,7 +56,6 @@ export function ReportScreen({ navigation, route }) {
     const [tags, setTags] = useState(Array)
 
     useEffect(() => {
-        UpdateNavigationBar(null, true, null)
         for (const [index, tagGroup] of Object.entries(tagGroups)) {
             for (const [key, tag] of Object.entries(tagGroup)) {
                 if (tag.checked) {
@@ -125,7 +125,7 @@ export function ReportScreen({ navigation, route }) {
     const [isCommentsModalVisible, setCommentsModalVisible] = useState(false)
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="light-content" />
+            <FocusAwareStatusBar translucent backgroundColor={"transparent"} barStyle="light-content" />
             <ModalBase
                 isVisible={isDeleteModalVisible}
                 onBackdropPress={() => { }}

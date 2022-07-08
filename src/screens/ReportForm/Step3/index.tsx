@@ -15,6 +15,7 @@ import { TextInput } from "react-native-gesture-handler";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import SubmitReport from "./SubmitReport";
 import { useAuth } from "../../../hooks/useAuth";
+import FocusAwareStatusBar from "../../../utils/functions/FocusAwareStatusBar";
 
 export function ReportScreen3({ route, navigation }: any) {
     const { user, updateProfile } = useAuth();
@@ -42,11 +43,12 @@ export function ReportScreen3({ route, navigation }: any) {
         } else {
             await updateProfile(response)
             setIsLoading(false)
+            const pageToNavigate = response === null ? "Main" : "NewLevel"
             navigation.navigate("ConclusionScreen", {
                 title: "O relatório foi enviado com sucesso!",
                 info: "Obrigado por contribuir com o meio ambiente!",
                 gainedExperience: response.experience - user.profile.experience,
-                navigateTo: response === null ? "Home" : "NewLevel",
+                navigateTo: pageToNavigate,
             })
         }
     }
@@ -64,6 +66,7 @@ export function ReportScreen3({ route, navigation }: any) {
 
     return (
         <KeyboardAvoidingView style={defaultStyles.container} behavior={"height"}>
+            <FocusAwareStatusBar translucent backgroundColor={"transparent"} barStyle="dark-content" />
             <ScrollView showsVerticalScrollIndicator={false} style={defaultStyles.safeView}>
                 <View style={defaultStyles.header}>
                     <Text style={defaultStyles.stepTitle}>3 | INFORMAÇÕES</Text>
