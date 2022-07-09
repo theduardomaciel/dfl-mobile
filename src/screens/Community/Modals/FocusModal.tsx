@@ -1,4 +1,4 @@
-import React, { SetStateAction, useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, Platform, Linking } from 'react-native';
 
 import {
@@ -13,7 +13,6 @@ import { theme } from '../../../global/styles/theme';
 import { actionButtonsMargin, paddingHorizontal, styles } from './modalStyles';
 
 import { Profile, Report } from '../../../@types/application';
-import { useAuth } from '../../../hooks/useAuth';
 
 import { LoadingScreen } from '../../../components/LoadingScreen';
 import GetRatingsAverage from '../../../utils/functions/GetRatingsAverage';
@@ -24,82 +23,27 @@ import { ScrollView, NativeViewGestureHandler } from 'react-native-gesture-handl
 
 import { Portal } from 'react-native-portalize';
 import RatingFrame from '../../Reports/RatingFrame';
-import { api } from '../../../utils/api';
-import MapView, { Camera, Marker } from 'react-native-maps';
 
 const Bold = (props) => <Text style={{ fontFamily: theme.fonts.title700 }}>{props.children}</Text>
 
 type Props = {
     report: Report;
     profile: Profile;
-    updateReport: React.Dispatch<React.SetStateAction<Report>>;
-    markerRef: React.RefObject<Marker>;
-    mapRef: React.RefObject<MapView>;
-}
-
-export function returnCamera(report: Report, markerRef, mapRef) {
-    console.log("Voltando câmera para o local inicial")
-    markerRef.current?.hideCallout()
-    if (report) {
-        console.log(parseFloat(report.coordinates[0]) + (0.005 / 2), parseFloat(report.coordinates[1]))
-        const parsedLatitude = parseFloat(report.coordinates[0]) + (0.005 / 2) as number | string;
-        const latitude = parsedLatitude !== "NaN" ? parsedLatitude : report.coordinates[0]
-
-        const parsedLongitude = parseFloat(report.coordinates[1]) as number | string;
-        const longitude = parsedLongitude !== "NaN" ? parsedLongitude : report.coordinates[1]
-        const camera = {
-            center: {
-                latitude: latitude,
-                longitude: longitude
-            },
-            zoom: 14
-        }
-        if (mapRef.current) {
-            mapRef.current?.animateCamera(camera, { duration: 1000 })
-        }
-    } else {
-        console.log("Não obtivemos o objeto do relatório ou suas coordenadas.")
-    }
+    setRating: React.Dispatch<React.SetStateAction<number>>;
+    handleSheetChanges: (index: number) => Promise<void>;
 }
 
 export const FocusModal = React.forwardRef((props: Props, ref) => {
-    const { updateReports } = useAuth();
-
     const report = props.report;
     const profile = props.profile;
 
-    const markerRef = props.markerRef;
-    const mapRef = props.mapRef;
+    if (!report) {
+        console.log(report)
+        return <View></View>
+    }
 
     // variables
     const snapPoints = useMemo(() => ['50%', '75%'], []);
-
-    const [rating, setRating] = useState(0)
-    const handleSheetChanges = useCallback((index: number) => {
-        console.log('handleSheetChanges', index);
-        if (index === -1) {
-            console.log("Fechando modal.")
-            returnCamera(report, markerRef, mapRef)
-            async function UpdateReport() {
-                console.log(rating)
-                if (rating !== 0) {
-                    console.log("Atualizando relatório")
-                    const response = await api.patch(`/report/${report.id}`, {
-                        profile_id: profile.id,
-                        rating: rating,
-                    })
-                    const updatedReport = response.data as Report;
-                    if (updatedReport) {
-                        setRating(0)
-                        console.log("Avaliação alterada com sucesso.")
-                        updateReports(updatedReport);
-                        console.log("Relatório atualizado com sucesso.")
-                    }
-                }
-            }
-            UpdateReport();
-        }
-    }, []);
 
     const [ratingBarHeight, setRatingBarHeight] = useState(0)
     const [commentsPositionY, setCommentsPositionY] = useState(0)
@@ -133,7 +77,7 @@ export const FocusModal = React.forwardRef((props: Props, ref) => {
                     enablePanDownToClose
                     overDragResistanceFactor={1.5}
                     snapPoints={snapPoints}
-                    onChange={handleSheetChanges}
+                    onChange={props.handleSheetChanges}
                 >
                     <ScrollView ref={scrollVieWRef} showsVerticalScrollIndicator={false}>
                         <View style={styles.padding}>
@@ -165,6 +109,7 @@ export const FocusModal = React.forwardRef((props: Props, ref) => {
                                     marginRight: 5
                                 }}>
                                     <Image
+                                        progressiveRenderingEnabled
                                         source={{ uri: report.profile && report.profile.image_url }}
                                         style={{
                                             flex: 1
@@ -242,28 +187,35 @@ export const FocusModal = React.forwardRef((props: Props, ref) => {
                         {/* Images */}
                         <View style={[styles.subContainer, { justifyContent: "space-between", marginBottom: 15 }, styles.padding]}>
                             <Image
+                                progressiveRenderingEnabled
+                                loadingIndicatorSource={{ uri: "/src/assets/icon/loading_icon.gif" }}
                                 source={{ uri: report.images_urls[0] }}
                                 style={[styles.image, { width: image1Width }]}
                             />
                             {
-                                report.images_urls.length > 1 ?
+                                report.images_urls.length > 1 &&
                                     report.images_urls.length > 2 ?
-                                        <View style={styles.imagesHolder}>
-                                            <Image
-                                                source={{ uri: report.images_urls[1] }}
-                                                style={[styles.image, { width: "100%", height: "49%" }]}
-                                            />
-                                            <Image
-                                                source={{ uri: report.images_urls[2] }}
-                                                style={[styles.image, { width: "100%", height: "49%" }]}
-                                            />
-                                        </View>
-                                        :
+                                    <View style={styles.imagesHolder}>
                                         <Image
+                                            loadingIndicatorSource={{ uri: "/src/assets/icon/loading_icon.gif" }}
+                                            progressiveRenderingEnabled
                                             source={{ uri: report.images_urls[1] }}
-                                            style={[styles.image, { width: "49%" }]}
+                                            style={[styles.image, { width: "100%", height: "49%" }]}
                                         />
-                                    : null
+                                        <Image
+                                            progressiveRenderingEnabled
+                                            loadingIndicatorSource={{ uri: "/src/assets/icon/loading_icon.gif" }}
+                                            source={{ uri: report.images_urls[2] }}
+                                            style={[styles.image, { width: "100%", height: "49%" }]}
+                                        />
+                                    </View>
+                                    :
+                                    <Image
+                                        progressiveRenderingEnabled
+                                        loadingIndicatorSource={{ uri: "/src/assets/icon/loading_icon.gif" }}
+                                        source={{ uri: report.images_urls[1] }}
+                                        style={[styles.image, { width: "49%" }]}
+                                    />
                             }
                         </View>
                         {/* Suggestion */}
@@ -333,7 +285,7 @@ export const FocusModal = React.forwardRef((props: Props, ref) => {
                                     />
                                 </View>
                                 <View style={{ paddingVertical: 5, paddingHorizontal: 50 }}>
-                                    <RatingFrame setRating={setRating} />
+                                    <RatingFrame setRating={props.setRating} />
                                 </View>
                             </View>
                         </View>

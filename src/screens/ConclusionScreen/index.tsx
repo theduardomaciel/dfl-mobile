@@ -15,6 +15,7 @@ import AnimatedNumbers from 'react-native-animated-numbers';
 import FocusAwareStatusBar from '../../utils/functions/FocusAwareStatusBar';
 
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import { useNavigation } from '@react-navigation/native';
 
 type Props = {
     // A ? faz com que o elemento não seja obrigatório
@@ -37,7 +38,7 @@ export function ConclusionScreen({ route, navigation }) {
 
     const USER_EXP = user.profile.experience;
     const USER_LEVEL = user.profile.level
-    const BAR_WIDTH = ((USER_EXP * 100) / LEVELS_DATA[USER_LEVEL + 1].exp)
+    const BAR_WIDTH = Math.floor(((USER_EXP * 100) / LEVELS_DATA[USER_LEVEL + 1].exp))
 
     const barWidth = useSharedValue(0)
 
@@ -58,7 +59,7 @@ export function ConclusionScreen({ route, navigation }) {
         }, 1000);
     }, [])
 
-    console.log(gainedExperience, typeof gainedExperience)
+    console.log(gainedExperience, typeof gainedExperience, navigateTo)
     /* Nunca deixar uma string dessa maneira: "", sem espaços, pois o react native acusa o erro de string fora de Text element */
     const experienceUI = <View>
         <View style={styles.animatedTextView}>
@@ -93,7 +94,7 @@ export function ConclusionScreen({ route, navigation }) {
     </View>
 
     return (
-        <ImageBackground source={require("../../assets/placeholders/background_placeholder.png")} style={styles.container}>
+        <ImageBackground progressiveRenderingEnabled source={require("../../assets/placeholders/background_placeholder.png")} style={styles.container}>
             <FocusAwareStatusBar backgroundColor={"transparent"} barStyle={"dark-content"} translucent={true} />
             <Text style={styles.title}>
                 {title}
@@ -119,8 +120,9 @@ export function ConclusionScreen({ route, navigation }) {
                 disabled={!animationConcluded}
                 onPress={() => {
                     if (navigateTo) {
-                        navigation.navigate(navigateTo);
+                        navigation.navigate(navigateTo)
                     } else {
+                        console.log("foi aqui")
                         navigation.navigate("Main");
                     }
                 }}

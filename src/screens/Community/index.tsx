@@ -5,7 +5,7 @@ import Animated, { cancelAnimation, useAnimatedStyle, useSharedValue, withRepeat
 import { BottomSheetModal, BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
 import Toast from 'react-native-toast-message';
-import MapView, { PROVIDER_GOOGLE, Marker, Callout, LatLng } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE, Marker, Callout, Camera } from "react-native-maps";
 import * as Location from "expo-location";
 
 import { theme } from "../../global/styles/theme";
@@ -25,9 +25,10 @@ import { TagSection } from "../../components/TagsSelector";
 import { RectButton } from "react-native-gesture-handler";
 
 import { FocusCallout } from "./Callouts/FocusCallout";
-import { FocusModal, returnCamera } from "./Modals/FocusModal";
+import { FocusModal } from "./Modals/FocusModal";
+import { api } from "../../utils/api";
 
-const placeholder_report = {
+/* const placeholder_report = {
     profile: {
         username: "",
         profile_image: "https://github.com/theduardomaciel.png",
@@ -58,42 +59,77 @@ const placeholder_report = {
     resolved: false,
     comments: [],
 }
+ */
 
-interface Camera {
-    center: LatLng;
-    zoom: number;
+export function returnCamera(report: Report, markerRef, mapRef) {
+    markerRef.current?.hideCallout()
+    if (report) {
+        const parsedLatitude = parseFloat(report.coordinates[0]) + (0.005 / 2) as number | string;
+        const parsedLongitude = parseFloat(report.coordinates[1]) as number | string;
+
+        if (parsedLatitude === "NaN" || parsedLongitude === "NaN") {
+            console.log("Não foi possível obter a localização do relatório.")
+            return;
+        }
+
+        console.log("Voltando câmera para o local inicial")
+
+        const camera = {
+            center: {
+                latitude: parsedLatitude,
+                longitude: parsedLongitude
+            },
+            zoom: 14
+        }
+        if (mapRef.current) {
+            mapRef.current?.animateCamera(camera, { duration: 1000 })
+        }
+    } else {
+        console.log("Não obtivemos o objeto do relatório ou suas coordenadas.")
+    }
 }
+
+async function updateReportRating(rating, reportId, profileId) {
+    console.log(rating)
+    if (rating !== 0) {
+        console.log("Atualizando relatório")
+        const response = await api.patch(`/report/${reportId}`, {
+            profile_id: profileId,
+            rating: rating,
+        })
+        const updatedReport = response.data as Report;
+        return updatedReport;
+    }
+}
+
 
 export function Community({ navigation }) {
     const { user, updateReports } = useAuth();
 
     const [reports, setReports] = useState([])
+    const [actualReport, setActualReport] = useState(null)
 
-    const [region, setRegion] = useState<Region>(null);
-    const getScopePicked = async (scope, newRegion?) => {
-        if (newRegion) setRegion(newRegion);
-        const markersArray = await ListMarkersOnMap(scope, newRegion)
-        setReports(markersArray)
-    }
+    const [userLocation, setUserLocation] = useState({ latitude: 0, longitude: 0 })
 
     async function PrepareScreen() {
         const { coords } = await Location.getCurrentPositionAsync()
-        const newRegion = {
-            latitude: coords.latitude,
-            longitude: coords.longitude,
-            latitudeDelta: 0.05,
-            longitudeDelta: 0.05
-        }
-        setRegion(newRegion);
         const initialCamera = {
             center: {
-                latitude: newRegion.latitude,
-                longitude: newRegion.longitude,
+                latitude: coords.latitude,
+                longitude: coords.longitude,
             },
             zoom: 14
         }
+        setUserLocation(initialCamera.center)
         console.log("Atualizando câmera para o local do usuário.")
         mapRef.current?.setCamera(initialCamera)
+
+        console.log("Atualizando marcadores no mapa")
+        const markersArray = await ListMarkersOnMap("city", {
+            latitude: coords.latitude,
+            longitude: coords.longitude,
+        })
+        setReports(markersArray)
     }
 
     const refreshButtonRotation = useSharedValue(0);
@@ -114,32 +150,49 @@ export function Community({ navigation }) {
         setFilters(tagsCopy)
     }
 
-    const [actualMarker, setActualMarker] = useState<Report>(placeholder_report);
-
     const mapRef = useRef<MapView>(null);
     const markerRef = useRef<Marker>(null);
     const focusModalRef = useRef<BottomSheetModal>(null);
 
     const openFocusModal = useCallback(async (report) => {
         console.log("Alterando relatório atual e abrindo modal.")
-        if (report !== actualMarker) {
-            await setActualMarker(report)
+        if (report !== actualReport) {
+            setActualReport(report)
         }
         focusModalRef.current?.present();
-        const camera = await mapRef.current?.getCamera() as Camera;
-        camera.center = {
-            latitude: parseFloat(report.coordinates[0]) - 0.0035,
-            longitude: parseFloat(report.coordinates[1])
+        let camera = {
+            center: {
+                latitude: parseFloat(report.coordinates[0]) - 0.0035,
+                longitude: parseFloat(report.coordinates[1])
+            },
+            zoom: 15.75
         }
-        camera.zoom = 15.75
         mapRef.current?.animateCamera(camera, { duration: 1000 })
     }, []);
 
     const closeFocusModal = useCallback(async () => {
         console.log("Fechando modal")
         focusModalRef.current?.dismiss();
-        returnCamera(actualMarker, markerRef, mapRef)
+        returnCamera(actualReport, markerRef, mapRef)
     }, []);
+
+    const [rating, setRating] = useState(0)
+
+    async function handleModalClose() {
+        console.log("Fechando modal.")
+        returnCamera(actualReport, markerRef, mapRef)
+        const updatedReport = await updateReportRating(rating, actualReport.id, user.profile.id)
+        if (updatedReport) {
+            updateReports(updatedReport)
+        }
+    }
+
+    const handleSheetChanges = async (index: number) => {
+        console.log('handleSheetChanges', index);
+        if (index === -1) {
+            handleModalClose()
+        }
+    }
 
     const showToast = () => {
         console.log("Mostrando toast de sucesso.")
@@ -166,7 +219,7 @@ export function Community({ navigation }) {
         refreshButtonRotation.value = withRepeat(withSpring(refreshButtonRotation.value + 360, { damping: 15, restSpeedThreshold: 1 }), -1, false)
         const success = await updateReports()
         if (success === true) {
-            getScopePicked("city")
+            await PrepareScreen()
             showToast()
             cancelAnimation(refreshButtonRotation)
         } else {
@@ -177,7 +230,6 @@ export function Community({ navigation }) {
 
     useEffect(() => {
         PrepareScreen()
-        getScopePicked("city")
     }, []);
 
     if (user === null) return (
@@ -186,65 +238,53 @@ export function Community({ navigation }) {
 
     return (
         <BottomSheetModalProvider>
-            <ImageBackground source={require("../../assets/placeholders/background_placeholder.png")} style={styles.container}>
+            <ImageBackground progressiveRenderingEnabled source={require("../../assets/placeholders/background_placeholder.png")} style={styles.container}>
                 <FocusAwareStatusBar translucent backgroundColor={"transparent"} barStyle="dark-content" />
                 <View style={styles.container}>
-                    {
-                        region !== null &&
-                        <MapView
-                            style={{ height: "100%", width: "100%" }}
-                            ref={mapRef}
-                            provider={PROVIDER_GOOGLE}
-                            showsUserLocation={true}
-                            showsMyLocationButton={true}
-                            minZoomLevel={10}
-                            toolbarEnabled={false}
-                            maxZoomLevel={17}
-                            mapPadding={{
-                                bottom: 0, top: 200, left: 15, right: 15
-                            }}
-                            loadingEnabled
-                            loadingIndicatorColor={theme.colors.primary1}
-                            loadingBackgroundColor={theme.colors.background}
-                            onPress={() => {
-                                console.log("Ocultando modal.")
-                                closeFocusModal();
-                            }}
-                        >
-                            {
-                                reports ?
-                                    reports.map((report, index) => (
-                                        <Marker
-                                            key={index}
-                                            ref={markerRef}
-                                            image={{ uri: "trashfocus_icon" }}
-                                            coordinate={{
-                                                latitude: parseFloat(report.coordinates[0]),
-                                                longitude: parseFloat(report.coordinates[1])
-                                                //latitude: typeof report.coordinates[0] !== "number" ?  : report.coordinates[0],
-                                                //longitude: typeof report.coordinates[0] !== "number" ? parseFloat(report.coordinates[1]) : report.coordinates[1]
-                                            }}
-                                            onPress={() => openFocusModal(report)}
-                                            calloutAnchor={{ x: 4.825, y: -0.15 }}
-                                        >
-                                            {
-                                                region !== undefined &&
-                                                <Callout tooltip onPress={() => openFocusModal(report)}>
-                                                    <FocusCallout report={report} region={region} />
-                                                </Callout>
-                                            }
-                                        </Marker>
-                                    ))
-                                    : null
-                            }
-                            {/* <Geojson
-                        geojson={}
-                        strokeColor="#FF6D6A"
-                        fillColor="#ffffff80"
-                        strokeWidth={5}
-                    /> */}
-                        </MapView>
-                    }
+                    <MapView
+                        style={{ height: "100%", width: "100%" }}
+                        ref={mapRef}
+                        provider={PROVIDER_GOOGLE}
+                        showsUserLocation={true}
+                        showsMyLocationButton={true}
+                        minZoomLevel={10}
+                        toolbarEnabled={false}
+                        maxZoomLevel={17}
+                        mapPadding={{
+                            bottom: 0, top: 200, left: 15, right: 15
+                        }}
+                        loadingEnabled
+                        loadingIndicatorColor={theme.colors.primary1}
+                        loadingBackgroundColor={theme.colors.background}
+                        onPress={() => {
+                            console.log("Ocultando modal.")
+                            closeFocusModal();
+                        }}
+                    >
+                        {
+                            reports &&
+                            reports.map((report, index) => (
+                                <Marker
+                                    key={index}
+                                    ref={markerRef}
+                                    image={{ uri: "trashfocus_icon" }}
+                                    coordinate={{
+                                        latitude: parseFloat(report.coordinates[0]),
+                                        longitude: parseFloat(report.coordinates[1])
+                                    }}
+                                    onPress={() => openFocusModal(report)}
+                                    calloutAnchor={{ x: 4.825, y: -0.15 }}
+                                >
+                                    {
+                                        userLocation &&
+                                        <Callout tooltip onPress={() => openFocusModal(report)}>
+                                            <FocusCallout report={report} region={userLocation} />
+                                        </Callout>
+                                    }
+                                </Marker>
+                            ))
+                        }
+                    </MapView>
                 </View>
                 <View style={styles.header}>
                     <View style={styles.subHeader}>
@@ -280,17 +320,12 @@ export function Community({ navigation }) {
                         <TagSection height={35} section="filter" tags={['Focos de Lixo', 'Ecopontos', 'Lixeiras']} onSelectTags={handleFilters} />
                     </View>
                 </View>
-
-                {/* <View style={{ position: "absolute", bottom: 65, right: 15 }}>
-                <MapScopePicker changedScope={getScopePicked} actualRegion={region} biggerScope />
-            </View> */}
                 <FocusModal
                     ref={focusModalRef}
-                    report={actualMarker}
+                    report={actualReport}
                     profile={user.profile}
-                    updateReport={setActualMarker}
-                    markerRef={markerRef}
-                    mapRef={mapRef}
+                    setRating={setRating}
+                    handleSheetChanges={handleSheetChanges}
                 />
             </ImageBackground >
         </BottomSheetModalProvider>

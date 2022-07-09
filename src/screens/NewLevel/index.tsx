@@ -103,7 +103,7 @@ export function NewLevel({ route, navigation }) {
             <Text style={[styles.levelTitle, { fontSize: 24, fontFamily: theme.fonts.title400, marginTop: -15 }]}>
                 {LEVEL_COMPONENT.title}
             </Text>
-            <Image style={{ flex: 1, width: "90%", resizeMode: "contain" }} source={LEVEL_COMPONENT.icon} />
+            <Image style={{ flex: 1, width: "90%", resizeMode: "contain" }} source={LEVEL_COMPONENT.icon} progressiveRenderingEnabled />
             <View style={{
                 backgroundColor: theme.colors.primary2,
                 height: 25,
@@ -142,7 +142,7 @@ export function NewLevel({ route, navigation }) {
     }
 
     return (
-        <ImageBackground source={require("../../assets/placeholders/background_placeholder.png")} style={styles.container}>
+        <ImageBackground progressiveRenderingEnabled source={require("../../assets/placeholders/background_placeholder.png")} style={styles.container}>
             <FocusAwareStatusBar backgroundColor={"transparent"} barStyle={"dark-content"} translucent={true} />
             {
                 isExpandedView &&

@@ -169,7 +169,7 @@ export function ReportScreen({ navigation, route }) {
                 </View>
             </LinearGradient>
             <View style={styles.image}>
-                <Image style={{ flex: 1 }} source={{ uri: report.images_urls[0] }} />
+                <Image progressiveRenderingEnabled style={{ flex: 1 }} source={{ uri: report.images_urls[0] }} />
                 <LinearGradient
                     colors={[theme.colors.primary1, 'transparent']}
                     start={{ x: 0.5, y: 1 }}

@@ -62,7 +62,7 @@ export const shareReport = async (setIsLoading: React.Dispatch<React.SetStateAct
 }
 
 export function Reports({ route, navigation }) {
-    const { user, updateProfile } = useAuth();
+    const { user } = useAuth();
 
     if (user === null) return (
         <View style={{ flex: 1 }} />
@@ -174,6 +174,7 @@ export function Reports({ route, navigation }) {
             <View style={{ height: IMAGE_HEIGHT }}>
                 {/* backgroundColor: index % 2 == 0 ? "blue" : "green", */}
                 <Image
+                    progressiveRenderingEnabled
                     style={{
                         flex: 1,
                         resizeMode: "cover"
@@ -248,9 +249,15 @@ export function Reports({ route, navigation }) {
             {
                 isTabBarVisible &&
                 <View style={styles.tabBar}>
-                    <Text style={[styles.title, { marginBottom: 5 }]}>
-                        @{data.length > 0 && data[currentIndex].profile !== null ? data[currentIndex].profile.username : ""}
-                    </Text>
+                    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                        <Text style={[styles.title, { marginBottom: 5 }]}>
+                            @{data.length > 0 && data[currentIndex].profile !== null ? data[currentIndex].profile.username : ""}
+                        </Text>
+                        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
+                            <MaterialIcons name="chevron-left" size={28} style={{ marginRight: 10 }} color={theme.colors.text1} />
+                            <MaterialIcons name="chevron-right" size={28} color={theme.colors.text1} />
+                        </View>
+                    </View>
                     <View style={{ flexDirection: "row" }}>
                         <MaterialIcons name="place" size={18} color={theme.colors.text1} style={{ marginRight: 5 }} />
                         <Text style={[styles.description, { marginRight: 15 }]}>

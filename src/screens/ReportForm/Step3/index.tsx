@@ -37,17 +37,18 @@ export function ReportScreen3({ route, navigation }: any) {
         data.hasTrashBins = hasTrashbin
         data.suggestion = suggestion
         const response = await SubmitReport(data, user.profile)
+        setIsLoading(false)
+        navigation.removeListener("beforeRemove");
         if (response === "error") {
             console.log("Deu erro :(")
             navigation.navigate("Início" as never, { errorMessage: `Infelizmente não foi cadastrar seu relatório :(\nPor favor, tente novamente mais tarde.` })
         } else {
-            await updateProfile(response)
-            setIsLoading(false)
-            const pageToNavigate = response === null ? "Main" : "NewLevel"
+            await updateProfile(response.profile)
+            const pageToNavigate = response.newLevel ? "NewLevel" : null
             navigation.navigate("ConclusionScreen", {
                 title: "O relatório foi enviado com sucesso!",
                 info: "Obrigado por contribuir com o meio ambiente!",
-                gainedExperience: response.experience - user.profile.experience,
+                gainedExperience: (response.profile.experience - user.profile.experience).toString(),
                 navigateTo: pageToNavigate,
             })
         }
@@ -59,6 +60,7 @@ export function ReportScreen3({ route, navigation }: any) {
                 // Prevent default behavior of leaving the screen
                 event.preventDefault();
             } else {
+                navigation.removeListener("beforeRemove");
                 return;
             }
         })

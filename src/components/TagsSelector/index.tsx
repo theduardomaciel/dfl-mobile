@@ -21,6 +21,7 @@ type TagSectionProps = {
     tags: Array<string>;
     section: string;
     height?: number;
+    uniqueSelection?: boolean;
     onSelectTags: (section, tags) => void;
 }
 
@@ -37,7 +38,7 @@ function CreateSectionData(tags: string[]) {
     return data;
 }
 
-export function TagSection({ tags, section, height, onSelectTags }: TagSectionProps) {
+export function TagSection({ tags, section, height, uniqueSelection, onSelectTags }: TagSectionProps) {
     const [sectionData, setSectionData] = useState([] as any);
 
     function UpdateTagsData() {
@@ -64,8 +65,18 @@ export function TagSection({ tags, section, height, onSelectTags }: TagSectionPr
             style={item.checked ? [styles.tag, { borderColor: theme.colors.primary1, borderWidth: 3 }, height && { height: height }] : [styles.tag, height && { height: height }]}
             activeOpacity={0.75}
             onPress={() => {
-                const updatedSectionData = sectionData
-                updatedSectionData.find((x: any) => x.id === item.id).checked = !item.checked
+                let updatedSectionData = sectionData
+
+                if (uniqueSelection) {
+                    updatedSectionData = [...sectionData].map(tag => {
+                        if (tag.id !== item.id) { //fazemos essa verificação para que seja possível remover a tag do item selecionado
+                            tag.checked = false;
+                        }
+                        return tag;
+                    })
+                }
+
+                updatedSectionData.find((x: any) => x.id === item.id).checked = !item.checked // toggling the checked value
                 LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut); //.spring
                 setSectionData(updatedSectionData)
                 onSelectTags(section, sectionData)
@@ -109,10 +120,10 @@ export function TagsSelector({ onSelectTags, style }: TagsSelectorTypes) {
     return (
         <View style={style ? [styles.container, style] : styles.container}>
             <SectionTitle title='Tempo de Permanência' viewStyle={{ marginBottom: 5 }} fontStyle={{ fontSize: 18, color: theme.colors.secondary1, fontFamily: theme.fonts.section400 }} />
-            <TagSection section="time" tags={['Até 5 dias', '1 semana', '2 semanas', 'Mais de 1 mês']} onSelectTags={handleTags} />
+            <TagSection section="time" uniqueSelection tags={['Até 5 dias', '1 semana', '2 semanas', 'Mais de 1 mês']} onSelectTags={handleTags} />
 
             <SectionTitle title='Vegetação' viewStyle={{ marginBottom: 5 }} fontStyle={{ fontSize: 18, color: theme.colors.secondary1, fontFamily: theme.fonts.section400 }} />
-            <TagSection section="vegetation" tags={['Rasteira', 'Alta', 'Inexistente']} onSelectTags={handleTags} />
+            <TagSection section="vegetation" uniqueSelection tags={['Rasteira', 'Alta', 'Inexistente']} onSelectTags={handleTags} />
 
             <SectionTitle title='Animais' viewStyle={{ marginBottom: 5 }} fontStyle={{ fontSize: 18, color: theme.colors.secondary1, fontFamily: theme.fonts.section400 }} />
             <TagSection section="animals" tags={['Moscas', 'Porcos', 'Cavalos', 'Escorpiões', 'Cobras', 'Sapos', 'Outros']} onSelectTags={handleTags} />

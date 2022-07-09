@@ -24,7 +24,7 @@ import {
 import * as Location from "expo-location";
 import { LocationGeocodedAddress } from "expo-location";
 
-export default async function ListMarkersOnMap(scope: string, userRegion: Region) {
+export default async function ListMarkersOnMap(scope: string, userRegion: Region | { latitude: number, longitude: number }) {
     const markersArray = []
     const reportsUnparsed = await AsyncStorage.getItem(REPORTS_STORAGE);
     const reports = JSON.parse(reportsUnparsed) as Array<Report>

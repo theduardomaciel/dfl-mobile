@@ -11,7 +11,7 @@ import { styles } from "./styles";
 import { theme } from "../../../global/styles/theme";
 
 export default function CameraObject({ images, setImages, setModalOpen }) {
-    const [hasPermission, setHasPermission] = useState(null);
+    const [isLoaded, setLoaded] = useState(false);
     const [type, setType] = useState(CameraType.back);
 
     const [isLoading, setIsLoading] = useState(false)
@@ -46,16 +46,23 @@ export default function CameraObject({ images, setImages, setModalOpen }) {
 
     useEffect(() => {
         (async () => {
-            const { status } = await Camera.requestCameraPermissionsAsync();
-            setHasPermission(status === 'granted');
+            setTimeout(() => {
+                setLoaded(true)
+            }, 250);
         })();
     }, []);
 
-    if (hasPermission === null) {
+    /* if (hasPermission === null) {
         return <View />;
     }
     if (hasPermission === false) {
         return <Text>Por favor, nos permita ter acesso à câmera.</Text>;
+    } */
+
+    if (!isLoaded) {
+        return <View style={{ alignItems: "center", justifyContent: "center", flex: 1 }}>
+            <ActivityIndicator size="large" color={theme.colors.primary1} />
+        </View>
     }
 
     function flipCameraHandler() {

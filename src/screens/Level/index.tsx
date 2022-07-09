@@ -211,7 +211,7 @@ export function Level({ route, navigation }) {
                 <Text style={levelStyles.levelDescription}>
                     {`${LEVELS_DATA[USER_LEVEL + 1].exp - USER_EXP}xp para o próximo nível`}
                 </Text>
-                <Image source={require("../../assets/placeholders/level_placeholder.png")} />
+                <Image progressiveRenderingEnabled source={require("../../assets/placeholders/level_placeholder.png")} />
             </LinearGradient>
             <TextButton
                 title="Compartilhar meu nível"
@@ -241,7 +241,7 @@ export function Level({ route, navigation }) {
                         renderItem={({ item, index }) => {
                             return (
                                 <View key={index} style={{ width: ITEM_LENGTH, marginHorizontal: SPACING * 1.5, justifyContent: "space-between" }}>
-                                    <Image source={item.icon} style={levelStyles.itemImage} />
+                                    <Image progressiveRenderingEnabled source={item.icon} style={levelStyles.itemImage} />
                                     <Text style={[levelStyles.levelDescription2, { marginBottom: 20 }]}>
                                         {USER_LEVEL < item.id ? `faltam ${item.exp - USER_EXP}xp para esse nível` : `Você já passou por esse nível!`}
                                     </Text>

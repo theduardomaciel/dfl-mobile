@@ -175,6 +175,8 @@ export function Account({ navigation, route }) {
                     </Text>
                 </View>
                 <Image
+                    progressiveRenderingEnabled
+                    loadingIndicatorSource={{ uri: "/src/assets/icon/loading_icon.gif" }}
                     style={styles.report_image}
                     source={{
                         uri: item.images_urls[0]

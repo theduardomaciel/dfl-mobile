@@ -19,11 +19,17 @@ export default async function SubmitReport(data, profile) {
         if (updatedProfile.level > profile.level) {
             console.log("O usuário subiu de nível.")
             // Caso o usuário tenha subido de nível, indicamos que ele não ganhou nenhuma experiência, e realizamos a tratativa no modal
-            return updatedProfile
+            return {
+                profile: updatedProfile,
+                newLevel: true,
+            }
         } else {
             console.log("O usuário não subiu de nível.")
             // Caso não, somente mostramos o quanto o usuário ganhou de exp
-            return updatedProfile
+            return {
+                profile: updatedProfile,
+                newLevel: false,
+            }
         }
     } catch (error) {
         console.log("Erro: ", error.response, error)

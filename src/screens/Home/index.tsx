@@ -158,7 +158,7 @@ export function Home({ route, navigation }) {
     const userReportsSolvedInMonthAmount = [...userReports].filter(report => new Date(report.createdAt).getMonth() === new Date().getMonth() && report.resolved === true).length
 
     return (
-        <ImageBackground source={require("../../assets/placeholders/background_placeholder.png")} style={styles.container}>
+        <ImageBackground progressiveRenderingEnabled source={require("../../assets/placeholders/background_placeholder.png")} style={styles.container}>
             <FocusAwareStatusBar translucent backgroundColor={"transparent"} barStyle="dark-content" />
             <View style={styles.header}>
                 <View style={styles.greetingsView}>
@@ -184,12 +184,7 @@ export function Home({ route, navigation }) {
                     />
                 }
             >
-                {/* <TextButton buttonStyle={{ padding: 10 }} title="Ir pra tela" onPress={() => navigation.navigate("ConclusionScreen", {
-                    title: "O relatório foi enviado com sucesso!",
-                    info: "Obrigado por contribuir com o meio ambiente!",
-                    gainedExperience: 500,
-                    navigateTo: "NewLevel",
-                })} /> */}
+                {/* <TextButton buttonStyle={{ padding: 10 }} title="Ir pra tela" onPress={() => navigation.navigate("Step3", { data: {} })} /> */}
                 <Text style={[styles.title, { paddingTop: 0 }]}>
                     Seu nível
                 </Text>
@@ -205,7 +200,7 @@ export function Home({ route, navigation }) {
                             {LEVELS_DATA[user.profile.level].title}
                         </Text>
                     </View>
-                    <Image source={LEVELS_DATA[user.profile.level].icon} />
+                    <Image progressiveRenderingEnabled source={LEVELS_DATA[user.profile.level].icon} />
                 </Pressable>
 
                 <Text style={styles.title}>
