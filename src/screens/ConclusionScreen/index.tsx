@@ -122,7 +122,6 @@ export function ConclusionScreen({ route, navigation }) {
                     if (navigateTo) {
                         navigation.navigate(navigateTo)
                     } else {
-                        console.log("foi aqui")
                         navigation.navigate("Main");
                     }
                 }}

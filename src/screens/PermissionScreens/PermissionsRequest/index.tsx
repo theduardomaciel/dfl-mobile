@@ -76,7 +76,11 @@ export function PermissionsRequest({ navigation, route }) {
         setLoading(true)
         if (hasToUpdate) {
             console.log("Atualizando relatórios de maneira geral.")
-            await updateReports()
+            try {
+                await updateReports()
+            } catch (error) {
+                setLoading(false)
+            }
         }
         setLoading(false)
         navigation.navigate("ConclusionScreen", {
@@ -89,7 +93,7 @@ export function PermissionsRequest({ navigation, route }) {
         console.log("A permissão para uso da câmera foi garantida.")
         CameraPermission = true
         BUTTONS_TEXTS[1] = "Continuar"
-        if (CameraPermission && LocationPermission) {
+        if (CameraPermission && LocationPermission && permission !== "camera") {
             console.log("As duas permissões já foram concedidas, prosseguindo...")
             PrepareApp()
         } else {
@@ -109,8 +113,12 @@ export function PermissionsRequest({ navigation, route }) {
             console.log("As duas permissões já foram concedidas, prosseguindo...")
             PrepareApp()
         } else {
-            scrollTo(1)
-            setCurrentIndex(1)
+            if (permission === "location") {
+                navigation.goBack();
+            } else {
+                scrollTo(1)
+                setCurrentIndex(1)
+            }
         }
     }
 

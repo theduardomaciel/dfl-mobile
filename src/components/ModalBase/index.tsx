@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { View, Text, ViewStyle, TextStyle, Dimensions } from 'react-native'
 import Modal from 'react-native-modal'
+import changeNavigationBarColor, { hideNavigationBar } from 'react-native-navigation-bar-color'
 import { theme } from '../../global/styles/theme'
 
 import { TextButton } from '../TextButton'
@@ -36,6 +37,7 @@ export function ModalBase({
     style,
     descriptionStyle,
     ...rest }: Props) {
+
     return (
         <Modal
             deviceHeight={deviceHeight}

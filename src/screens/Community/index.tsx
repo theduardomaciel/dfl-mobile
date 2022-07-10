@@ -206,7 +206,7 @@ export function Community({ navigation }) {
     const showErrorToast = () => {
         console.log("Mostrando toast de erro.")
         Toast.show({
-            type: 'success',
+            type: 'error',
             text1: 'Opa! Algo deu errado...',
             text2: 'Infelizmente não possível atualizar os relatórios de sua cidade.',
         });
@@ -218,10 +218,10 @@ export function Community({ navigation }) {
         console.log("Atualizando relatórios.")
         refreshButtonRotation.value = withRepeat(withSpring(refreshButtonRotation.value + 360, { damping: 15, restSpeedThreshold: 1 }), -1, false)
         const success = await updateReports()
+        cancelAnimation(refreshButtonRotation)
         if (success === true) {
             await PrepareScreen()
             showToast()
-            cancelAnimation(refreshButtonRotation)
         } else {
             showErrorToast()
         }

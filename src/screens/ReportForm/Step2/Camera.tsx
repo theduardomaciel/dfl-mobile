@@ -51,7 +51,7 @@ export default function CameraObject({ images, setImages, setModalOpen }) {
     }
 
     useEffect(() => {
-        (async () => {
+        async function checkPermission() {
             check(cameraPermission)
                 .then(async (result) => {
                     if (result !== RESULTS.GRANTED) {
@@ -61,8 +61,11 @@ export default function CameraObject({ images, setImages, setModalOpen }) {
                         setHasPermission(true);
                     }
                 });
-        })();
-    }, []);
+        }
+        const unsubscribe = navigation.addListener('focus', checkPermission);
+        // Return the function to unsubscribe from the event so it gets removed on unmount
+        return unsubscribe;
+    }, [navigation]);
 
     if (hasPermission === false) {
         return <Text>Por favor, nos permita ter acesso à câmera.</Text>;

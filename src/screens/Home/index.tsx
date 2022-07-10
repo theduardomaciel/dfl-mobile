@@ -127,9 +127,9 @@ export function Home({ route, navigation }) {
     }
 
     const [isAvailable, setIsAvailable] = useState(true)
-    const appVersion = "1"
+    const appVersion = "3"
 
-    const outdatedMessage = "Epa! Parece que você está usando uma versão desatualizada do aplicativo.\nProvavelmente, o acesso antecipado do app acabou, portanto, pedimos que desinstale essa versão inacabada do seu dispositivo."
+    const outdatedMessage = "Epa! Parece que você está usando uma versão desatualizada do aplicativo.\nPedimos que desinstale essa versão desatualizada do seu dispositivo para evitar problemas."
 
     async function CheckAvailability(coords) {
         getScopePicked("district")

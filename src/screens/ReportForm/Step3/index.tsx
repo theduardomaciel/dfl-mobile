@@ -21,6 +21,7 @@ export function ReportScreen3({ route, navigation }: any) {
     const { user, updateProfile } = useAuth();
     const { data } = route.params;
 
+    const [alreadySentReport, setAlreadySentReport] = useState(false);
     const [isLoading, setIsLoading] = useState(false)
 
     const [tags, setTags] = useState({});
@@ -33,17 +34,24 @@ export function ReportScreen3({ route, navigation }: any) {
 
     async function EndForm() {
         setIsLoading(true)
+        navigation.removeListener("beforeRemove");
+
         data.tags = tags
         data.hasTrashBins = hasTrashbin
         data.suggestion = suggestion
+
         const response = await SubmitReport(data, user.profile)
         setIsLoading(false)
-        navigation.removeListener("beforeRemove");
+        setAlreadySentReport(true)
+
         if (response === "error") {
             console.log("Deu erro :(")
             navigation.navigate('Main', {
                 screen: 'Início',
-                params: { errorMessage: "Infelizmente não foi cadastrar seu relatório, provavelmente por conta da conexão com a internet. Por favor, tente novamente mais tarde." },
+                params: {
+                    errorMessage:
+                        "Infelizmente não foi cadastrar seu relatório, provavelmente por conta da conexão com a internet. Por favor, tente novamente mais tarde."
+                },
             });
         } else {
             await updateProfile(response.profile)
@@ -51,7 +59,7 @@ export function ReportScreen3({ route, navigation }: any) {
             navigation.navigate("ConclusionScreen", {
                 title: "O relatório foi enviado com sucesso!",
                 info: "Obrigado por contribuir com o meio ambiente!",
-                gainedExperience: (response.profile.experience - user.profile.experience).toString(),
+                gainedExperience: response.experienceGained,
                 navigateTo: pageToNavigate,
             })
         }
@@ -59,7 +67,8 @@ export function ReportScreen3({ route, navigation }: any) {
 
     useEffect(() => {
         navigation.addListener('beforeRemove', (event) => {
-            if (isLoading) {
+            if (isLoading === true && alreadySentReport === false) {
+                console.log("Cancelando requisição")
                 // Prevent default behavior of leaving the screen
                 event.preventDefault();
             } else {
@@ -67,7 +76,7 @@ export function ReportScreen3({ route, navigation }: any) {
                 return;
             }
         })
-    }, [navigation, isLoading])
+    }, [navigation])
 
     return (
         <KeyboardAvoidingView style={defaultStyles.container} behavior={"height"}>

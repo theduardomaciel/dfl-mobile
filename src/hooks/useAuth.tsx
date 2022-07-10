@@ -48,9 +48,7 @@ export const AuthContext = createContext({} as AuthContextData)
 import * as Location from "expo-location"
 
 import { check, RESULTS } from 'react-native-permissions';
-
 import { locationPermission } from "../utils/permissionsToCheck";
-import { GetReportsInLocation } from "../utils/functions/GetReportsInLocation";
 
 function AuthProvider({ children }: AuthProviderProps) {
     const [isSigningIn, setIsSigningIn] = useState(true)
@@ -151,13 +149,20 @@ function AuthProvider({ children }: AuthProviderProps) {
                 const result = await Location.reverseGeocodeAsync({ latitude: userLocation.coords.latitude, longitude: userLocation.coords.longitude });
                 const location = result[0]
                 const state = location.region ? location.region.replace(/ /g, '') : location.region.replace(/ /g, '');
-                const reports = await GetReportsInLocation(state, true)
-                if (reports) {
-                    await AsyncStorage.setItem(REPORTS_STORAGE, JSON.stringify(reports))
-                    await AsyncStorage.setItem(LOCATION_STORAGE, JSON.stringify(location))
-                    console.log("Os relatórios da cidade do usuário foram atualizados na aplicação.")
-                    return true
-                } else {
+                try {
+                    const reportsResponse = await api.get(`/report?location=${state}&includeInfo=true&approved=true`)
+                    if (reportsResponse.status === 200) {
+                        const reports = reportsResponse.data as Array<Report>
+                        await AsyncStorage.setItem(REPORTS_STORAGE, JSON.stringify(reports))
+                        await AsyncStorage.setItem(LOCATION_STORAGE, JSON.stringify(location))
+                        console.log("Os relatórios da cidade do usuário foram atualizados na aplicação.")
+                        return true
+                    } else {
+                        console.log(reportsResponse)
+                        return false
+                    }
+                } catch (error) {
+                    console.log(error)
                     return false
                 }
             } else {
