@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Animated, Pressable, Easing } from 'react-native'
 
-import { MenuButton } from '../MenuButton';
+import { MenuButton } from "./MenuButton/index"
 import { styles } from './styles'
 
 import community_icon from '../../assets/menu/community_icon.svg'

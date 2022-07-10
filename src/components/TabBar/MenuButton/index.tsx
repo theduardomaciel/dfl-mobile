@@ -17,7 +17,7 @@ type Props = {
     index: number;
 };
 
-import Trashbin_Vector from "../../assets/menu/trashbin.svg"
+import Trashbin_Vector from "../../../assets/menu/trashbin.svg"
 
 const icon_sizes = [
     [38, 38],

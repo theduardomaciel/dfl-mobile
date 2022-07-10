@@ -36,7 +36,8 @@ type PropTypes = {
 }
 
 import { styles } from "../Account/styles";
-import { UpdateNavigationBar } from "../../utils/functions/UpdateNavigationBar";
+import FocusAwareStatusBar from "../../utils/functions/FocusAwareStatusBar";
+import changeNavigationBarColor, { showNavigationBar } from "react-native-navigation-bar-color";
 
 function GetReportsAmountByRating(profile) {
     const data = profile.reports;
@@ -169,7 +170,8 @@ export function Level({ route, navigation }) {
     };
 
     useEffect(() => {
-        UpdateNavigationBar(null, true, null)
+        showNavigationBar();
+        changeNavigationBarColor(theme.colors.background, true, true);
         if (user.profile === undefined) {
             return navigation.goBack();
         }
@@ -184,7 +186,7 @@ export function Level({ route, navigation }) {
 
     return (
         <View style={levelStyles.container}>
-            <StatusBar barStyle="light-content" />
+            <FocusAwareStatusBar translucent backgroundColor={"transparent"} barStyle="light-content" />
             <LinearGradient
                 colors={[theme.colors.secondary1, theme.colors.primary1]}
                 start={{ x: 0, y: 0.5 }}

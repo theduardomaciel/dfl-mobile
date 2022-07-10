@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, Image, RefreshControl, Pressable, ImageBackground } from "react-native";
+import React, { useState, useEffect, useLayoutEffect } from "react";
+import { View, Text, ScrollView, Image, RefreshControl, Pressable, ImageBackground, BackHandler } from "react-native";
 import { MapScopePicker } from "../../components/MapScopePicker";
 
 import MapView, { PROVIDER_GOOGLE, Marker, Callout } from "react-native-maps";
@@ -22,7 +22,6 @@ import { MaterialIcons } from '@expo/vector-icons';
 import * as Location from "expo-location"
 
 import FocusAwareStatusBar from "../../utils/functions/FocusAwareStatusBar";
-import { UpdateNavigationBar } from "../../utils/functions/UpdateNavigationBar";
 import { locationPermission } from "../../utils/permissionsToCheck";
 
 import { check, RESULTS } from 'react-native-permissions';
@@ -50,14 +49,13 @@ import { FocusCallout } from "../Community/Callouts/FocusCallout";
 import { hideNavigationBar } from 'react-native-navigation-bar-color';
 import { ProfileModal } from "../../components/ProfileModal";
 
-import * as SplashScreen from "expo-splash-screen";
 import { TextButton } from "../../components/TextButton";
+import { api } from "../../utils/api";
 
 export function Home({ route, navigation }) {
-    const [errorMessage, setErrorMessage] = useState(route.params?.errorMessage);
-    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(" ");
 
-    const { user, updateProfile, signOut } = useAuth();
+    const { user, updateProfile } = useAuth();
 
     let mapReference: any;
     const [alreadyLoaded, setAlreadyLoaded] = useState(false)
@@ -66,23 +64,12 @@ export function Home({ route, navigation }) {
         if (route.params?.errorMessage) {
             console.log("Error Message: ", route.params?.errorMessage)
             setErrorMessage(route.params?.errorMessage)
-            setErrorModalVisible(true)
         }
         check(locationPermission)
             .then(async (result) => {
-                if (result !== RESULTS.GRANTED) return navigation.navigate("PermissionsRequest");
+                if (result !== RESULTS.GRANTED) return navigation.navigate("PermissionsRequest", { permission: "location" });
             });
-        UpdateNavigationBar("dark", false, theme.colors.background)
         hideNavigationBar()
-        async function LoadMarkersOnMap() {
-            try {
-                await getScopePicked("district")
-            } catch (error) {
-                console.log(error)
-            }
-        }
-        LoadMarkersOnMap()
-        setErrorModalVisible(typeof errorMessage === "string" ? true : false)
         CheckIfProfileIsCreated()
     }
 
@@ -131,22 +118,34 @@ export function Home({ route, navigation }) {
     const [isRefreshing, setIsRefreshing] = useState(false)
     const onRefresh = async () => {
         setIsRefreshing(true)
+
         await updateProfile()
+        getScopePicked("district")
 
         setIsRefreshing(false)
         console.log("Usuário atualizou a página inicial.")
     }
 
     const [isAvailable, setIsAvailable] = useState(true)
+    const appVersion = "1"
+
+    const outdatedMessage = "Epa! Parece que você está usando uma versão desatualizada do aplicativo.\nProvavelmente, o acesso antecipado do app acabou, portanto, pedimos que desinstale essa versão inacabada do seu dispositivo."
+
     async function CheckAvailability(coords) {
+        getScopePicked("district")
         const userLocation = await Location.reverseGeocodeAsync(coords) as any;
         if (userLocation.city && userLocation.subRegion !== "Maceió") {
             console.log("Usuário não está em um local permitido.")
             setIsAvailable(false)
             setErrorMessage("Por enquanto, o DFL não está disponível em sua localização :(\nAguarde o lançamento oficial do aplicativo para que sua região esteja disponível.")
-            setErrorModalVisible(true)
+        } else {
+            const serverVersion = await api.get("/")
+            console.log("Versão do servidor: ", serverVersion.data, "Versão do app: ", appVersion)
+            if (parseFloat(appVersion) < parseFloat(serverVersion.data)) {
+                setIsAvailable(false)
+                setErrorMessage(outdatedMessage)
+            }
         }
-        SplashScreen.hideAsync();
     }
 
     if (user === null) return (
@@ -297,13 +296,13 @@ export function Home({ route, navigation }) {
                 <ModalBase
                     title="Opa! Parece que algo deu errado..."
                     description={errorMessage}
-                    isVisible={errorModalVisible}
+                    isVisible={errorMessage !== " "}
                     backButton={true}
                     toggleModal={() => {
                         if (isAvailable) {
-                            setErrorModalVisible(!errorModalVisible)
+                            setErrorMessage(" ")
                         } else {
-                            signOut()
+                            BackHandler.exitApp()
                         }
                     }}
                     onBackdropPress={() => { }}

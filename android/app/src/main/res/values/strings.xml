@@ -1,7 +1,6 @@
 <resources>
   <!-- Below line is handled by '@expo/configure-splash-screen' command and it's discouraged to modify it manually -->
   <string name="expo_splash_screen_resize_mode" translatable="false">contain</string>
-  <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
   <string name="app_name">DFL</string>
   <string name="server_client_id">867322063173-u3jns36k76voo7tuv2cv20s0lhuh1i82.apps.googleusercontent.com</string>
 </resources>

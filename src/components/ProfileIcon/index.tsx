@@ -34,7 +34,6 @@ import { LoadingScreen } from '../LoadingScreen';
 import { MAX_USERNAME_CHARACTERS, MIN_USERNAME_CHARACTERS, verifyFormatting, verifyRange } from '../ProfileModal/Username';
 import { api } from '../../utils/api';
 import { Profile } from '../../@types/application';
-import { UpdateNavigationBar } from '../../utils/functions/UpdateNavigationBar';
 
 async function CheckIfUsernameIsAvailable(username) {
     const usersInLocationResults = await api.get(`/profile?username=${username}`)

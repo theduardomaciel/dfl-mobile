@@ -23,11 +23,20 @@ import { useAuth } from './hooks/useAuth';
 import { createStackNavigator } from '@react-navigation/stack';
 const Stack = createStackNavigator();
 
+import * as SplashScreen from "expo-splash-screen";
+
 export default function Routes() {
-    const { user, hasAppPermissions } = useAuth();
+    const { user } = useAuth();
+
+    if (user) {
+        setTimeout(() => {
+            SplashScreen.hideAsync();
+        }, 500);
+    }
+
     return (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-            {user && hasAppPermissions ? (
+            {user ? (
                 <Stack.Group>
                     <Stack.Screen
                         name="Main"

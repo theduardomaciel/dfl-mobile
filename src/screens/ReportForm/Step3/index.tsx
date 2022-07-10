@@ -41,7 +41,10 @@ export function ReportScreen3({ route, navigation }: any) {
         navigation.removeListener("beforeRemove");
         if (response === "error") {
             console.log("Deu erro :(")
-            navigation.navigate("Início" as never, { errorMessage: `Infelizmente não foi cadastrar seu relatório :(\nPor favor, tente novamente mais tarde.` })
+            navigation.navigate('Main', {
+                screen: 'Início',
+                params: { errorMessage: "Infelizmente não foi cadastrar seu relatório, provavelmente por conta da conexão com a internet. Por favor, tente novamente mais tarde." },
+            });
         } else {
             await updateProfile(response.profile)
             const pageToNavigate = response.newLevel ? "NewLevel" : null

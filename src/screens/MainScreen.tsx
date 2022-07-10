@@ -12,8 +12,6 @@ import { FadeInView } from '../global/animations/fadeInView'
 import { theme } from '../global/styles/theme'
 import { backgroundDrivers, buttonDrivers, TabBar } from '../components/TabBar'
 
-import { UpdateNavigationBar } from "../utils/functions/UpdateNavigationBar";
-
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 const Tab = createBottomTabNavigator();
 
@@ -39,29 +37,27 @@ const FadeReportsScreen = (props) => (
     </FadeInView>
 );
 
-const FadeAccountScreen = (props) => (
-    <FadeInView>
-        {
-            useEffect(() => {
-                const changedScreen = props.navigation.addListener('focus', () => {
-                    if (lastIndex !== 4) {
-                        riseTrashbin(buttonDrivers[4]);
-                        downTrashbin(buttonDrivers[lastIndex]);
+const FadeAccountScreen = (props) => {
+    useEffect(() => {
+        const changedScreen = props.navigation.addListener('focus', () => {
+            if (lastIndex !== 4) {
+                riseTrashbin(buttonDrivers[4]);
+                downTrashbin(buttonDrivers[lastIndex]);
 
-                        if (lastIndex === 1) {
-                            downTrashbin(backgroundDrivers[0]);
-                        }
-                        lastIndex = 4;
-                    }
-                });
+                if (lastIndex === 1) {
+                    downTrashbin(backgroundDrivers[0]);
+                }
+                lastIndex = 4;
+            }
+        });
 
-                // Return the function to unsubscribe from the event so it gets removed on unmount
-                return changedScreen;
-            }, [props.navigation])
-        }
+        // Return the function to unsubscribe from the event so it gets removed on unmount
+        return changedScreen;
+    }, [props.navigation])
+    return (
         <Account {...props} />
-    </FadeInView>
-);
+    );
+}
 
 export function MainScreen() {
     return (

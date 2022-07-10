@@ -14,7 +14,7 @@ export default async function SubmitReport(data, profile) {
             tags: data.tags,
             suggestion: data.suggestion,
             hasTrashBins: data.hasTrashBins
-        })
+        }, { timeout: 10000 })
         const updatedProfile = submitResponse.data as ReportResponse
         if (updatedProfile.level > profile.level) {
             console.log("O usuário subiu de nível.")

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { View, StatusBar, Text, Image, useWindowDimensions, ScrollView, Platform, UIManager, LayoutAnimation } from "react-native";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { View, StatusBar, Text, Image, useWindowDimensions, ScrollView, Platform, UIManager, LayoutAnimation, FlatList, Dimensions, TouchableOpacity } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
 import { RectButton } from "react-native-gesture-handler";
@@ -24,9 +24,11 @@ import { useAuth } from "../../hooks/useAuth";
 import { api } from "../../utils/api";
 import { Profile, Report } from "../../@types/application";
 import { CommentsModal } from "../Reports/Comments/Modal";
-import { UpdateNavigationBar } from "../../utils/functions/UpdateNavigationBar";
+
 import GetRatingsAverage from "../../utils/functions/GetRatingsAverage";
 import FocusAwareStatusBar from "../../utils/functions/FocusAwareStatusBar";
+import { PropTypes } from "../Reports";
+import changeNavigationBarColor, { showNavigationBar } from "react-native-navigation-bar-color";
 
 type TagsType = {
     id: string;
@@ -56,6 +58,8 @@ export function ReportScreen({ navigation, route }) {
     const [tags, setTags] = useState(Array)
 
     useEffect(() => {
+        showNavigationBar();
+        changeNavigationBarColor(theme.colors.background, true, true);
         for (const [index, tagGroup] of Object.entries(tagGroups)) {
             for (const [key, tag] of Object.entries(tagGroup)) {
                 if (tag.checked) {
@@ -122,6 +126,26 @@ export function ReportScreen({ navigation, route }) {
         counter += 1
     }
 
+    /* Flat List */
+    const [currentIndex, setCurrentIndex] = useState(0)
+    const slidesRef = useRef(null);
+
+    const viewabilityConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
+    const onViewableItemsChanged = useCallback(({ viewableItems }: PropTypes) => {
+        return setCurrentIndex(viewableItems[0].index)
+    }, []);
+    const viewabilityConfigCallbackPairs = useRef([{ viewabilityConfig, onViewableItemsChanged }])
+
+    const scrollTo = (factor: number) => {
+        if (slidesRef.current !== null) {
+            if (factor === 1 && currentIndex < report.images_urls.length - 1) {
+                slidesRef.current.scrollToIndex({ index: currentIndex + 1 })
+            } else if (factor === -1 && currentIndex > 0) {
+                slidesRef.current.scrollToIndex({ index: currentIndex - 1 })
+            }
+        }
+    };
+
     const [isCommentsModalVisible, setCommentsModalVisible] = useState(false)
     return (
         <View style={styles.container}>
@@ -169,13 +193,46 @@ export function ReportScreen({ navigation, route }) {
                 </View>
             </LinearGradient>
             <View style={styles.image}>
-                <Image progressiveRenderingEnabled style={{ flex: 1 }} source={{ uri: report.images_urls[0] }} />
+                <View style={{ flex: 1 }}>
+                    <FlatList
+                        style={{ flex: report.images_urls.length > 1 ? report.images_urls.length : 1 }}
+                        data={report.images_urls}
+                        renderItem={({ item }) =>
+                            <Image
+                                progressiveRenderingEnabled
+                                style={{ width: Dimensions.get("screen").width }}
+                                source={{ uri: item }}
+                            />
+                        }
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        pagingEnabled
+                        bounces={false}
+                        keyExtractor={item => item}
+                        scrollEventThrottle={32}
+                        viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
+                        viewabilityConfig={viewabilityConfig}
+                        ref={slidesRef}
+                    />
+                </View>
+
                 <LinearGradient
                     colors={[theme.colors.primary1, 'transparent']}
                     start={{ x: 0.5, y: 1 }}
                     end={{ x: 0.5, y: 0 }}
                     style={styles.imageGradient}
                 >
+                    {
+                        report.images_urls.length > 1 &&
+                        <View style={{ flexDirection: "row", alignItems: "flex-start", width: "90%" }}>
+                            <TouchableOpacity onPress={() => scrollTo(-1)}>
+                                <MaterialIcons name="chevron-left" size={28} style={{ marginRight: 10 }} color={theme.colors.text1} />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => scrollTo(1)}>
+                                <MaterialIcons name="chevron-right" size={28} color={theme.colors.text1} />
+                            </TouchableOpacity>
+                        </View>
+                    }
                     <Text style={styles.suggestion}>
                         {suggestion}
                     </Text>

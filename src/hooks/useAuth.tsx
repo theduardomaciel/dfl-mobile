@@ -28,8 +28,6 @@ export const LOCATION_STORAGE = "@dfl:location";
 type AuthContextData = {
     user: User | null;
     isSigningIn: boolean;
-    hasAppPermissions: boolean;
-    setHasAppPermissions: (state: boolean) => Promise<void>;
     signIn: () => Promise<string>;
     signOut: () => Promise<void>;
     updateReports: (updatedReport?: Report) => Promise<boolean | string>;
@@ -56,12 +54,10 @@ import { GetReportsInLocation } from "../utils/functions/GetReportsInLocation";
 
 function AuthProvider({ children }: AuthProviderProps) {
     const [isSigningIn, setIsSigningIn] = useState(true)
-    const [hasAppPermissions, setHasAppPermissionsState] = useState(true)
     const [user, setUser] = useState<User | null>(null)
 
     async function signIn() {
         setIsSigningIn(true)
-        setHasAppPermissions(false)
         await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
         try {
             const userInfo = await GoogleSignin.signIn();
@@ -146,12 +142,10 @@ function AuthProvider({ children }: AuthProviderProps) {
             }
         } else {
             const result = await check(locationPermission)
-            if (result === RESULTS.GRANTED) {
-                setHasAppPermissionsState(true)
-            } else {
-                return false
+            if (result !== RESULTS.GRANTED) {
+                console.log("O usuário não autorizou a localização.")
+                return "permission_lack"
             }
-
             const userLocation = await Location.getLastKnownPositionAsync()
             if (userLocation) {
                 const result = await Location.reverseGeocodeAsync({ latitude: userLocation.coords.latitude, longitude: userLocation.coords.longitude });
@@ -210,6 +204,7 @@ function AuthProvider({ children }: AuthProviderProps) {
             // O usuário não está logado, podemos exibir a tela de onboarding
             SplashScreen.hideAsync();
         }
+
         setIsSigningIn(false);
     }
 
@@ -217,19 +212,13 @@ function AuthProvider({ children }: AuthProviderProps) {
         loadUserStorageData()
     }, [])
 
-    async function setHasAppPermissions(state: boolean) {
-        await setHasAppPermissionsState(state)
-    }
-
     return (
         <AuthContext.Provider value={{
             signIn,
             signOut,
             updateReports,
             updateProfile,
-            setHasAppPermissions,
             user,
-            hasAppPermissions,
             isSigningIn,
         }}>
             {children}

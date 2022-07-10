@@ -25,6 +25,7 @@ import { useAuth } from "../../hooks/useAuth";
 
 import Toast from 'react-native-toast-message';
 import FocusAwareStatusBar from "../../utils/functions/FocusAwareStatusBar";
+import { hideNavigationBar } from "react-native-navigation-bar-color";
 
 function GetReportsAmountByMonth(profile) {
     const data = profile.reports;
@@ -244,6 +245,7 @@ export function Account({ navigation, route }) {
     }
 
     useEffect(() => {
+        hideNavigationBar()
         console.log("Verificando mudanças na tela de relatórios.")
         if (route.params?.status) {
             const status = route.params.status.split("_")[0]

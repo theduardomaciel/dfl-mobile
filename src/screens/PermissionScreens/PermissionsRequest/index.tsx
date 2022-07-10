@@ -28,12 +28,15 @@ type PropTypes = {
 const Bold = (props) => <Text style={{ fontWeight: 'bold' }}>{props.children}</Text>
 
 let BUTTON_COLORS = [theme.colors.primary1, theme.colors.primary1]
-let BUTTONS_TEXTS = ["Permitir acesso à localização", "Permitir acesso à câmera"]
 
 let CameraPermission = false;
 let LocationPermission = false
 export function PermissionsRequest({ navigation, route }) {
     const hasToUpdate = route.params?.update as boolean;
+    const permission = route.params?.permission as string;
+
+    let BUTTONS_TEXTS = permission === "camera" ? ["Permitir acesso à câmera", "Permitir acesso à localização"] : ["Permitir acesso à localização", "Permitir acesso à câmera"]
+    const FUNCTIONS = permission === "camera" ? [RequestCameraPermission, RequestLocationPermission] : [RequestLocationPermission, RequestCameraPermission]
 
     const { updateReports } = useAuth();
 
@@ -90,8 +93,12 @@ export function PermissionsRequest({ navigation, route }) {
             console.log("As duas permissões já foram concedidas, prosseguindo...")
             PrepareApp()
         } else {
-            scrollTo(0)
-            setCurrentIndex(0)
+            if (permission === "camera") {
+                navigation.goBack();
+            } else {
+                scrollTo(0)
+                setCurrentIndex(0)
+            }
         }
     }
     function LocationGranted() {
@@ -166,7 +173,6 @@ export function PermissionsRequest({ navigation, route }) {
                 }
             })
     }
-    const FUNCTIONS = [RequestLocationPermission, RequestCameraPermission]
 
     return (
         <View style={styles.container}>
@@ -174,7 +180,7 @@ export function PermissionsRequest({ navigation, route }) {
             <Logo height={75} width={150} />
             <View style={{ flex: 0.8, marginTop: 48 }}>
                 <FlatList style={styles.list}
-                    data={permissions_screens}
+                    data={permission === "camera" ? [permissions_screens[1]] : permission === "location" ? [permissions_screens[1]] : permissions_screens}
                     renderItem={({ item }) => <OnboardingItem image={item.icon} title={item.title} description={item.description} children={Platform.OS === "android" && <Hint />} />}
                     horizontal
                     showsHorizontalScrollIndicator={false}
@@ -191,7 +197,7 @@ export function PermissionsRequest({ navigation, route }) {
                 />
             </View>
             <View style={styles.footer}>
-                <Paginator data={permissions_screens} scrollX={scrollX} scrollTo={scrollTo} />
+                <Paginator data={permission === "camera" ? [permissions_screens[1]] : permission === "location" ? [permissions_screens[1]] : permissions_screens} scrollX={scrollX} scrollTo={scrollTo} />
                 <TextButton buttonStyle={{ backgroundColor: BUTTON_COLORS[currentIndex], paddingHorizontal: 20, paddingVertical: 15 }} title={BUTTONS_TEXTS[currentIndex]} onPress={FUNCTIONS[currentIndex]} />
                 {/* <Text style={styles.info}>Negar a permissão tornará impossível utilizar o aplicativo.</Text> */}
             </View>

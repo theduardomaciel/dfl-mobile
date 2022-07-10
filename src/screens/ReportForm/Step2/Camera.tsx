@@ -2,16 +2,22 @@ import { CameraType, Camera } from "expo-camera";
 import { useEffect, useRef, useState } from "react";
 import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 
-import CameraIcon from "../../../assets/camera/photo_camera.svg"
+import { cameraPermission } from "../../../utils/permissionsToCheck";
 
+import CameraIcon from "../../../assets/camera/photo_camera.svg"
 import FlipCamera from "../../../assets/camera/flip_camera.svg"
+
 import { BottomBar } from "../../../components/BottomBar";
 
 import { styles } from "./styles";
 import { theme } from "../../../global/styles/theme";
+import { check, RESULTS } from "react-native-permissions";
+import { useNavigation } from "@react-navigation/native";
 
 export default function CameraObject({ images, setImages, setModalOpen }) {
-    const [isLoaded, setLoaded] = useState(false);
+    const navigation = useNavigation();
+
+    const [hasPermission, setHasPermission] = useState(null);
     const [type, setType] = useState(CameraType.back);
 
     const [isLoading, setIsLoading] = useState(false)
@@ -46,20 +52,23 @@ export default function CameraObject({ images, setImages, setModalOpen }) {
 
     useEffect(() => {
         (async () => {
-            setTimeout(() => {
-                setLoaded(true)
-            }, 250);
+            check(cameraPermission)
+                .then(async (result) => {
+                    if (result !== RESULTS.GRANTED) {
+                        return navigation.navigate("PermissionsRequest" as never, { permission: "camera" } as never);
+                    } else {
+                        console.log("Permissão para acessar a câmera concedida.")
+                        setHasPermission(true);
+                    }
+                });
         })();
     }, []);
 
-    /* if (hasPermission === null) {
-        return <View />;
-    }
     if (hasPermission === false) {
         return <Text>Por favor, nos permita ter acesso à câmera.</Text>;
-    } */
+    }
 
-    if (!isLoaded) {
+    if (hasPermission === null) {
         return <View style={{ alignItems: "center", justifyContent: "center", flex: 1 }}>
             <ActivityIndicator size="large" color={theme.colors.primary1} />
         </View>

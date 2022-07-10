@@ -21,15 +21,17 @@ import { Report } from "../../@types/application";
 import { LoadingScreen } from "../../components/LoadingScreen";
 import FocusAwareStatusBar from "../../utils/functions/FocusAwareStatusBar";
 
-type PropTypes = {
+export type PropTypes = {
     viewableItems: Array<ViewToken>;
 }
+
 import { useFocusEffect } from '@react-navigation/native';
-import { UpdateNavigationBar } from "../../utils/functions/UpdateNavigationBar";
+
 import RatingFrame from "./RatingFrame";
 import GetRatingsAverage from "../../utils/functions/GetRatingsAverage";
-
-let lastIndex = 0;
+import { RectButton } from "react-native-gesture-handler";
+import renderItem, { IMAGE_HEIGHT, scrollToFunctions } from "./ReportItem";
+import ReportItem from "./ReportItem";
 
 export const shareReport = async (setIsLoading: React.Dispatch<React.SetStateAction<boolean>>, report: Report) => {
     setIsLoading(true)
@@ -68,12 +70,13 @@ export function Reports({ route, navigation }) {
         <View style={{ flex: 1 }} />
     );
 
+    const [lastIndex, setLastIndex] = useState(0);
+
     const [isLoading, setIsLoading] = useState(false)
     const [data, setData] = useState<Array<Report>>([])
     async function loadMoreReports() {
         try {
-            console.log(data, data.length)
-            const moreReportsResponse = await api.get(`/report?location=${`Brasil`}${data.length > 0 ? `&exclusionsId=${data.map(report => report.id)}` : ""}&includeInfo=true`)
+            const moreReportsResponse = await api.get(`/report?location=${`Brasil`}${data.length > 0 ? `&exclusionsId=${data.map(report => report.id)}` : ""}&includeInfo=true&approved=true`)
             // Condição 1: Local - utilizamos o Brasil inteiro como local de busca
             // Condição 2: Novos - Excluímos os relatórios já adicionados em buscas anteriores
             // Condição 3: Usuário - Excluímos os relatórios criados pelo próprio usuário
@@ -120,8 +123,6 @@ export function Reports({ route, navigation }) {
     useFocusEffect(
         useCallback(() => {
             if (shouldLoadData) loadMoreReports()
-            UpdateNavigationBar("dark", true, "black")
-            UpdateNavigationBar("dark", false, "black")
         }, [data])
     );
 
@@ -149,11 +150,11 @@ export function Reports({ route, navigation }) {
                     updatedData[lastIndex][`note${rating}`] = updatedReport[`note${rating}`] + 1
                     setData(updatedData)
 
-                    lastIndex = currentIndex
                     setRating(0)
                     console.log("Relatório atualizado com sucesso.")
                 }
             }
+            setLastIndex(currentIndex)
         }
 
         if (data.length > 0) {
@@ -163,27 +164,6 @@ export function Reports({ route, navigation }) {
 
     const viewabilityConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
     const viewabilityConfigCallbackPairs = useRef([{ viewabilityConfig, onViewableItemsChanged }])
-
-    const dimensions = Dimensions.get("screen")
-    const TOLERANCE = 15 // Tolerância que damos para que as imagens fiquem por trás das bordas arredondadas 
-
-    const IMAGE_HEIGHT = dimensions.height - TAB_BAR_HEIGHT_LONG + TOLERANCE
-
-    const renderItem = ({ item, index }) => {
-        return (
-            <View style={{ height: IMAGE_HEIGHT }}>
-                {/* backgroundColor: index % 2 == 0 ? "blue" : "green", */}
-                <Image
-                    progressiveRenderingEnabled
-                    style={{
-                        flex: 1,
-                        resizeMode: "cover"
-                    }}
-                    source={{ uri: item.images_urls[0] }}
-                />
-            </View>
-        )
-    }
 
     const showToast = () => {
         console.log("Mostrando toast de aviso.")
@@ -212,7 +192,7 @@ export function Reports({ route, navigation }) {
                     pagingEnabled
                     data={data}
                     showsVerticalScrollIndicator={false}
-                    renderItem={renderItem}
+                    renderItem={({ item, index }) => <ReportItem item={item} index={index} />}
                     scrollEventThrottle={50}
                     keyExtractor={(item, index) => index.toString()}
                     viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
@@ -253,10 +233,23 @@ export function Reports({ route, navigation }) {
                         <Text style={[styles.title, { marginBottom: 5 }]}>
                             @{data.length > 0 && data[currentIndex].profile !== null ? data[currentIndex].profile.username : ""}
                         </Text>
-                        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
-                            <MaterialIcons name="chevron-left" size={28} style={{ marginRight: 10 }} color={theme.colors.text1} />
-                            <MaterialIcons name="chevron-right" size={28} color={theme.colors.text1} />
-                        </View>
+                        {
+                            data[currentIndex] && data[currentIndex].images_urls.length > 1 &&
+                            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
+                                <RectButton onPress={() => {
+                                    const scrollFunction = scrollToFunctions[currentIndex]
+                                    scrollFunction(-1)
+                                }}>
+                                    <MaterialIcons name="chevron-left" size={28} style={{ marginRight: 10 }} color={theme.colors.text1} />
+                                </RectButton>
+                                <RectButton onPress={() => {
+                                    const scrollFunction = scrollToFunctions[currentIndex]
+                                    scrollFunction(1)
+                                }}>
+                                    <MaterialIcons name="chevron-right" size={28} color={theme.colors.text1} />
+                                </RectButton>
+                            </View>
+                        }
                     </View>
                     <View style={{ flexDirection: "row" }}>
                         <MaterialIcons name="place" size={18} color={theme.colors.text1} style={{ marginRight: 5 }} />
@@ -307,6 +300,6 @@ export function Reports({ route, navigation }) {
             {
                 isLoading && <LoadingScreen />
             }
-        </View>
+        </View >
     );
 }
