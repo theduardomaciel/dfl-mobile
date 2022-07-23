@@ -20,18 +20,17 @@ Um aplicativo que irá lhe ajudar a reportar focos de lixo e encontrar pontos de
 
 ## ✨ Tecnologias
 
--   [ ] HTML
--   [ ] CSS
--   [ ] JavaScript
--   [ ] Context API
+-   [ ] JavaScript (w/TypeScript)
+-   [ ] React
+-   [ ] React Native
+-   [ ] Expo
 -   [ ] Material Icons
--   [ ] Express
 -   [ ] Axios
 
 
 ## 🔖 Layout
 
-Você pode visualizar o layout do projeto através [desse link](https://www.figma.com/file/6PllN3nfMjMHgkNk6AKCRV). É necessário ter conta no [Figma](http://figma.com/) para acessá-lo.
+Você pode visualizar o layout do projeto através [desse link](https://www.figma.com/file/WSAdXvaBPIDKfDSbqyqvyM/DFL---Mobile?node-id=0%3A1). É necessário ter conta no [Figma](http://figma.com/) para acessá-lo.
 
 
 ## Executando o projeto
