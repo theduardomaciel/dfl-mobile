@@ -7,8 +7,10 @@
 
 <p align="center">
   <img alt="License" src="https://img.shields.io/static/v1?label=license&message=MIT&color=346259&labelColor=26413C">
-
- <img src="https://img.shields.io/static/v1?label=version&message=web&color=346259&labelColor=26413C" alt="NLW 06" />
+  
+  <img alt="Version" src="https://img.shields.io/static/v1?label=version&message=MOBILE&color=346259&labelColor=26413C">
+  
+  <img alt="Lines" src="https://img.shields.io/tokei/lines/github/theduardomaciel/dfl-mobile?color=346259&&labelColor=26413C&label=Lines%20of%20code&style=for-the-badge" />
 </p>
 
 
