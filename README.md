@@ -29,15 +29,11 @@ Um aplicativo que irá lhe ajudar a reportar focos de lixo e encontrar pontos de
 -   [ ] Material Icons
 -   [ ] Axios
 
-## Utilizando o aplicativo
+## Utilizando o aplicativo padrão
 
-Para poder baixar o app em seu dispositivo móvel Android (único sistema operacional disponível atualmente), visite o [site do DFL](https://dfl.vercel.app) e navegue até a área de download para instalar o arquivo .apk do aplicativo.
+Para poder baixar o app padrão em seu dispositivo móvel Android (único sistema operacional disponível atualmente), visite o [site do DFL](https://dfl.vercel.app) e navegue até a área de download para instalar o arquivo .apk do aplicativo.
 
-> Atualmente, o app está em acesso antecipado e pode conter diversos bugs. Para reportar algum problema, adicione um [issue](https://github.com/theduardomaciel/dfl-mobile/issues) para que o erro possa ser rastreado e resolvido. 
-
-## 🔖 Layout
-
-Você pode visualizar o layout do projeto através [desse link](https://www.figma.com/file/WSAdXvaBPIDKfDSbqyqvyM/DFL---Mobile?node-id=0%3A1). É necessário ter conta no [Figma](http://figma.com/) para acessá-lo.
+> Para reportar algum problema, adicione um [issue](https://github.com/theduardomaciel/dfl-mobile/issues) para que o erro possa ser rastreado e resolvido. 
 
 
 ## Executando o projeto
@@ -49,7 +45,9 @@ Em seguida, inicie o projeto.
 npm run start
 ```
 
+## 🔖 Layout
 
+Você pode visualizar o layout do projeto através [desse link](https://www.figma.com/file/WSAdXvaBPIDKfDSbqyqvyM/DFL---Mobile?node-id=0%3A1). É necessário ter conta no [Figma](http://figma.com/) para acessá-lo.
 
 ## 📄 Licença
 
