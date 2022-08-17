@@ -17,29 +17,29 @@
 ![cover](.github/cover.png?style=flat)
 
 
-## 💻 Projeto
-Um aplicativo que irá lhe ajudar a reportar focos de lixo e encontrar pontos de coleta em sua cidade.
+## 💻 Project
+An application that will help you to report garbage outbreaks and find collection points in your city.
 
-## ✨ Tecnologias
+## ✨ Technologies
 
--   [ ] JavaScript (w/TypeScript)
--   [ ] React
--   [ ] React Native
--   [ ] Expo
--   [ ] Material Icons
--   [ ] Axios
+- [ ] JavaScript (w/TypeScript)
+- [ ] React
+- [ ] React Native
+- [ ] Expo
+- [ ] Material Icons
+- [ ] Axios
 
-## Utilizando o aplicativo padrão
+## Using the default application
 
-Para poder baixar o app padrão em seu dispositivo móvel Android (único sistema operacional disponível atualmente), visite o [site do DFL](https://dfl.vercel.app) e navegue até a área de download para instalar o arquivo .apk do aplicativo.
+To be able to download the default app on your Android mobile device (the only operating system currently available), visit the [DFL website](https://dfl.vercel.app) and navigate to the download area to install the .apk file of the application.
 
-> Para reportar algum problema, adicione um [issue](https://github.com/theduardomaciel/dfl-mobile/issues) para que o erro possa ser rastreado e resolvido. 
+> To report an issue, please add an [issue](https://github.com/theduardomaciel/dfl-mobile/issues) so the bug can be tracked and resolved.
 
 
-## Executando o projeto
+## Running the project
 
-Utilize o **yarn** ou o **npm install** para instalar as dependências do projeto.
-Em seguida, inicie o projeto.
+Use **yarn** or **npm install** to install project dependencies.
+Then start the project.
 
 ```cl
 npm run start
@@ -47,10 +47,10 @@ npm run start
 
 ## 🔖 Layout
 
-Você pode visualizar o layout do projeto através [desse link](https://www.figma.com/file/WSAdXvaBPIDKfDSbqyqvyM/DFL---Mobile?node-id=0%3A1). É necessário ter conta no [Figma](http://figma.com/) para acessá-lo.
+You can view the layout of the project through [this link](https://www.figma.com/file/WSAdXvaBPIDKfDSbqyqvyM/DFL---Mobile?node-id=0%3A1). You need an account on [Figma](http://figma.com/) to access it.
 
-## 📄 Licença
+## 📄 License
 
-Esse projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+This project is under the MIT license. See the [LICENSE](LICENSE) file for more details.
 
 <br />
